@@ -7,10 +7,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/signup" element={<Signup />} />
-        {/* 다른 라우트들 */}
       </Routes>
     </BrowserRouter>
   );
 }
-
 export default App;
