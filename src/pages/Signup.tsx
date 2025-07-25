@@ -52,7 +52,7 @@ const Signup: React.FC = () => {
                   className="bg-blue-500 text-white border border-l-0 border-gray-300 rounded-r-lg px-3 py-2 text-sm font-semibold hover:bg-blue-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 flex-shrink-0 w-20 h-10 text-nowrap ml-1 text-center flex items-center justify-center"
                   type="button"
                 >
-                  메일 인증
+                  인증
                 </button>
               </div>
             </div>
@@ -84,17 +84,11 @@ const Signup: React.FC = () => {
               </label>
               <div className="flex flex-grow">
                 <input
-                  className="flex-grow appearance-none border border-gray-300 rounded-l-lg w-full py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:ring-blue-500 focus:border-blue-500 h-10 bg-gray-50"
+                  className="flex-grow appearance-none border border-gray-300 rounded-lg w-full py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:ring-blue-500 focus:border-blue-500 h-10 bg-gray-50"
                   id="nickname"
                   type="text"
                   placeholder="닉네임을 입력해주세요."
                 />
-                <button
-                  className="bg-white border border-l-0 border-gray-300 text-gray-600 rounded-r-lg px-3 py-2 text-sm font-semibold hover:bg-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 flex-shrink-0 w-20 h-10 text-nowrap ml-1 text-center flex items-center justify-center"
-                  type="button"
-                >
-                  중복 확인
-                </button>
               </div>
             </div>
           </div>

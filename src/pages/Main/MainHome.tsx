@@ -284,31 +284,9 @@ const CalendarSection: React.FC = () => {
 };
 
 const MainHome: React.FC = () => {
-  const [goalStatuses, setGoalStatuses] = useState<{ [key: number]: boolean }>({
-    0: false,
-    1: true,
-    2: false,
-    3: false,
-    4: false,
-    5: false,
-  });
-
-  const toggleGoalStatus = (goalId: number) => {
-    setGoalStatuses((prev) => ({
-      ...prev,
-      [goalId]: !prev[goalId],
-    }));
-  };
-
-  const [openMoreMenu, setOpenMoreMenu] = useState<number | null>(null);
-
-  const toggleMoreMenu = (goalId: number) => {
-    setOpenMoreMenu(openMoreMenu === goalId ? null : goalId);
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="h-screen flex flex-col bg-gray-50 text-gray-800 overflow-hidden">
+      <header className="bg-white border-b border-gray-200 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-shrink-0">
@@ -331,12 +309,12 @@ const MainHome: React.FC = () => {
           </div>
         </div>
       </header>
-      <main className="flex-grow">
-        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-12 gap-8">
-            <aside className="col-span-3">
+      <main className="flex-1 flex overflow-hidden">
+        <div className="max-w-7xl mx-auto w-full py-8 px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-12 gap-8 h-full">
+            <aside className="col-span-3 flex flex-col">
               <div className="flex flex-col h-full space-y-6">
-                <div className="pt-20"></div>
+                <div className="pt-8"></div>
                 <ProfileSection />
                 <MenuSection />
                 <div className="flex-grow"></div>
@@ -346,37 +324,37 @@ const MainHome: React.FC = () => {
                 <CalendarSection />
               </div>
             </aside>
-            <div className="col-span-9">
-              <div className="overflow-hidden">
-                <div className="bg-gray-50">
-                  <div className="flex justify-center">
-                    <nav className="flex">
-                      <a
-                        className="text-gray-500 hover:text-gray-900 hover:bg-white px-6 py-4 text-base font-medium transition-colors relative"
-                        href="#"
-                      >
-                        전체
-                      </a>
-                      <a
-                        aria-current="page"
-                        className="text-gray-900 px-6 py-4 text-base font-bold transition-colors relative"
-                        href="#"
-                      >
-                        나<div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
-                      </a>
-                      <a
-                        className="text-gray-500 hover:text-gray-900 hover:bg-white px-6 py-4 text-base font-medium transition-colors relative"
-                        href="#"
-                      >
-                        친구
-                      </a>
-                    </nav>
-                  </div>
-                  <div className="border-b-2 border-gray-300 mx-6"></div>
+            <div className="col-span-9 flex flex-col overflow-hidden">
+              <div className="bg-gray-50 flex-shrink-0">
+                <div className="flex justify-center">
+                  <nav className="flex">
+                    <button className="relative px-6 py-4 text-base font-medium transition-colors text-gray-500 hover:text-gray-900 hover:bg-white">
+                      전체
+                    </button>
+                    <button className="relative px-6 py-4 text-base font-bold transition-colors text-gray-900">
+                      나<div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
+                    </button>
+                    <button className="relative px-6 py-4 text-base font-medium transition-colors text-gray-500 hover:text-gray-900 hover:bg-white">
+                      친구
+                    </button>
+                  </nav>
                 </div>
-                <div className="p-6">
-                  <div className="mb-6"></div>
-                  <div className="space-y-4 max-h-[calc(100vh-300px)] overflow-y-auto pl-2 pt-2 pr-6 pb-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300">
+                <div className="border-b-2 border-gray-300 mx-6"></div>
+              </div>
+              <div className="flex-1 flex flex-col overflow-hidden">
+                {/* 검색바 공간 - 여백으로 대체 */}
+                <div className="p-6 pb-4 flex-shrink-0">
+                  <div className="flex justify-end">
+                    <div className="relative">
+                      {/* 검색창 제거하고 여백만 유지 */}
+                      <div className="w-64 h-10"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 목표 목록 스크롤 영역 */}
+                <div className="flex-1 overflow-y-auto px-6 pb-6">
+                  <div className="space-y-4 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300">
                     <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:bg-blue-50 hover:shadow-lg hover:border-blue-200 transition-all duration-200 cursor-pointer transform hover:scale-[1.02]">
                       <div className="flex items-start space-x-6 pl-2">
                         <img
@@ -407,42 +385,18 @@ const MainHome: React.FC = () => {
                               <button className="text-gray-400 hover:text-yellow-500">
                                 <span className="material-icons">bookmark_border</span>
                               </button>
-                              <button
-                                onClick={() => toggleMoreMenu(0)}
-                                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
-                              >
+                              <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
                                 <span className="material-icons">more_horiz</span>
                               </button>
-                              {openMoreMenu === 0 && (
-                                <div className="absolute right-0 top-8 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                                  <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    수정
-                                  </button>
-                                  <button className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-50">
-                                    삭제
-                                  </button>
-                                </div>
-                              )}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="mt-4 flex justify-end items-center space-x-4">
                         <div className="flex items-center space-x-3">
-                          <span className="text-base font-medium text-gray-700">
-                            {goalStatuses[0] ? '완료' : '미완료'}
-                          </span>
-                          <button
-                            onClick={() => toggleGoalStatus(0)}
-                            className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                              goalStatuses[0] ? 'bg-blue-600' : 'bg-gray-200'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                                goalStatuses[0] ? 'translate-x-7' : 'translate-x-1'
-                              }`}
-                            ></span>
+                          <span className="text-base font-medium text-gray-700">미완료</span>
+                          <button className="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 bg-gray-200">
+                            <span className="inline-block h-6 w-6 transform rounded-full bg-white transition-transform translate-x-1"></span>
                           </button>
                         </div>
                         <button className="text-gray-400 hover:text-red-500">
@@ -480,42 +434,18 @@ const MainHome: React.FC = () => {
                               <button className="text-gray-400 hover:text-yellow-500">
                                 <span className="material-icons">bookmark_border</span>
                               </button>
-                              <button
-                                onClick={() => toggleMoreMenu(1)}
-                                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
-                              >
+                              <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
                                 <span className="material-icons">more_horiz</span>
                               </button>
-                              {openMoreMenu === 1 && (
-                                <div className="absolute right-0 top-8 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                                  <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    수정
-                                  </button>
-                                  <button className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-50">
-                                    삭제
-                                  </button>
-                                </div>
-                              )}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="mt-4 flex justify-end items-center space-x-4">
                         <div className="flex items-center space-x-3">
-                          <span className="text-base font-medium text-gray-700">
-                            {goalStatuses[1] ? '완료' : '미완료'}
-                          </span>
-                          <button
-                            onClick={() => toggleGoalStatus(1)}
-                            className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                              goalStatuses[1] ? 'bg-blue-600' : 'bg-gray-200'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                                goalStatuses[1] ? 'translate-x-7' : 'translate-x-1'
-                              }`}
-                            ></span>
+                          <span className="text-base font-medium text-gray-700">완료</span>
+                          <button className="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 bg-blue-600">
+                            <span className="inline-block h-6 w-6 transform rounded-full bg-white transition-transform translate-x-7"></span>
                           </button>
                         </div>
                         <button className="text-gray-400 hover:text-red-500">
@@ -553,42 +483,18 @@ const MainHome: React.FC = () => {
                               <button className="text-gray-400 hover:text-yellow-500">
                                 <span className="material-icons">bookmark_border</span>
                               </button>
-                              <button
-                                onClick={() => toggleMoreMenu(2)}
-                                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
-                              >
+                              <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
                                 <span className="material-icons">more_horiz</span>
                               </button>
-                              {openMoreMenu === 2 && (
-                                <div className="absolute right-0 top-8 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                                  <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    수정
-                                  </button>
-                                  <button className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-50">
-                                    삭제
-                                  </button>
-                                </div>
-                              )}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="mt-4 flex justify-end items-center space-x-4">
                         <div className="flex items-center space-x-3">
-                          <span className="text-base font-medium text-gray-700">
-                            {goalStatuses[2] ? '완료' : '미완료'}
-                          </span>
-                          <button
-                            onClick={() => toggleGoalStatus(2)}
-                            className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                              goalStatuses[2] ? 'bg-blue-600' : 'bg-gray-200'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                                goalStatuses[2] ? 'translate-x-7' : 'translate-x-1'
-                              }`}
-                            ></span>
+                          <span className="text-base font-medium text-gray-700">미완료</span>
+                          <button className="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 bg-gray-200">
+                            <span className="inline-block h-6 w-6 transform rounded-full bg-white transition-transform translate-x-1"></span>
                           </button>
                         </div>
                         <button className="text-gray-400 hover:text-red-500">
@@ -626,42 +532,18 @@ const MainHome: React.FC = () => {
                               <button className="text-gray-400 hover:text-yellow-500">
                                 <span className="material-icons">bookmark_border</span>
                               </button>
-                              <button
-                                onClick={() => toggleMoreMenu(3)}
-                                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
-                              >
+                              <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
                                 <span className="material-icons">more_horiz</span>
                               </button>
-                              {openMoreMenu === 3 && (
-                                <div className="absolute right-0 top-8 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                                  <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    수정
-                                  </button>
-                                  <button className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-50">
-                                    삭제
-                                  </button>
-                                </div>
-                              )}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="mt-4 flex justify-end items-center space-x-4">
                         <div className="flex items-center space-x-3">
-                          <span className="text-base font-medium text-gray-700">
-                            {goalStatuses[3] ? '완료' : '미완료'}
-                          </span>
-                          <button
-                            onClick={() => toggleGoalStatus(3)}
-                            className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                              goalStatuses[3] ? 'bg-blue-600' : 'bg-gray-200'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                                goalStatuses[3] ? 'translate-x-7' : 'translate-x-1'
-                              }`}
-                            ></span>
+                          <span className="text-base font-medium text-gray-700">미완료</span>
+                          <button className="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 bg-gray-200">
+                            <span className="inline-block h-6 w-6 transform rounded-full bg-white transition-transform translate-x-1"></span>
                           </button>
                         </div>
                         <button className="text-gray-400 hover:text-red-500">
@@ -699,42 +581,18 @@ const MainHome: React.FC = () => {
                               <button className="text-gray-400 hover:text-yellow-500">
                                 <span className="material-icons">bookmark_border</span>
                               </button>
-                              <button
-                                onClick={() => toggleMoreMenu(4)}
-                                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
-                              >
+                              <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
                                 <span className="material-icons">more_horiz</span>
                               </button>
-                              {openMoreMenu === 4 && (
-                                <div className="absolute right-0 top-8 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                                  <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    수정
-                                  </button>
-                                  <button className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-50">
-                                    삭제
-                                  </button>
-                                </div>
-                              )}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="mt-4 flex justify-end items-center space-x-4">
                         <div className="flex items-center space-x-3">
-                          <span className="text-base font-medium text-gray-700">
-                            {goalStatuses[4] ? '완료' : '미완료'}
-                          </span>
-                          <button
-                            onClick={() => toggleGoalStatus(4)}
-                            className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                              goalStatuses[4] ? 'bg-blue-600' : 'bg-gray-200'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                                goalStatuses[4] ? 'translate-x-7' : 'translate-x-1'
-                              }`}
-                            ></span>
+                          <span className="text-base font-medium text-gray-700">미완료</span>
+                          <button className="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 bg-gray-200">
+                            <span className="inline-block h-6 w-6 transform rounded-full bg-white transition-transform translate-x-1"></span>
                           </button>
                         </div>
                         <button className="text-gray-400 hover:text-red-500">
@@ -772,42 +630,18 @@ const MainHome: React.FC = () => {
                               <button className="text-gray-400 hover:text-yellow-500">
                                 <span className="material-icons">bookmark_border</span>
                               </button>
-                              <button
-                                onClick={() => toggleMoreMenu(5)}
-                                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
-                              >
+                              <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
                                 <span className="material-icons">more_horiz</span>
                               </button>
-                              {openMoreMenu === 5 && (
-                                <div className="absolute right-0 top-8 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                                  <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    수정
-                                  </button>
-                                  <button className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-50">
-                                    삭제
-                                  </button>
-                                </div>
-                              )}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="mt-4 flex justify-end items-center space-x-4">
                         <div className="flex items-center space-x-3">
-                          <span className="text-base font-medium text-gray-700">
-                            {goalStatuses[5] ? '완료' : '미완료'}
-                          </span>
-                          <button
-                            onClick={() => toggleGoalStatus(5)}
-                            className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                              goalStatuses[5] ? 'bg-blue-600' : 'bg-gray-200'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                                goalStatuses[5] ? 'translate-x-7' : 'translate-x-1'
-                              }`}
-                            ></span>
+                          <span className="text-base font-medium text-gray-700">미완료</span>
+                          <button className="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 bg-gray-200">
+                            <span className="inline-block h-6 w-6 transform rounded-full bg-white transition-transform translate-x-1"></span>
                           </button>
                         </div>
                         <button className="text-gray-400 hover:text-red-500">
@@ -822,7 +656,7 @@ const MainHome: React.FC = () => {
           </div>
         </div>
       </main>
-      <footer className="bg-white border-t border-gray-200 mt-auto">
+      <footer className="bg-white border-t border-gray-200 flex-shrink-0">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <div className="text-sm text-gray-500">
             <span className="font-bold">(로고) Haru</span> |{' '}
