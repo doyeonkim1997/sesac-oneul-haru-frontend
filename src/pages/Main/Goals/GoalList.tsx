@@ -19,9 +19,9 @@ const ProfileSection: React.FC = () => {
 
 // 메뉴 섹션 컴포넌트
 const MenuSection: React.FC = () => {
-  const [isGoalMenuOpen, setIsGoalMenuOpen] = useState(false);
-  const [isFriendMenuOpen, setIsFriendMenuOpen] = useState(false);
-  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
+  const [isGoalMenuOpen, setIsGoalMenuOpen] = useState(true);
+  const [isFriendMenuOpen, setIsFriendMenuOpen] = useState(true);
+  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(true);
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -444,7 +444,7 @@ const GoalList: React.FC = () => {
 
                 {/* 목표 목록 스크롤 영역 */}
                 <div className="flex-1 overflow-y-auto px-6 pb-6">
-                  <div className="space-y-4 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300">
+                  <div className="pt-2 space-y-4 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300">
                     {goals.map((goal, index) => (
                       <div
                         key={goal.id}
@@ -532,11 +532,21 @@ const GoalList: React.FC = () => {
       </main>
       <footer className="bg-white border-t border-gray-200 flex-shrink-0">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-          <div className="text-sm text-gray-500">
-            <span className="font-bold">(로고) Haru</span> |{' '}
-            <a className="hover:underline" href="#">
-              Policy
-            </a>
+          <div className="flex justify-between items-center text-sm text-gray-500">
+            <div>
+              <span className="font-bold">Haru</span>
+            </div>
+            <div className="flex space-x-6">
+              <a className="hover:underline" href="#">
+                연락처
+              </a>
+              <a className="hover:underline" href="#">
+                정책
+              </a>
+              <a className="hover:underline" href="#">
+                이용약관
+              </a>
+            </div>
           </div>
         </div>
       </footer>

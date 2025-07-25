@@ -283,61 +283,12 @@ const CalendarSection: React.FC = () => {
   );
 };
 
-const BookmarkList: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const tabs = ['내 북마크', '친구 북마크'];
-
-  // 더미 북마크 데이터
-  const bookmarks = [
-    {
-      id: 1,
-      nickname: '닉네임',
-      content: '텍스트를 입력해 주세요.',
-      date: '2025-00-00 (월)',
-      bookmarkDate: '2025-07-15',
-      supporters: 5,
-    },
-    {
-      id: 2,
-      nickname: '닉네임',
-      content: '텍스트를 입력해 주세요.',
-      date: '2025-00-00 (월)',
-      bookmarkDate: '2025-07-14',
-      supporters: 3,
-    },
-    {
-      id: 3,
-      nickname: '닉네임',
-      content: '텍스트를 입력해 주세요.',
-      date: '2025-00-00 (월)',
-      bookmarkDate: '2025-07-13',
-      supporters: 7,
-    },
-    {
-      id: 4,
-      nickname: '닉네임',
-      content: '텍스트를 입력해 주세요.',
-      date: '2025-00-00 (월)',
-      bookmarkDate: '2025-07-12',
-      supporters: 2,
-    },
-    {
-      id: 5,
-      nickname: '닉네임',
-      content: '텍스트를 입력해 주세요.',
-      date: '2025-00-00 (월)',
-      bookmarkDate: '2025-07-11',
-      supporters: 4,
-    },
-    {
-      id: 6,
-      nickname: '닉네임',
-      content: '텍스트를 입력해 주세요.',
-      date: '2025-00-00 (월)',
-      bookmarkDate: '2025-07-10',
-      supporters: 6,
-    },
-  ];
+const Settings: React.FC = () => {
+  const [nickname, setNickname] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [withdrawPassword, setWithdrawPassword] = useState('');
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 text-gray-800 overflow-hidden">
@@ -380,94 +331,111 @@ const BookmarkList: React.FC = () => {
               </div>
             </aside>
             <div className="col-span-9 flex flex-col overflow-hidden">
-              <div className="bg-gray-50 flex-shrink-0">
-                <div className="flex justify-center">
-                  <nav className="flex">
-                    {tabs.map((tab, index) => (
-                      <button
-                        key={tab}
-                        className={`relative px-6 py-4 text-base font-medium transition-colors ${
-                          index === 0
-                            ? 'text-gray-900'
-                            : 'text-gray-500 hover:text-gray-900 hover:bg-white'
-                        }`}
-                      >
-                        {tab}
-                        {index === 0 && (
-                          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
-                        )}
-                      </button>
-                    ))}
-                  </nav>
-                </div>
-                <div className="border-b-2 border-gray-300 mx-6"></div>
-              </div>
-              <div className="flex-1 flex flex-col overflow-hidden">
-                {/* 검색바 공간 - 여백으로 대체 */}
-                <div className="p-6 pb-4 flex-shrink-0">
-                  <div className="flex justify-end">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="북마크 검색"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-64 h-10 px-4 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                      />
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span className="material-icons text-gray-400 text-sm">search</span>
+              <div className="flex-1 overflow-y-auto">
+                <div className="pt-32 space-y-6">
+                  {/* 닉네임 및 비밀번호 설정 */}
+                  <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200">
+                    <div className="flex items-start space-x-8 justify-center">
+                      {/* 프로필 이미지 영역 */}
+                      <div className="flex flex-col items-center space-y-4">
+                        <div className="w-24 h-24 border-2 border-gray-300 border-dashed rounded-full flex items-center justify-center bg-gray-50">
+                          <span className="text-gray-500 text-sm">이미지</span>
+                        </div>
+                        <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm transition-colors">
+                          프로필 이미지 설정
+                        </button>
                       </div>
-                    </div>
-                  </div>
-                </div>
 
-                {/* 북마크 목록 스크롤 영역 */}
-                <div className="flex-1 overflow-y-auto px-6 pb-6">
-                  <div className="pt-2 space-y-4 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300">
-                    {bookmarks.map((bookmark, index) => (
-                      <div
-                        key={bookmark.id}
-                        className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:bg-blue-50 hover:shadow-lg hover:border-blue-200 transition-all duration-200 cursor-pointer transform hover:scale-[1.02]"
-                      >
-                        <div className="flex items-start space-x-6 pl-2">
-                          <img
-                            alt={`${bookmark.nickname} 프로필 이미지`}
-                            className="h-16 w-16 rounded-full object-cover"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJeSEHLf3AGAymfO0jRLhPhT6_Gf9bWxHc4AikLOBUGfgUobtBnAWz-dbumuqmgOJUOAj2pGwuoSDoCmfA18IOKqYAmtcpXAs0GIbeC912h6OuLKzerIYUA9SD0hrEROKTADA5ZAC3gaxiO0NOR7PHbU5Zqf43FRpsXBJ0hQw1U9XXvRmaZmxem-tjuz1vUTI7KmxzN7ZlRLkmhunSyqt0lznaE34Zl7ABqTnz0lgUDXfoVjFTZVGSEtDYwQi7tbkFJaAVff2k6mg"
-                          />
-                          <div className="flex-1">
-                            <div className="flex justify-between items-start">
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-2">
-                                  <span className="font-semibold">@{bookmark.nickname}</span>
-                                  <span className="text-xs text-gray-400">{bookmark.date}</span>
-                                </div>
-                                <p className="text-xl font-medium text-gray-800 mt-4 mb-6">
-                                  {bookmark.content}
-                                </p>
-                                <div className="flex flex-wrap gap-2 mb-3">
-                                  <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full">
-                                    #공부
-                                  </span>
-                                  <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full">
-                                    #업무
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="relative flex items-center space-x-2"></div>
+                      {/* 설정 폼 */}
+                      <div className="flex flex-col items-center space-y-6 flex-1 max-w-md">
+                        {/* 닉네임 설정 */}
+                        <div className="w-full">
+                          <h3 className="text-base font-semibold text-gray-800 mb-3">
+                            닉네임 설정
+                          </h3>
+                          <div className="flex items-center">
+                            <input
+                              type="text"
+                              placeholder="닉네임을 입력해 주세요."
+                              value={nickname}
+                              onChange={(e) => setNickname(e.target.value)}
+                              className="flex-1 h-8 px-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            />
+                            <button className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-l-0 border-gray-300 rounded-r-lg text-sm transition-colors">
+                              수정
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* 비밀번호 설정 */}
+                        <div className="w-full">
+                          <h3 className="text-base font-semibold text-gray-800 mb-3">
+                            비밀번호 설정
+                          </h3>
+                          <div className="flex flex-col space-y-3">
+                            <input
+                              type="password"
+                              placeholder="기존 비밀번호를 입력해 주세요."
+                              value={currentPassword}
+                              onChange={(e) => setCurrentPassword(e.target.value)}
+                              className="w-full h-8 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            />
+                            <input
+                              type="password"
+                              placeholder="새 비밀번호를 입력해 주세요."
+                              value={newPassword}
+                              onChange={(e) => setNewPassword(e.target.value)}
+                              className="w-full h-8 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            />
+                            <div className="flex items-center">
+                              <input
+                                type="password"
+                                placeholder="새 비밀번호를 다시 입력해 주세요."
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="flex-1 h-8 px-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                              />
+                              <button className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-l-0 border-gray-300 rounded-r-lg text-sm transition-colors">
+                                수정
+                              </button>
                             </div>
                           </div>
                         </div>
-                        <div className="mt-4 flex justify-end items-center space-x-4">
-                          <button
-                            className="text-yellow-500 hover:text-yellow-600 transition-colors duration-200"
-                            title="북마크 해제하기"
-                          >
-                            <span className="material-icons text-3xl">bookmark</span>
-                          </button>
+                      </div>
+                    </div>
+
+                    {/* 전체 박스 중앙에 저장 버튼 */}
+                    <div className="flex justify-center mt-6">
+                      <button className="w-32 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors text-sm">
+                        저장
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 회원 탈퇴 */}
+                  <div className="bg-white p-8 pb-16 rounded-xl shadow-md border border-gray-200">
+                    <div className="flex flex-col items-center space-y-6 w-full max-w-md mx-auto pt-4">
+                      <div className="w-full">
+                        <h3 className="text-base font-semibold text-gray-800 mb-3">회원 탈퇴</h3>
+                        <div className="flex flex-col space-y-4">
+                          <input
+                            type="password"
+                            placeholder="비밀번호를 입력해 주세요."
+                            value={withdrawPassword}
+                            onChange={(e) => setWithdrawPassword(e.target.value)}
+                            className="w-full h-8 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          />
+                          <div className="flex justify-center space-x-3">
+                            <button className="w-32 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors text-sm font-medium">
+                              취소
+                            </button>
+                            <button className="w-32 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-medium">
+                              탈퇴
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -499,4 +467,4 @@ const BookmarkList: React.FC = () => {
   );
 };
 
-export default BookmarkList;
+export default Settings;

@@ -28,7 +28,7 @@ const CalendarSection: React.FC = () => {
           <span className="cursor-pointer">2</span>
         </div>
         <div className="p-1">
-          <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+          <span className="bg-sky-400 text-white rounded-full w-6 h-6 flex items-center justify-center">
             3
           </span>
         </div>
@@ -42,7 +42,7 @@ const CalendarSection: React.FC = () => {
           <span className="cursor-pointer">6</span>
         </div>
         <div className="p-1">
-          <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+          <span className="bg-sky-400 text-white rounded-full w-6 h-6 flex items-center justify-center">
             7
           </span>
         </div>
@@ -56,7 +56,7 @@ const CalendarSection: React.FC = () => {
           <span className="cursor-pointer">10</span>
         </div>
         <div className="p-1">
-          <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+          <span className="bg-sky-400 text-white rounded-full w-6 h-6 flex items-center justify-center">
             11
           </span>
         </div>
@@ -70,12 +70,12 @@ const CalendarSection: React.FC = () => {
           <span className="cursor-pointer">14</span>
         </div>
         <div className="p-1">
-          <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">
+          <span className="bg-sky-400 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">
             15
           </span>
         </div>
         <div className="p-1">
-          <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+          <span className="bg-sky-400 text-white rounded-full w-6 h-6 flex items-center justify-center">
             16
           </span>
         </div>
@@ -95,7 +95,7 @@ const CalendarSection: React.FC = () => {
           <span className="cursor-pointer">21</span>
         </div>
         <div className="p-1">
-          <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+          <span className="bg-sky-400 text-white rounded-full w-6 h-6 flex items-center justify-center">
             22
           </span>
         </div>
