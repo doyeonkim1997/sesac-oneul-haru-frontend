@@ -1,5 +1,5 @@
 // 메뉴 섹션 컴포넌트
-import { useState } from "react";
+import { useState } from 'react';
 
 const MenuSection: React.FC = () => {
   const [isGoalMenuOpen, setIsGoalMenuOpen] = useState(false);
@@ -11,7 +11,7 @@ const MenuSection: React.FC = () => {
       <nav className="space-y-1">
         <div>
           <button
-            className="flex items-center justify-between w-full text-left space-x-3 text-white bg-blue-500 hover:bg-blue-600 px-3 py-3 rounded-lg font-medium transition-colors"
+            className="flex items-center justify-between w-full text-left space-x-3 text-white bg-sky-400 hover:bg-sky-500 px-3 py-3 rounded-lg font-medium transition-colors"
             onClick={() => setIsGoalMenuOpen(!isGoalMenuOpen)}
           >
             <div className="flex items-center space-x-3">
@@ -43,7 +43,7 @@ const MenuSection: React.FC = () => {
         </div>
         <div>
           <button
-            className="flex items-center justify-between w-full text-left space-x-3 text-white bg-blue-500 hover:bg-blue-600 px-3 py-3 rounded-lg font-medium transition-colors"
+            className="flex items-center justify-between w-full text-left space-x-3 text-white bg-sky-400 hover:bg-sky-500 px-3 py-3 rounded-lg font-medium transition-colors"
             onClick={() => setIsFriendMenuOpen(!isFriendMenuOpen)}
           >
             <div className="flex items-center space-x-3">
@@ -81,7 +81,7 @@ const MenuSection: React.FC = () => {
         </div>
         <div>
           <button
-            className="flex items-center justify-between w-full text-left space-x-3 text-white bg-blue-500 hover:bg-blue-600 px-3 py-3 rounded-lg font-medium transition-colors"
+            className="flex items-center justify-between w-full text-left space-x-3 text-white bg-sky-400 hover:bg-sky-500 px-3 py-3 rounded-lg font-medium transition-colors"
             onClick={() => setIsSettingsMenuOpen(!isSettingsMenuOpen)}
           >
             <div className="flex items-center space-x-3">

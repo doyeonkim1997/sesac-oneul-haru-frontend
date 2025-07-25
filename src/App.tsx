@@ -3,7 +3,9 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import MainHome from './pages/Main/MainHome';
 import GoalList from './pages/Main/Goals/GoalList';
+import BookmarkList from './pages/Main/Goals/BookmarkList';
 import FriendList from './pages/Main/Friends/FriendList';
+import Settings from './pages/Main/componets/settings/settings';
 // ... 다른 import
 
 function App() {
@@ -14,7 +16,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/main" element={<MainHome />} />
         <Route path="/goals" element={<GoalList />} />
+        <Route path="/bookmarks" element={<BookmarkList />} />
         <Route path="/friends" element={<FriendList />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </BrowserRouter>
   );
