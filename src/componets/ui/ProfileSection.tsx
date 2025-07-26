@@ -4,13 +4,10 @@ const ProfileSection: React.FC = () => {
     <div className="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center">
       <img
         alt="프로필 이미지"
-        className="h-24 w-24 rounded-full object-cover"
+        className="h-32 w-32 rounded-full object-cover"
         src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxXs7vDKXMRvI3IZHHf5Ual3o0KgDnebg8JGYnS3N0bRmgVIPTB7HoOTX5ZkkKi1Hz3JMwW7WDKIcVbl3pO-tMjQrV8_8jJnB-MpiCl_wXTrc8adxUAF-7NE2m2-GOF88PNtm4xA_5RqMzvRMPgMwCXr2-VdePIbvy0qZ9aWcRAWZfR0_DYpHJzgZPB-wW5EklI___Z1ePt2SfQvrvEVcNsVQaV_-6naKmZ523fItMRU6mLabXPoPUGQZBDS3OdHUFqA_ov8DiNdE"
       />
       <p className="mt-4 text-xl font-bold text-gray-800">닉네임</p>
-      <p className="mt-3 text-sm font-medium text-gray-600 text-center leading-relaxed">
-        아침 햇살 + 따뜻한 커피 = 내 하루의 시작 🌞☕
-      </p>
     </div>
   );
 };

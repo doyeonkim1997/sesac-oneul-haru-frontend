@@ -1,5 +1,5 @@
 // 다크모드 토글 컴포넌트
-import { useState } from "react";
+import { useState } from 'react';
 
 const DarkModeToggle: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import Terms from './pages/Terms';
 import MainHome from './pages/Main/MainHome';
 import GoalList from './pages/Main/Goals/GoalList';
 import BookmarkList from './pages/Main/Goals/BookmarkList';
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/main" element={<MainHome />} />
         <Route path="/goals" element={<GoalList />} />
         <Route path="/bookmarks" element={<BookmarkList />} />
