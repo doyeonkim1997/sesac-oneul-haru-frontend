@@ -33,7 +33,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
     };
   }, [isDropdownOpen]);
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:bg-blue-50 hover:shadow-lg hover:border-blue-200 transition-all duration-200 cursor-pointer transform hover:scale-[1.02]">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-gray-600 transition-all duration-200 cursor-pointer transform hover:scale-[1.02]">
       <div className="flex items-start space-x-6 pl-2">
         <img
           alt={`${user.nickname} 프로필 이미지`}
@@ -44,10 +44,14 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-center space-x-2">
-                <span className="font-semibold">@{user.nickname}</span>
-                <span className="text-xs text-gray-400">{goal.created_at}</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  @{user.nickname}
+                </span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">{goal.created_at}</span>
               </div>
-              <p className="text-xl font-medium text-gray-800 mt-4 mb-6">{goal.content}</p>
+              <p className="text-xl font-medium text-gray-800 dark:text-white mt-4 mb-6">
+                {goal.content}
+              </p>
             </div>
             <div className="relative flex items-center space-x-2">
               {!isBookmarkMode && (
@@ -125,7 +129,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
             // 일반 모드: 토글 + 하트 표시
             <>
               <div className="flex items-center space-x-3">
-                <span className="text-base font-medium text-gray-700">
+                <span className="text-base font-medium text-gray-700 dark:text-gray-300">
                   {goal.is_completed ? '완료' : '미완료'}
                 </span>
                 <button

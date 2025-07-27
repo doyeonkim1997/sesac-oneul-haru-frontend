@@ -15,24 +15,24 @@ const BookmarkList: React.FC = () => {
   const goals = activeTab === 'my' ? getMyBookmarkedGoals() : getFriendsBookmarkedGoals();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 overflow-hidden">
-      <header className="bg-white border-b border-gray-200 flex-shrink-0">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-shrink-0">
               <a className="flex items-center space-x-2" href="#">
                 <span className="material-icons text-blue-500 text-3xl">task_alt</span>
-                <span className="text-xl font-bold text-gray-900">Haru</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">Haru</span>
               </a>
             </div>
             <div className="flex items-center space-x-6">
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">people</span>
               </button>
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">favorite_border</span>
               </button>
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">refresh</span>
               </button>
             </div>
@@ -62,15 +62,15 @@ const BookmarkList: React.FC = () => {
               </div>
             </aside>
             <div className="col-span-9 flex flex-col">
-              <div className="bg-gray-50 flex-shrink-0">
+              <div className="bg-gray-50 dark:bg-gray-900 flex-shrink-0">
                 <div className="flex justify-center">
                   <nav className="flex">
                     <button
                       onClick={() => setActiveTab('my')}
-                      className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white ${
+                      className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white dark:hover:bg-gray-800 ${
                         activeTab === 'my'
-                          ? 'text-gray-900 font-bold'
-                          : 'text-gray-500 hover:text-gray-900'
+                          ? 'text-gray-900 dark:text-white font-bold'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                       }`}
                     >
                       내 북마크
@@ -80,10 +80,10 @@ const BookmarkList: React.FC = () => {
                     </button>
                     <button
                       onClick={() => setActiveTab('friends')}
-                      className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white ${
+                      className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white dark:hover:bg-gray-800 ${
                         activeTab === 'friends'
-                          ? 'text-gray-900 font-bold'
-                          : 'text-gray-500 hover:text-gray-900'
+                          ? 'text-gray-900 dark:text-white font-bold'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                       }`}
                     >
                       친구 북마크
@@ -93,7 +93,7 @@ const BookmarkList: React.FC = () => {
                     </button>
                   </nav>
                 </div>
-                <div className="border-b-2 border-gray-300 mx-6"></div>
+                <div className="border-b-2 border-gray-300 dark:border-gray-600 mx-6"></div>
               </div>
               <div className="flex-1 flex flex-col overflow-hidden">
                 {/* 검색바 공간 */}

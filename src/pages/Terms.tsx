@@ -7,24 +7,24 @@ import Footer from '../componets/ui/Footer';
 
 const Terms: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 overflow-hidden">
-      <header className="bg-white border-b border-gray-200 flex-shrink-0">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-shrink-0">
               <a className="flex items-center space-x-2" href="#">
                 <span className="material-icons text-blue-500 text-3xl">task_alt</span>
-                <span className="text-xl font-bold text-gray-900">Haru</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">Haru</span>
               </a>
             </div>
             <div className="flex items-center space-x-6">
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">people</span>
               </button>
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">favorite_border</span>
               </button>
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">refresh</span>
               </button>
             </div>
@@ -56,12 +56,14 @@ const Terms: React.FC = () => {
             <div className="col-span-9 flex flex-col overflow-hidden">
               <div className="flex-1 overflow-y-auto">
                 <div className="pt-16 space-y-6">
-                  <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200 max-h-[calc(100vh-15.5rem)] overflow-y-auto">
-                    <h1 className="text-2xl font-bold mb-6 text-center">이용약관 및 정책</h1>
-                    <div className="text-gray-700 text-base leading-relaxed space-y-6">
+                  <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 max-h-[calc(100vh-15.5rem)] overflow-y-auto">
+                    <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+                      이용약관 및 정책
+                    </h1>
+                    <div className="text-gray-700 dark:text-gray-300 text-base leading-relaxed space-y-6">
                       {/* 서비스 이용약관 */}
                       <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                           제1조 (서비스 이용약관)
                         </h2>
                         <div className="space-y-3">
@@ -82,7 +84,7 @@ const Terms: React.FC = () => {
 
                       {/* 개인정보 처리방침 */}
                       <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                           제2조 (개인정보 처리방침)
                         </h2>
                         <div className="space-y-3">

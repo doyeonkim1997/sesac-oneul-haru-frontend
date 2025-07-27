@@ -40,7 +40,7 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({ isOpen, onClose, onSu
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-xl shadow-2xl border-2 border-gray-100 backdrop-blur-sm bg-opacity-95 hover:shadow-3xl transition-all duration-300 w-full max-w-lg mx-4 transform hover:scale-[1.02]">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 backdrop-blur-sm bg-opacity-95 hover:shadow-3xl transition-all duration-300 w-full max-w-lg mx-4 transform hover:scale-[1.02]">
         {/* Header/User Section */}
         <div className="flex items-start space-x-6 pl-2 mb-6">
           <img
@@ -50,10 +50,12 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({ isOpen, onClose, onSu
           />
           <div className="flex-1">
             <div className="flex items-center space-x-2">
-              <span className="font-semibold">@닉네임</span>
-              <span className="text-xs text-gray-400">(ME)</span>
+              <span className="font-semibold text-gray-900 dark:text-white">@닉네임</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500">(ME)</span>
             </div>
-            <p className="text-gray-600 text-sm mt-1">| 오늘 하루 목표는 무엇인가요?</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              | 오늘 하루 목표는 무엇인가요?
+            </p>
           </div>
         </div>
 
@@ -63,13 +65,13 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({ isOpen, onClose, onSu
             value={goalContent}
             onChange={(e) => setGoalContent(e.target.value)}
             placeholder="목표를 입력해주세요..."
-            className="w-full h-24 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 resize-none text-xl font-medium text-gray-800"
+            className="w-full h-24 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 resize-none text-xl font-medium text-gray-800 dark:text-white bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400"
           />
         </div>
 
         {/* Tag Selection Section */}
         <div className="mb-6 pl-24">
-          <p className="text-gray-700 font-medium mb-3">태그를 선택하세요!</p>
+          <p className="text-gray-700 dark:text-gray-300 font-medium mb-3">태그를 선택하세요!</p>
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <button
@@ -91,7 +93,7 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({ isOpen, onClose, onSu
         <div className="flex justify-end items-center space-x-4 pl-24">
           <button
             onClick={handleCancel}
-            className="px-6 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors font-medium"
+            className="px-6 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors font-medium"
           >
             취소
           </button>

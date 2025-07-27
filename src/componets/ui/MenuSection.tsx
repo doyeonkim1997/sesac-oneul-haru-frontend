@@ -1,5 +1,6 @@
 // 메뉴 섹션 컴포넌트
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import CreateGoalModal from '../modals/CreateGoalModal';
 
 const MenuSection: React.FC = () => {
@@ -11,7 +12,7 @@ const MenuSection: React.FC = () => {
     // 예: API 호출, 상태 업데이트 등
   };
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm mb-4">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mb-4">
       <nav className="space-y-1">
         <div>
           <div className="flex items-center justify-between w-full text-left space-x-3 text-white bg-sky-400 px-3 py-3 rounded-lg font-medium">
@@ -24,22 +25,22 @@ const MenuSection: React.FC = () => {
           <div className="mt-1 ml-8 space-y-1">
             <button
               onClick={() => setIsCreateGoalModalOpen(true)}
-              className="flex items-center space-x-3 text-gray-600 hover:bg-gray-50 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors w-full text-left"
+              className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors w-full text-left"
             >
               <span>새 목표 작성</span>
             </button>
-            <a
-              className="flex items-center space-x-3 text-gray-600 hover:bg-gray-50 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
-              href="#"
+            <Link
+              to="/goals"
+              className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
             >
               <span>목표 조회</span>
-            </a>
-            <a
-              className="flex items-center space-x-3 text-gray-600 hover:bg-gray-50 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
-              href="#"
+            </Link>
+            <Link
+              to="/bookmarks"
+              className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
             >
               <span>북마크</span>
-            </a>
+            </Link>
           </div>
         </div>
         <div>
@@ -80,12 +81,12 @@ const MenuSection: React.FC = () => {
             <span className="material-icons text-sm rotate-180">expand_more</span>
           </div>
           <div className="mt-1 ml-8 space-y-1">
-            <a
-              className="flex items-center space-x-3 text-gray-600 hover:bg-gray-50 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
-              href="#"
+            <Link
+              to="/settings"
+              className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
             >
               <span>회원 정보 수정</span>
-            </a>
+            </Link>
           </div>
         </div>
       </nav>

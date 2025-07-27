@@ -1,8 +1,15 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'haru-blue': {
+          500: '#56BBE2', // Main color
+          600: '#4AA8D1',
+        },
+      },
+    },
   },
   plugins: [],
 };
