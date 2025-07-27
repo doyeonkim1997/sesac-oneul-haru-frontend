@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState } from 'react';
+import logo from '../assets/logo.svg';
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -13,14 +15,18 @@ export default function Login() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 pt-12 pb-16">
       
       {/* 로고 + 설명 */}
-      <div className="text-center mb-7 max-w-md px-2">
-        <div className="flex items-center justify-center mb-3">
-          <span className="material-icons text-blue-500 text-3xl sm:text-4xl mr-2">logo</span>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Haru</h1>
+      <div className="text-center mb-7 px-2">
+        <div className="flex items-baseline justify-center mb-3 ">
+        <img
+          src={logo}
+          alt="logo"
+          className="w-[43px] h-[43px] object-contain"
+        />
+        <h1 className="ml-4 text-6xl font-bold leading-none font-stretch-expanded">Haru</h1>
         </div>
         <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
           "거창한 계획 대신 오늘의 작은 성공을 모아요."<br />
-          거창한 목표가 부담스러운 당신을 위해, Haru(하루)는 '작심일일'을 제안합니다.<br />
+          거창한 목표가 부담스러운 당신을 위해, <strong>Haru</strong>(하루)는 '작심일일'을 제안합니다.<br />
           하루 하나의 목표 — 가볍게 세우고, 함께 응원하며<br />
           작은 성공을 차곡차곡 쌓아가는 공간에 함께해보세요.
         </p>
@@ -28,7 +34,7 @@ export default function Login() {
 
       {/* 로그인 박스 */}
       <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="email" className="block text-base font-medium text-gray-700">
               이메일
@@ -37,7 +43,7 @@ export default function Login() {
               id="email"
               type="email"
               required
-              className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-3 focus:ring-sky-200 focus:border-sky-400"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="test@example.com"
@@ -52,7 +58,7 @@ export default function Login() {
               id="password"
               type="password"
               required
-              className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-3 focus:ring-sky-200 focus:border-sky-400"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -60,7 +66,7 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition"
+            className="w-full bg-sky-400 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition"
           >
             로그인
           </button>
@@ -99,15 +105,11 @@ export default function Login() {
           </div>
         </div>
 
-        {/* 추가 링크 */}
-        <div className="mt-6 text-center text-gray-500 space-y-1 text-sm">
+        {/* 회원가입 */}
+        <div className="mt-6 text-center text-gray-500 space-y-1">
           <p>
-            계정이 없으신가요?
-            <a href="#" className="text-blue-500 hover:underline ml-1">회원가입</a>
-          </p>
-          <p>
-            비밀번호를 잊으셨나요?
-            <a href="#" className="text-blue-500 hover:underline ml-1">비밀번호 찾기</a>
+            <em>계정이 없으신가요? </em>
+            <Link to="/signup" className="text-sky-400 hover:underline ml-1 font-medium">회원가입</Link>
           </p>
         </div>
       </div>

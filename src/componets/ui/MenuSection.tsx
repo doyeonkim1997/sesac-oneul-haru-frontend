@@ -2,9 +2,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import CreateGoalModal from '../modals/CreateGoalModal';
+import FriendRequestModal from '../modals/FriendRequestModal';
+import FriendSearchModal from '../modals/FriendSearchModal';
 
 const MenuSection: React.FC = () => {
   const [isCreateGoalModalOpen, setIsCreateGoalModalOpen] = useState(false);
+  const [isRequestOpen, setIsRequestOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const handleCreateGoal = (goalData: { content: string; category: string }) => {
     console.log('새 목표 생성:', goalData);
@@ -20,12 +24,12 @@ const MenuSection: React.FC = () => {
               <span className="material-icons text-lg">list_alt</span>
               <span>내 목표 관리</span>
             </div>
-            <span className="material-icons text-sm rotate-180">expand_more</span>
+            {/* <span className="material-icons text-sm rotate-180">expand_more</span> */}
           </div>
           <div className="mt-1 ml-8 space-y-1">
             <button
               onClick={() => setIsCreateGoalModalOpen(true)}
-              className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors w-full text-left"
+              className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors w-full text-left cursor-pointer"
             >
               <span>새 목표 작성</span>
             </button>
@@ -49,36 +53,53 @@ const MenuSection: React.FC = () => {
               <span className="material-icons text-lg">people</span>
               <span>친구 관리</span>
             </div>
-            <span className="material-icons text-sm rotate-180">expand_more</span>
+            {/* <span className="material-icons text-sm rotate-180">expand_more</span> */}
           </div>
           <div className="mt-1 ml-8 space-y-1">
-            <a
+            <Link
+              to="/friends"
               className="flex items-center space-x-3 text-gray-600 hover:bg-gray-50 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
-              href="#"
             >
               <span>친구 목록</span>
-            </a>
+            </Link>
+
             <a
-              className="flex items-center space-x-3 text-gray-600 hover:bg-gray-50 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
+              className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer"
               href="#"
+              onClick={(e) => {
+                e.preventDefault(); // 페이지 이동 막기
+                setIsRequestOpen(true); // 모달 열기
+              }}
             >
-              <span>친구 요청 관리</span>
+              <span>친구 요청</span>
             </a>
+            {isRequestOpen && (
+              <FriendRequestModal onClose={() => setIsRequestOpen(false)} isStandalone={true} />
+            )}
+
             <a
-              className="flex items-center space-x-3 text-gray-600 hover:bg-gray-50 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
-              href="#"
+              className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsSearchOpen(true);
+              }}
             >
               <span>친구 찾기</span>
             </a>
+            
+            {isSearchOpen && (
+              <FriendSearchModal onClose={() => setIsSearchOpen(false)} isStandalone={true} />
+            )}
           </div>
         </div>
+
         <div>
           <div className="flex items-center justify-between w-full text-left space-x-3 text-white bg-sky-400 px-3 py-3 rounded-lg font-medium">
             <div className="flex items-center space-x-3">
               <span className="material-icons text-lg">settings</span>
               <span>설정</span>
             </div>
-            <span className="material-icons text-sm rotate-180">expand_more</span>
+            {/* <span className="material-icons text-sm rotate-180">expand_more</span> */}
           </div>
           <div className="mt-1 ml-8 space-y-1">
             <Link
