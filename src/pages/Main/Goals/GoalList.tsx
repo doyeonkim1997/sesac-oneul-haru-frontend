@@ -1,37 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import ProfileSection from '../../../componets/ui/ProfileSection';
 import MenuSection from '../../../componets/ui/MenuSection';
 import DarkModeToggle from '../../../componets/ui/DarkModeToggle';
 import CalendarSection from '../../../componets/ui/Calendar';
 import Footer from '../../../componets/ui/Footer';
 import GoalCard from '../../../componets/ui/GoalCard';
-import { getMyGoals } from '../../../data/goals';
+import { getAllGoals, getMyGoals } from '../../../data/goals';
 
 const GoalList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'my' | 'friends'>('my');
 
-  // 목표 데이터 (중앙화된 데이터 사용)
-  const goals = getMyGoals();
+  // 필터에 따른 목표 데이터
+  const goals = useMemo(() => {
+    let filteredGoals;
+    switch (activeFilter) {
+      case 'all':
+        filteredGoals = getAllGoals();
+        break;
+      case 'my':
+        filteredGoals = getMyGoals();
+        break;
+      case 'friends':
+        // 친구들의 목표 (내가 작성하지 않은 목표)
+        filteredGoals = getAllGoals().filter((goalWithUser) => goalWithUser.goal.user_id !== 1);
+        break;
+      default:
+        filteredGoals = getMyGoals();
+    }
+
+    // 검색어 필터링
+    if (searchTerm.trim()) {
+      filteredGoals = filteredGoals.filter(
+        (goalWithUser) =>
+          goalWithUser.goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          goalWithUser.user.nickname.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
+
+    return filteredGoals;
+  }, [activeFilter, searchTerm]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 overflow-hidden">
-      <header className="bg-white border-b border-gray-200 flex-shrink-0">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-shrink-0">
               <a className="flex items-center space-x-2" href="#">
                 <span className="material-icons text-blue-500 text-3xl">task_alt</span>
-                <span className="text-xl font-bold text-gray-900">Haru</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">Haru</span>
               </a>
             </div>
             <div className="flex items-center space-x-6">
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">people</span>
               </button>
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">favorite_border</span>
               </button>
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">refresh</span>
               </button>
             </div>
@@ -61,21 +89,51 @@ const GoalList: React.FC = () => {
               </div>
             </aside>
             <div className="col-span-9 flex flex-col">
-              <div className="bg-gray-50 flex-shrink-0">
+              <div className="bg-gray-50 dark:bg-gray-900 flex-shrink-0">
                 <div className="flex justify-center">
                   <nav className="flex">
-                    <button className="relative px-6 py-4 text-base font-medium transition-colors text-gray-500 hover:text-gray-900 hover:bg-white">
+                    <button
+                      onClick={() => setActiveFilter('all')}
+                      className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white dark:hover:bg-gray-800 ${
+                        activeFilter === 'all'
+                          ? 'text-gray-900 dark:text-white font-bold'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      }`}
+                    >
                       전체
+                      {activeFilter === 'all' && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
+                      )}
                     </button>
-                    <button className="relative px-6 py-4 text-base font-bold transition-colors text-gray-900">
-                      나<div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
+                    <button
+                      onClick={() => setActiveFilter('my')}
+                      className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white dark:hover:bg-gray-800 ${
+                        activeFilter === 'my'
+                          ? 'text-gray-900 dark:text-white font-bold'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      }`}
+                    >
+                      나
+                      {activeFilter === 'my' && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
+                      )}
                     </button>
-                    <button className="relative px-6 py-4 text-base font-medium transition-colors text-gray-500 hover:text-gray-900 hover:bg-white">
+                    <button
+                      onClick={() => setActiveFilter('friends')}
+                      className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white dark:hover:bg-gray-800 ${
+                        activeFilter === 'friends'
+                          ? 'text-gray-900 dark:text-white font-bold'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      }`}
+                    >
                       친구
+                      {activeFilter === 'friends' && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
+                      )}
                     </button>
                   </nav>
                 </div>
-                <div className="border-b-2 border-gray-300 mx-6"></div>
+                <div className="border-b-2 border-gray-300 dark:border-gray-600 mx-6"></div>
               </div>
               <div className="flex-1 flex flex-col overflow-hidden">
                 {/* 검색바 공간 */}
@@ -87,7 +145,7 @@ const GoalList: React.FC = () => {
                         placeholder="목표 검색"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-64 h-10 px-4 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm"
+                        className="w-64 h-10 px-4 pl-10 pr-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                       />
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <span className="material-icons text-sky-400 text-sm">search</span>

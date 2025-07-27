@@ -1,24 +1,24 @@
 // 캘린더 섹션 컴포넌트
 const CalendarSection: React.FC = () => {
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <button className="text-gray-500 hover:text-gray-900">
+        <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
           <span className="material-icons">chevron_left</span>
         </button>
-        <h3 className="text-sm font-semibold">7월 2025</h3>
-        <button className="text-gray-500 hover:text-gray-900">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">7월 2025</h3>
+        <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
           <span className="material-icons">chevron_right</span>
         </button>
       </div>
       <div className="grid grid-cols-7 gap-1 text-center text-xs">
-        <div className="text-gray-500">일</div>
-        <div className="text-gray-500">월</div>
-        <div className="text-gray-500">화</div>
-        <div className="text-gray-500">수</div>
-        <div className="text-gray-500">목</div>
-        <div className="text-gray-500">금</div>
-        <div className="text-gray-500">토</div>
+        <div className="text-gray-500 dark:text-gray-400">일</div>
+        <div className="text-gray-500 dark:text-gray-400">월</div>
+        <div className="text-gray-500 dark:text-gray-400">화</div>
+        <div className="text-gray-500 dark:text-gray-400">수</div>
+        <div className="text-gray-500 dark:text-gray-400">목</div>
+        <div className="text-gray-500 dark:text-gray-400">금</div>
+        <div className="text-gray-500 dark:text-gray-400">토</div>
         <div className="text-gray-400"></div>
         <div className="text-gray-400"></div>
         <div className="p-1">

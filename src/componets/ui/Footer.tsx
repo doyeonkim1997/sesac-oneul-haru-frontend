@@ -1,9 +1,11 @@
 // Footer 컴포넌트
+import { Link } from 'react-router-dom';
+
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-white border-t border-gray-200 flex-shrink-0">
+    <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center text-sm text-gray-500">
+        <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
           {/* 왼쪽: Haru 로고 */}
           <div className="font-bold">Haru</div>
 
@@ -13,9 +15,9 @@ const Footer: React.FC = () => {
               developer@gmail.com
             </a>
             <span>|</span>
-            <a href="#" className="hover:underline">
+            <Link to="/terms" className="hover:underline">
               이용약관
-            </a>
+            </Link>
           </div>
         </div>
       </div>

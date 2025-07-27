@@ -14,24 +14,24 @@ const MainHome: React.FC = () => {
   const goals = getAllGoals();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 overflow-hidden">
-      <header className="bg-white border-b border-gray-200 flex-shrink-0">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-shrink-0">
               <a className="flex items-center space-x-2" href="#">
                 <span className="material-icons text-blue-500 text-3xl">task_alt</span>
-                <span className="text-xl font-bold text-gray-900">Haru</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">Haru</span>
               </a>
             </div>
             <div className="flex items-center space-x-6">
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">people</span>
               </button>
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">favorite_border</span>
               </button>
-              <button className="text-gray-500 hover:text-gray-900">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 <span className="material-icons text-2xl">refresh</span>
               </button>
             </div>
@@ -61,21 +61,21 @@ const MainHome: React.FC = () => {
               </div>
             </aside>
             <div className="col-span-9 flex flex-col">
-              <div className="bg-gray-50 flex-shrink-0">
+              <div className="bg-gray-50 dark:bg-gray-900 flex-shrink-0">
                 <div className="flex justify-center">
                   <nav className="flex">
-                    <button className="relative px-6 py-4 text-base font-medium transition-colors text-gray-500 hover:text-gray-900 hover:bg-white">
+                    <button className="relative px-6 py-4 text-base font-medium transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-gray-800">
                       전체
                     </button>
-                    <button className="relative px-6 py-4 text-base font-bold transition-colors text-gray-900">
+                    <button className="relative px-6 py-4 text-base font-bold transition-colors text-gray-900 dark:text-white">
                       나<div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
                     </button>
-                    <button className="relative px-6 py-4 text-base font-medium transition-colors text-gray-500 hover:text-gray-900 hover:bg-white">
+                    <button className="relative px-6 py-4 text-base font-medium transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-gray-800">
                       친구
                     </button>
                   </nav>
                 </div>
-                <div className="border-b-2 border-gray-300 mx-6"></div>
+                <div className="border-b-2 border-gray-300 dark:border-gray-600 mx-6"></div>
               </div>
               <div className="flex-1 flex flex-col overflow-hidden">
                 {/* 검색바 공간 - 여백으로 대체 */}
@@ -90,7 +90,7 @@ const MainHome: React.FC = () => {
 
                 {/* 목표 목록 스크롤 영역 */}
                 <div className="flex-1 overflow-y-auto px-6 pb-6 max-h-[calc(100vh-20rem)]">
-                  <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300">
+                  <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
                     {/* GoalCard 컴포넌트들 - 개별 목표 카드들 (프로필, 내용, 태그, 완료 상태 등) */}
                     {goals.map((goalWithUser) => (
                       <GoalCard key={goalWithUser.goal.goal_id} goalWithUser={goalWithUser} />
