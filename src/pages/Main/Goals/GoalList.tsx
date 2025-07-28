@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import Header from '../../../componets/ui/Header';
-import ProfileSection from '../../../componets/ui/ProfileSection';
-import MenuSection from '../../../componets/ui/MenuSection';
-import DarkModeToggle from '../../../componets/ui/DarkModeToggle';
-import CalendarSection from '../../../componets/ui/Calendar';
-import Footer from '../../../componets/ui/Footer';
-import GoalCard from '../../../componets/ui/GoalCard';
+import Header from '../../../components/ui/Header';
+import ProfileSection from '../../../components/ui/ProfileSection';
+import MenuSection from '../../../components/ui/MenuSection';
+import DarkModeToggle from '../../../components/ui/DarkModeToggle';
+import CalendarSection from '../../../components/ui/Calendar';
+import Footer from '../../../components/ui/Footer';
+import GoalCard from '../../../components/ui/GoalCard';
 import { useGoals } from '../../../contexts/GoalContext';
 
 const GoalList: React.FC = () => {

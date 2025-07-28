@@ -1,10 +1,10 @@
 import React from 'react';
-import Header from '../componets/ui/Header';
-import CalendarSection from '../componets/ui/Calendar';
-import DarkModeToggle from '../componets/ui/DarkModeToggle';
-import MenuSection from '../componets/ui/MenuSection';
-import ProfileSection from '../componets/ui/ProfileSection';
-import Footer from '../componets/ui/Footer';
+import Header from '../components/ui/Header';
+import CalendarSection from '../components/ui/Calendar';
+import DarkModeToggle from '../components/ui/DarkModeToggle';
+import MenuSection from '../components/ui/MenuSection';
+import ProfileSection from '../components/ui/ProfileSection';
+import Footer from '../components/ui/Footer';
 
 const Terms: React.FC = () => {
   return (

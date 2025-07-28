@@ -62,36 +62,48 @@ const GoalCard: React.FC<GoalCardProps> = ({
       <div className="flex items-start space-x-6 pl-2">
         <img
           alt={`${user.nickname} 프로필 이미지`}
-          className="h-16 w-16 rounded-full object-cover"
+          className="h-20 w-20 rounded-full object-cover"
           src={user.profileImage || ''}
         />
         <div className="flex-1">
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900 dark:text-white">
+              <div className="flex items-center space-x-3">
+                <span className="text-xl font-semibold text-gray-900 dark:text-white">
                   @{user.nickname}
                 </span>
-                <span className="text-xs text-gray-400 dark:text-gray-500">{goal.created_at}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleGoalCompletion(goal.goal_id);
+                  }}
+                  className={`w-7 h-7 rounded border-2 transition-colors ${
+                    goal.is_completed
+                      ? 'bg-sky-400 border-sky-400'
+                      : 'bg-white border-gray-300 dark:border-gray-600'
+                  }`}
+                >
+                  {goal.is_completed && (
+                    <span className="text-white text-sm flex items-center justify-center">✓</span>
+                  )}
+                </button>
               </div>
-              <p className="text-xl font-medium text-gray-800 dark:text-white mt-4 mb-6">
+              <p className="text-2xl font-medium text-gray-800 dark:text-white mt-4 mb-6">
                 {goal.content}
               </p>
             </div>
             <div className="relative flex items-center space-x-2">
-              {!isBookmarkMode && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleBookmark(goal.goal_id);
-                  }}
-                  className={`${isBookmarked ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500`}
-                >
-                  <span className="material-icons">
-                    {isBookmarked ? 'bookmark' : 'bookmark_border'}
-                  </span>
-                </button>
-              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleBookmark(goal.goal_id);
+                }}
+                className={`${isBookmarked ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500`}
+              >
+                <span className="material-icons !text-3xl">
+                  {isBookmarked ? 'bookmark' : 'bookmark_border'}
+                </span>
+              </button>
               {isMyGoal && (
                 <div className="relative">
                   <button
@@ -101,7 +113,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
                     }}
                     className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
                   >
-                    <span className="material-icons">more_horiz</span>
+                    <span className="material-icons !text-3xl">more_horiz</span>
                   </button>
 
                   {/* 드롭다운 메뉴 */}
@@ -140,60 +152,19 @@ const GoalCard: React.FC<GoalCardProps> = ({
       <div className="mt-4">
         {/* 키워드 영역 */}
         <div className="flex flex-wrap gap-2 mb-4 pl-24">
-          <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full">
+          <span className="text-base bg-gray-100 text-gray-600 px-4 py-2 rounded-full">
             #{CATEGORY_DISPLAY_NAMES[goal.category as keyof typeof CATEGORY_DISPLAY_NAMES]}
           </span>
         </div>
-        {/* 하단 버튼 영역 */}
-        <div className="flex justify-end items-center space-x-4">
-          {isBookmarkMode ? (
-            // 북마크 모드: 북마크 아이콘만 표시 (높이 맞추기 위해 빈 공간 추가)
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <span className="text-base font-medium text-gray-700 opacity-0">완료</span>
-                <div className="h-8 w-14"></div>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleBookmark(goal.goal_id);
-                }}
-                className="text-yellow-500 hover:text-yellow-600 transition-colors duration-200"
-                title="북마크 해제하기"
-              >
-                <span className="material-icons">bookmark</span>
-              </button>
-            </div>
-          ) : (
-            // 일반 모드: 토글 + 하트 표시
-            <>
-              <div className="flex items-center space-x-3">
-                <span className="text-base font-medium text-gray-700 dark:text-gray-300">
-                  {goal.is_completed ? '완료' : '미완료'}
-                </span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleGoalCompletion(goal.goal_id);
-                  }}
-                  title={goal.is_completed ? '완료 토글' : '미완료 토글'}
-                  className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 ${
-                    goal.is_completed ? 'bg-sky-400' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                      goal.is_completed ? 'translate-x-7' : 'translate-x-1'
-                    }`}
-                  ></span>
-                </button>
-              </div>
-              <button className="text-gray-400 hover:text-red-500">
-                <span className="material-icons">favorite_border</span>
-              </button>
-            </>
-          )}
+        {/* 날짜 표시 및 하트 */}
+        <div className="pl-24 mb-4 flex justify-between items-center">
+          <span className="text-sm text-gray-400 dark:text-gray-500">{goal.created_at}</span>
+          <button className="text-gray-400 hover:text-red-500">
+            <span className="material-icons !text-3xl">favorite_border</span>
+          </button>
         </div>
+        {/* 하단 버튼 영역 - 빈 공간으로 유지 */}
+        <div className="flex justify-end items-center space-x-4"></div>
       </div>
     </div>
   );

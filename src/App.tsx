@@ -9,7 +9,7 @@ import MainHome from './pages/Main/MainHome';
 import GoalList from './pages/Main/Goals/GoalList';
 import BookmarkList from './pages/Main/Goals/BookmarkList';
 import FriendList from './pages/Main/Friends/FriendList';
-import Settings from './pages/Main/componets/settings/settings';
+import Settings from './pages/Main/Settings/settings';
 
 function App() {
   return (
