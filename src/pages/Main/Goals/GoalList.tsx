@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import Header from '../../../componets/ui/Header';
 import ProfileSection from '../../../componets/ui/ProfileSection';
 import MenuSection from '../../../componets/ui/MenuSection';
 import DarkModeToggle from '../../../componets/ui/DarkModeToggle';
@@ -43,29 +44,7 @@ const GoalList: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex-shrink-0">
-              <a className="flex items-center space-x-2" href="#">
-                <span className="material-icons text-blue-500 text-3xl">task_alt</span>
-                <span className="text-xl font-bold text-gray-900 dark:text-white">Haru</span>
-              </a>
-            </div>
-            <div className="flex items-center space-x-6">
-              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                <span className="material-icons text-2xl">people</span>
-              </button>
-              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                <span className="material-icons text-2xl">favorite_border</span>
-              </button>
-              <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                <span className="material-icons text-2xl">refresh</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
       <main className="flex-1 flex overflow-hidden">
         <div className="max-w-7xl mx-auto w-full py-6 px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-12 gap-8 h-full">
