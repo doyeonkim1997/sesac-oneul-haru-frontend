@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { DarkModeProvider } from './contexts/DarkModeContext';
+import { GoalProvider } from './contexts/GoalContext';
+import { UserProvider } from './contexts/UserContext';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Terms from './pages/Terms';
@@ -11,20 +13,24 @@ import Settings from './pages/Main/componets/settings/settings';
 
 function App() {
   return (
-    <DarkModeProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/main" element={<MainHome />} />
-          <Route path="/goals" element={<GoalList />} />
-          <Route path="/bookmarks" element={<BookmarkList />} />
-          <Route path="/friends" element={<FriendList />} />
-          <Route path="/settings" element={<Settings />} />
-        </Routes>
-      </BrowserRouter>
-    </DarkModeProvider>
+    <UserProvider>
+      <DarkModeProvider>
+        <GoalProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/main" element={<MainHome />} />
+              <Route path="/goals" element={<GoalList />} />
+              <Route path="/bookmarks" element={<BookmarkList />} />
+              <Route path="/friends" element={<FriendList />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+          </BrowserRouter>
+        </GoalProvider>
+      </DarkModeProvider>
+    </UserProvider>
   );
 }
 
