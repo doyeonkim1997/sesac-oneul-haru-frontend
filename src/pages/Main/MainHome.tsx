@@ -71,6 +71,7 @@ const MainHome: React.FC = () => {
                 </div>
               </div>
             </aside>
+
             <div className="col-span-9 flex flex-col">
               <div className="bg-gray-50 dark:bg-gray-900 flex-shrink-0">
                 <div className="flex justify-center">
@@ -131,7 +132,7 @@ const MainHome: React.FC = () => {
 
                 {/* 목표 목록 스크롤 영역 */}
                 <div className="flex-1 overflow-y-auto px-6 pb-6 max-h-[calc(100vh-20rem)]">
-                  <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
+                  <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {/* GoalCard 컴포넌트들 - 개별 목표 카드들 (프로필, 내용, 태그, 완료 상태 등) */}
                     {goals.map((goalWithUser) => (
                       <GoalCard key={goalWithUser.goal.goal_id} goalWithUser={goalWithUser} />

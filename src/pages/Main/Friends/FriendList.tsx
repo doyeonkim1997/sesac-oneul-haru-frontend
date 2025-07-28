@@ -46,13 +46,11 @@ const FriendList: React.FC = () => {
             </aside>
 
             <div className="col-span-9 flex flex-col overflow-hidden">
-              <div className="overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mt-16 h-[550px]">
+              <div className="overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mt-16 h-[752px]">
                 <div
-                  className="grid grid-cols-2 gap-4 h-full overflow-y-auto
+                  className="grid grid-cols-2 h-[706px] overflow-y-auto
                     [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent
-                    [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 
-                    [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300 
-                    dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500"
+                    [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full"
                 >
                   {users.map((user) => (
                     <UserItem key={user.id} user={user} onDelete={handleDeleteUser} />
