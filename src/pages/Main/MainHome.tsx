@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Header from '../../componets/ui/Header';
 import CalendarSection from '../../componets/ui/Calendar';
 import DarkModeToggle from '../../componets/ui/DarkModeToggle';
@@ -6,13 +6,45 @@ import MenuSection from '../../componets/ui/MenuSection';
 import ProfileSection from '../../componets/ui/ProfileSection';
 import GoalCard from '../../componets/ui/GoalCard';
 import Footer from '../../componets/ui/Footer';
-import { getAllGoals } from '../../data/goals';
+import { useGoals } from '../../contexts/GoalContext';
 
 const MainHome: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'my' | 'friends'>('my');
+  const { goals: allGoals } = useGoals();
 
-  // 목표 데이터 (중앙화된 데이터 사용)
-  const goals = getAllGoals();
+  // 필터에 따른 목표 데이터
+  const goals = useMemo(() => {
+    let filteredGoals;
+    switch (activeFilter) {
+      case 'all':
+        // 전체 탭: 내 목표를 맨 위에, 친구 목표를 그 아래에 배치
+        const myGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id === 1);
+        const friendsGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id !== 1);
+        filteredGoals = [...myGoals, ...friendsGoals];
+        break;
+      case 'my':
+        filteredGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id === 1);
+        break;
+      case 'friends':
+        // 친구들의 목표 (내가 작성하지 않은 목표)
+        filteredGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id !== 1);
+        break;
+      default:
+        filteredGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id === 1);
+    }
+
+    // 검색어 필터링
+    if (searchTerm.trim()) {
+      filteredGoals = filteredGoals.filter(
+        (goalWithUser) =>
+          goalWithUser.goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          goalWithUser.user.nickname.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
+
+    return filteredGoals;
+  }, [activeFilter, searchTerm, allGoals]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
@@ -43,14 +75,44 @@ const MainHome: React.FC = () => {
               <div className="bg-gray-50 dark:bg-gray-900 flex-shrink-0">
                 <div className="flex justify-center">
                   <nav className="flex">
-                    <button className="relative px-6 py-4 text-base font-medium transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-gray-800">
+                    <button
+                      onClick={() => setActiveFilter('all')}
+                      className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white dark:hover:bg-gray-800 ${
+                        activeFilter === 'all'
+                          ? 'text-gray-900 dark:text-white font-bold'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      }`}
+                    >
                       전체
+                      {activeFilter === 'all' && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
+                      )}
                     </button>
-                    <button className="relative px-6 py-4 text-base font-bold transition-colors text-gray-900 dark:text-white">
-                      나<div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
+                    <button
+                      onClick={() => setActiveFilter('my')}
+                      className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white dark:hover:bg-gray-800 ${
+                        activeFilter === 'my'
+                          ? 'text-gray-900 dark:text-white font-bold'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      }`}
+                    >
+                      나
+                      {activeFilter === 'my' && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
+                      )}
                     </button>
-                    <button className="relative px-6 py-4 text-base font-medium transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-gray-800">
+                    <button
+                      onClick={() => setActiveFilter('friends')}
+                      className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white dark:hover:bg-gray-800 ${
+                        activeFilter === 'friends'
+                          ? 'text-gray-900 dark:text-white font-bold'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      }`}
+                    >
                       친구
+                      {activeFilter === 'friends' && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
+                      )}
                     </button>
                   </nav>
                 </div>

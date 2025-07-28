@@ -1,17 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Header from '../../../../componets/ui/Header';
 import ProfileSection from '../../../../componets/ui/ProfileSection';
 import MenuSection from '../../../../componets/ui/MenuSection';
 import DarkModeToggle from '../../../../componets/ui/DarkModeToggle';
 import CalendarSection from '../../../../componets/ui/Calendar';
 import Footer from '../../../../componets/ui/Footer';
+import { useUser } from '../../../../contexts/UserContext';
 
 const Settings: React.FC = () => {
-  const [nickname, setNickname] = useState('');
+  const { user, updateNickname, updatePassword, updateProfileImage, withdrawUser } = useUser();
+  const [nickname, setNickname] = useState(user.nickname);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [withdrawPassword, setWithdrawPassword] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 닉네임 수정 핸들러
+  const handleNicknameUpdate = () => {
+    updateNickname(nickname);
+  };
+
+  // 비밀번호 수정 핸들러
+  const handlePasswordUpdate = async () => {
+    if (newPassword !== confirmPassword) {
+      alert('새 비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    const success = await updatePassword(currentPassword, newPassword);
+    if (success) {
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    }
+  };
+
+  // 프로필 이미지 변경 핸들러
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string;
+        updateProfileImage(imageUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // 회원 탈퇴 핸들러
+  const handleWithdraw = async () => {
+    await withdrawUser(withdrawPassword);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
@@ -46,10 +87,29 @@ const Settings: React.FC = () => {
                     <div className="flex items-start space-x-8 justify-center">
                       {/* 프로필 이미지 영역 */}
                       <div className="flex flex-col items-center space-y-4">
-                        <div className="w-24 h-24 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-700">
-                          <span className="text-gray-500 dark:text-gray-400 text-sm">이미지</span>
+                        <div className="w-24 h-24 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-700 overflow-hidden">
+                          {user.profileImage ? (
+                            <img
+                              src={user.profileImage}
+                              alt="프로필"
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          ) : (
+                            <span className="text-gray-500 dark:text-gray-400 text-sm">이미지</span>
+                          )}
                         </div>
-                        <button className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm transition-colors">
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleImageChange}
+                          accept="image/*"
+                          className="hidden"
+                          aria-label="프로필 이미지 선택"
+                        />
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm transition-colors"
+                        >
                           프로필 이미지 설정
                         </button>
                       </div>
@@ -69,7 +129,10 @@ const Settings: React.FC = () => {
                               onChange={(e) => setNickname(e.target.value)}
                               className="flex-1 h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                             />
-                            <button className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-lg text-sm transition-colors">
+                            <button
+                              onClick={handleNicknameUpdate}
+                              className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-lg text-sm transition-colors"
+                            >
                               수정
                             </button>
                           </div>
@@ -103,7 +166,10 @@ const Settings: React.FC = () => {
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 className="flex-1 h-8 px-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                               />
-                              <button className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-l-0 border-gray-300 rounded-r-lg text-sm transition-colors">
+                              <button
+                                onClick={handlePasswordUpdate}
+                                className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-lg text-sm transition-colors"
+                              >
                                 수정
                               </button>
                             </div>
@@ -114,7 +180,15 @@ const Settings: React.FC = () => {
 
                     {/* 전체 박스 중앙에 저장 버튼 */}
                     <div className="flex justify-center mt-6">
-                      <button className="w-32 py-2 bg-sky-400 hover:bg-sky-500 text-white font-medium rounded-lg transition-colors text-sm">
+                      <button
+                        onClick={() => {
+                          handleNicknameUpdate();
+                          if (currentPassword && newPassword) {
+                            handlePasswordUpdate();
+                          }
+                        }}
+                        className="w-32 py-2 bg-sky-400 hover:bg-sky-500 text-white font-medium rounded-lg transition-colors text-sm"
+                      >
                         저장
                       </button>
                     </div>
@@ -140,7 +214,10 @@ const Settings: React.FC = () => {
                             <button className="w-32 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors text-sm font-medium">
                               취소
                             </button>
-                            <button className="w-32 py-2 bg-sky-400 hover:bg-sky-500 text-white rounded-lg transition-colors text-sm font-medium">
+                            <button
+                              onClick={handleWithdraw}
+                              className="w-32 py-2 bg-sky-400 hover:bg-sky-500 text-white rounded-lg transition-colors text-sm font-medium"
+                            >
                               탈퇴
                             </button>
                           </div>

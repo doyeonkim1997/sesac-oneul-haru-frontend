@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Header from '../../../componets/ui/Header';
 import ProfileSection from '../../../componets/ui/ProfileSection';
 import MenuSection from '../../../componets/ui/MenuSection';
@@ -6,14 +6,35 @@ import DarkModeToggle from '../../../componets/ui/DarkModeToggle';
 import CalendarSection from '../../../componets/ui/Calendar';
 import Footer from '../../../componets/ui/Footer';
 import GoalCard from '../../../componets/ui/GoalCard';
-import { getMyBookmarkedGoals, getFriendsBookmarkedGoals } from '../../../data/goals';
+import { useGoals } from '../../../contexts/GoalContext';
 
 const BookmarkList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'my' | 'friends'>('friends'); // 기본값을 친구 북마크로 설정
+  const { goals: allGoals, bookmarks } = useGoals();
 
-  // 탭에 따른 북마크된 목표 데이터
-  const goals = activeTab === 'my' ? getMyBookmarkedGoals() : getFriendsBookmarkedGoals();
+  // 탭과 검색어에 따른 북마크된 목표 데이터
+  const goals = useMemo(() => {
+    let filteredGoals = allGoals.filter((goalWithUser) => bookmarks.has(goalWithUser.goal.goal_id));
+
+    // 탭에 따른 추가 필터링
+    if (activeTab === 'my') {
+      filteredGoals = filteredGoals.filter((goalWithUser) => goalWithUser.goal.user_id === 1);
+    } else {
+      filteredGoals = filteredGoals.filter((goalWithUser) => goalWithUser.goal.user_id !== 1);
+    }
+
+    // 검색어 필터링
+    if (searchTerm.trim()) {
+      filteredGoals = filteredGoals.filter(
+        (goalWithUser) =>
+          goalWithUser.goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          goalWithUser.user.nickname.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
+
+    return filteredGoals;
+  }, [activeTab, searchTerm, allGoals]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
@@ -84,7 +105,7 @@ const BookmarkList: React.FC = () => {
                         placeholder="북마크 검색"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-64 h-10 px-4 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm"
+                        className="w-64 h-10 px-4 pl-10 pr-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                       />
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <span className="material-icons text-sky-400 text-sm">search</span>
@@ -95,7 +116,7 @@ const BookmarkList: React.FC = () => {
 
                 {/* 북마크 목록 스크롤 영역 */}
                 <div className="flex-1 overflow-y-auto px-6 pb-6 max-h-[calc(100vh-20rem)]">
-                  <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300">
+                  <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
                     {/* GoalCard 컴포넌트들 - 북마크된 목표 카드들 */}
                     {goals.map((goalWithUser) => (
                       <GoalCard
