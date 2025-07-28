@@ -2,7 +2,7 @@ interface User {
   id: string;
   nickname: string;
   email: string;
-  imageUrl?: string; // 프로필 이미지 URL (선택 사항)
+  imageUrl?: string;
   unreadCount?: number; // 읽지 않은 알림 수
 }
 
@@ -12,9 +12,9 @@ const UserItem: React.FC<{ user: User; onDelete: (id: string) => void; onNicknam
   onNicknameClick,
 }) => {
   return (
-    <div className="m-2 flex items-center p-2 border-b border-gray-200 last:border-b-0 h-[66px]">
+    <div className="m-2 flex items-center p-2 border-b border-gray-200 last:border-b-0 h-[80px]">
       {/* 이미지 */}
-      <div className="mb-5 relative w-15 h-15 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+      <div className="mb-4 relative w-15 h-15 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
         {user.imageUrl ? (
           <img src={user.imageUrl} alt={`${user.nickname} 프로필`} className="w-full h-full object-cover" />
         ) : (
