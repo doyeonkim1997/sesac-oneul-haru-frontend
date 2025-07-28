@@ -66,7 +66,7 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 backdrop-blur-sm bg-opacity-95 hover:shadow-3xl transition-all duration-300 w-full max-w-lg mx-4 transform hover:scale-[1.02]">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 backdrop-blur-sm bg-opacity-95 hover:shadow-2xl transition-transform duration-300 w-full max-w-lg mx-4 transform hover:scale-[1.01]">
         {/* Header/User Section */}
         <div className="flex items-start space-x-6 pl-2 mb-6">
           <img

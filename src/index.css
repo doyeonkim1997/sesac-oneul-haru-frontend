@@ -174,3 +174,29 @@
 .dark-mode .text-gray-700.dark\:text-gray-300 {
   color: var(--text-secondary) !important;
 }
+
+/* ===== MAC 환경 호버 효과 최적화 ===== */
+@supports (-webkit-appearance: none) {
+  /* MAC Safari/Chrome 전용 스타일 */
+  .transform.hover\:scale-\[1\.01\]:hover {
+    transform: scale(1.01) !important;
+    will-change: transform;
+  }
+
+  .hover\:shadow-lg:hover {
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .hover\:shadow-2xl:hover {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  }
+}
+
+/* ===== 크로스 브라우저 호버 효과 통일 ===== */
+.transform.hover\:scale-\[1\.01\]:hover {
+  transform: scale(1.01);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
