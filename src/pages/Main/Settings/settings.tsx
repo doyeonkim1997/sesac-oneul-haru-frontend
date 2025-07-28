@@ -1,15 +1,16 @@
 import React, { useState, useRef } from 'react';
-import Header from '../../../../componets/ui/Header';
-import ProfileSection from '../../../../componets/ui/ProfileSection';
-import MenuSection from '../../../../componets/ui/MenuSection';
-import DarkModeToggle from '../../../../componets/ui/DarkModeToggle';
-import CalendarSection from '../../../../componets/ui/Calendar';
-import Footer from '../../../../componets/ui/Footer';
-import { useUser } from '../../../../contexts/UserContext';
+import Header from '../../../components/ui/Header';
+import ProfileSection from '../../../components/ui/ProfileSection';
+import MenuSection from '../../../components/ui/MenuSection';
+import DarkModeToggle from '../../../components/ui/DarkModeToggle';
+import CalendarSection from '../../../components/ui/Calendar';
+import Footer from '../../../components/ui/Footer';
+import { useUser } from '../../../contexts/UserContext';
 
 const Settings: React.FC = () => {
   const { user, updateNickname, updatePassword, updateProfileImage, withdrawUser } = useUser();
   const [nickname, setNickname] = useState(user.nickname);
+  const [tempProfileImage, setTempProfileImage] = useState(user.profileImage);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -43,7 +44,7 @@ const Settings: React.FC = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
-        updateProfileImage(imageUrl);
+        setTempProfileImage(imageUrl); // 임시 상태로 저장
       };
       reader.readAsDataURL(file);
     }
@@ -55,7 +56,7 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       <Header />
       <main className="flex-1 flex overflow-hidden">
         <div className="max-w-7xl mx-auto w-full py-6 px-4 sm:px-6 lg:px-8">
@@ -86,11 +87,11 @@ const Settings: React.FC = () => {
                   <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
                     <div className="flex items-start space-x-8 justify-center">
                       {/* 프로필 이미지 영역 */}
-                      <div className="flex flex-col items-center space-y-4">
+                      <div className="flex flex-col items-center space-y-4 mt-16 -ml-8">
                         <div className="w-24 h-24 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-700 overflow-hidden">
-                          {user.profileImage ? (
+                          {tempProfileImage ? (
                             <img
-                              src={user.profileImage}
+                              src={tempProfileImage}
                               alt="프로필"
                               className="w-full h-full object-cover rounded-full"
                             />
@@ -127,14 +128,8 @@ const Settings: React.FC = () => {
                               placeholder="닉네임을 입력해 주세요."
                               value={nickname}
                               onChange={(e) => setNickname(e.target.value)}
-                              className="flex-1 h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                              className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                             />
-                            <button
-                              onClick={handleNicknameUpdate}
-                              className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-lg text-sm transition-colors"
-                            >
-                              수정
-                            </button>
                           </div>
                         </div>
 
@@ -158,21 +153,13 @@ const Settings: React.FC = () => {
                               onChange={(e) => setNewPassword(e.target.value)}
                               className="w-full h-8 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                             />
-                            <div className="flex items-center">
-                              <input
-                                type="password"
-                                placeholder="새 비밀번호를 다시 입력해 주세요."
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="flex-1 h-8 px-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                              />
-                              <button
-                                onClick={handlePasswordUpdate}
-                                className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-lg text-sm transition-colors"
-                              >
-                                수정
-                              </button>
-                            </div>
+                            <input
+                              type="password"
+                              placeholder="새 비밀번호를 다시 입력해 주세요."
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              className="w-full h-8 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            />
                           </div>
                         </div>
                       </div>
@@ -182,6 +169,10 @@ const Settings: React.FC = () => {
                     <div className="flex justify-center mt-6">
                       <button
                         onClick={() => {
+                          // 프로필 이미지가 변경된 경우에만 업데이트
+                          if (tempProfileImage !== user.profileImage) {
+                            updateProfileImage(tempProfileImage);
+                          }
                           handleNicknameUpdate();
                           if (currentPassword && newPassword) {
                             handlePasswordUpdate();
