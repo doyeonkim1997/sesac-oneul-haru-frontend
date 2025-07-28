@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { GoalWithUser } from '../../data/goals';
 import { CATEGORY_DISPLAY_NAMES } from '../../data/goals';
+import { useGoals } from '../../contexts/GoalContext';
+import CreateGoalModal from '../modals/CreateGoalModal';
 
 interface GoalCardProps {
   goalWithUser: GoalWithUser;
   isBookmarkMode?: boolean; // 북마크 모드 여부
+  onEditClick?: () => void; // 수정 버튼 클릭 핸들러
 }
 
-const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = false }) => {
+const GoalCard: React.FC<GoalCardProps> = ({
+  goalWithUser,
+  isBookmarkMode = false,
+  onEditClick,
+}) => {
   const { goal, user } = goalWithUser;
+  const { toggleGoalCompletion, toggleBookmark, deleteGoal, bookmarks } = useGoals();
 
   // 현재 로그인한 사용자 ID (임시로 1로 설정, 나중에 실제 로그인 상태에서 가져올 예정)
   const currentUserId = 1;
@@ -18,6 +27,18 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
 
   // 드롭다운 메뉴 상태
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // 북마크 상태 확인 (실제 상태 사용)
+  const isBookmarked = bookmarks.has(goal.goal_id);
+
+  // 오늘 작성된 목표인지 확인 (자정 처리)
+  const isTodayGoal = () => {
+    const today = new Date().toISOString().split('T')[0];
+    const goalDate = goal.created_at.split(' ')[0];
+    return goalDate === today;
+  };
+
+  const isExpired = !isTodayGoal();
 
   // 드롭다운 메뉴 외부 클릭 시 닫기
   React.useEffect(() => {
@@ -33,7 +54,11 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
     };
   }, [isDropdownOpen]);
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-gray-600 transition-all duration-200 cursor-pointer transform hover:scale-[1.02]">
+    <div
+      className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-gray-600 transition-all duration-200 cursor-pointer transform hover:scale-[1.02] ${
+        isExpired ? 'opacity-60 blur-[0.5px]' : ''
+      }`}
+    >
       <div className="flex items-start space-x-6 pl-2">
         <img
           alt={`${user.nickname} 프로필 이미지`}
@@ -55,8 +80,16 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
             </div>
             <div className="relative flex items-center space-x-2">
               {!isBookmarkMode && (
-                <button className="text-gray-400 hover:text-yellow-500">
-                  <span className="material-icons">bookmark_border</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleBookmark(goal.goal_id);
+                  }}
+                  className={`${isBookmarked ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500`}
+                >
+                  <span className="material-icons">
+                    {isBookmarked ? 'bookmark' : 'bookmark_border'}
+                  </span>
                 </button>
               )}
               {isMyGoal && (
@@ -77,7 +110,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log('수정:', goal.goal_id);
+                          onEditClick?.();
                           setIsDropdownOpen(false);
                         }}
                         className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
@@ -87,7 +120,9 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log('삭제:', goal.goal_id);
+                          if (window.confirm('정말로 이 목표를 삭제하시겠습니까?')) {
+                            deleteGoal(goal.goal_id);
+                          }
                           setIsDropdownOpen(false);
                         }}
                         className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 rounded-b-lg"
@@ -119,6 +154,10 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
                 <div className="h-8 w-14"></div>
               </div>
               <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleBookmark(goal.goal_id);
+                }}
                 className="text-yellow-500 hover:text-yellow-600 transition-colors duration-200"
                 title="북마크 해제하기"
               >
@@ -133,6 +172,10 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
                   {goal.is_completed ? '완료' : '미완료'}
                 </span>
                 <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleGoalCompletion(goal.goal_id);
+                  }}
                   title={goal.is_completed ? '완료 토글' : '미완료 토글'}
                   className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 ${
                     goal.is_completed ? 'bg-sky-400' : 'bg-gray-200'
@@ -156,4 +199,41 @@ const GoalCard: React.FC<GoalCardProps> = ({ goalWithUser, isBookmarkMode = fals
   );
 };
 
-export default GoalCard;
+// 수정 모달을 최상위로 렌더링 (Portal 사용)
+const GoalCardWithModal: React.FC<GoalCardProps> = (props) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { updateGoal } = useGoals();
+  const { goalWithUser } = props;
+  const { goal } = goalWithUser;
+
+  return (
+    <>
+      <GoalCard {...props} onEditClick={() => setIsEditModalOpen(true)} />
+
+      {isEditModalOpen &&
+        createPortal(
+          <CreateGoalModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            mode="edit"
+            goalToEdit={{
+              goal_id: goal.goal_id,
+              content: goal.content,
+              category: goal.category,
+            }}
+            onSubmit={(goalData) => {
+              updateGoal(goal.goal_id, {
+                title: goalData.title,
+                content: goalData.content,
+                category: goalData.category,
+              });
+              setIsEditModalOpen(false);
+            }}
+          />,
+          document.body,
+        )}
+    </>
+  );
+};
+
+export default GoalCardWithModal;

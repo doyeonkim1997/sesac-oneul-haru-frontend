@@ -5,28 +5,33 @@ import DarkModeToggle from '../../../componets/ui/DarkModeToggle';
 import CalendarSection from '../../../componets/ui/Calendar';
 import Footer from '../../../componets/ui/Footer';
 import GoalCard from '../../../componets/ui/GoalCard';
-import { getAllGoals, getMyGoals } from '../../../data/goals';
+import { useGoals } from '../../../contexts/GoalContext';
 
 const GoalList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'my' | 'friends'>('my');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'incomplete' | 'completed'>('all');
+  const { goals: allGoals } = useGoals();
 
-  // 필터에 따른 목표 데이터
+  // 필터에 따른 목표 데이터 (내 목표만)
   const goals = useMemo(() => {
-    let filteredGoals;
+    // 내 목표만 필터링 (user_id === 1)
+    let filteredGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id === 1);
+
+    // 완료 상태에 따른 필터링
     switch (activeFilter) {
       case 'all':
-        filteredGoals = getAllGoals();
+        // 전체: 내 목표 모두 (변경 없음)
         break;
-      case 'my':
-        filteredGoals = getMyGoals();
+      case 'incomplete':
+        // 미완료: 완료되지 않은 목표만
+        filteredGoals = filteredGoals.filter((goalWithUser) => !goalWithUser.goal.is_completed);
         break;
-      case 'friends':
-        // 친구들의 목표 (내가 작성하지 않은 목표)
-        filteredGoals = getAllGoals().filter((goalWithUser) => goalWithUser.goal.user_id !== 1);
+      case 'completed':
+        // 완료: 완료된 목표만
+        filteredGoals = filteredGoals.filter((goalWithUser) => goalWithUser.goal.is_completed);
         break;
       default:
-        filteredGoals = getMyGoals();
+        break;
     }
 
     // 검색어 필터링
@@ -39,7 +44,7 @@ const GoalList: React.FC = () => {
     }
 
     return filteredGoals;
-  }, [activeFilter, searchTerm]);
+  }, [activeFilter, searchTerm, allGoals]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
@@ -106,28 +111,28 @@ const GoalList: React.FC = () => {
                       )}
                     </button>
                     <button
-                      onClick={() => setActiveFilter('my')}
+                      onClick={() => setActiveFilter('incomplete')}
                       className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white dark:hover:bg-gray-800 ${
-                        activeFilter === 'my'
+                        activeFilter === 'incomplete'
                           ? 'text-gray-900 dark:text-white font-bold'
                           : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                       }`}
                     >
-                      나
-                      {activeFilter === 'my' && (
+                      미완료
+                      {activeFilter === 'incomplete' && (
                         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
                       )}
                     </button>
                     <button
-                      onClick={() => setActiveFilter('friends')}
+                      onClick={() => setActiveFilter('completed')}
                       className={`relative px-6 py-4 text-base font-medium transition-colors hover:bg-white dark:hover:bg-gray-800 ${
-                        activeFilter === 'friends'
+                        activeFilter === 'completed'
                           ? 'text-gray-900 dark:text-white font-bold'
                           : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                       }`}
                     >
-                      친구
-                      {activeFilter === 'friends' && (
+                      완료
+                      {activeFilter === 'completed' && (
                         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400"></div>
                       )}
                     </button>

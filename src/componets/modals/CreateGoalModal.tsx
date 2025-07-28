@@ -1,15 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GOAL_CATEGORIES, CATEGORY_DISPLAY_NAMES, type GoalCategory } from '../../data/goals';
 
 interface CreateGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (goalData: { title: string; content: string; category: string }) => void;
+  mode?: 'create' | 'edit';
+  goalToEdit?: {
+    goal_id: number;
+    content: string;
+    category: string;
+  };
 }
 
-const CreateGoalModal: React.FC<CreateGoalModalProps> = ({ isOpen, onClose, onSubmit }) => {
+const CreateGoalModal: React.FC<CreateGoalModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  mode = 'create',
+  goalToEdit,
+}) => {
   const [goalContent, setGoalContent] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<GoalCategory | ''>('');
+
+  // 수정 모드일 때 기존 데이터 불러오기
+  useEffect(() => {
+    if (mode === 'edit' && goalToEdit) {
+      setGoalContent(goalToEdit.content);
+      setSelectedCategory(goalToEdit.category as GoalCategory);
+    }
+  }, [mode, goalToEdit]);
 
   const categories = Object.entries(GOAL_CATEGORIES).map(([key, value]) => ({
     id: value,
@@ -24,15 +44,21 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({ isOpen, onClose, onSu
         content: goalContent.trim(),
         category: selectedCategory,
       });
-      setGoalContent('');
-      setSelectedCategory('');
+      // 수정 모드가 아닐 때만 초기화
+      if (mode !== 'edit') {
+        setGoalContent('');
+        setSelectedCategory('');
+      }
       onClose();
     }
   };
 
   const handleCancel = () => {
-    setGoalContent('');
-    setSelectedCategory('');
+    // 수정 모드가 아닐 때만 초기화
+    if (mode !== 'edit') {
+      setGoalContent('');
+      setSelectedCategory('');
+    }
     onClose();
   };
 
@@ -54,7 +80,7 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({ isOpen, onClose, onSu
               <span className="text-xs text-gray-400 dark:text-gray-500">(ME)</span>
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-              | 오늘 하루 목표는 무엇인가요?
+              | {mode === 'edit' ? '목표를 수정해주세요' : '오늘 하루 목표는 무엇인가요?'}
             </p>
           </div>
         </div>
@@ -106,7 +132,7 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({ isOpen, onClose, onSu
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
-            확인
+            {mode === 'edit' ? '수정' : '확인'}
           </button>
         </div>
       </div>

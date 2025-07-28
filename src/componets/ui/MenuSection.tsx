@@ -4,16 +4,17 @@ import { Link } from 'react-router-dom';
 import CreateGoalModal from '../modals/CreateGoalModal';
 import FriendRequestModal from '../modals/FriendRequestModal';
 import FriendSearchModal from '../modals/FriendSearchModal';
+import { useGoals } from '../../contexts/GoalContext';
 
 const MenuSection: React.FC = () => {
   const [isCreateGoalModalOpen, setIsCreateGoalModalOpen] = useState(false);
   const [isRequestOpen, setIsRequestOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { addGoal } = useGoals();
 
-  const handleCreateGoal = (goalData: { content: string; category: string }) => {
+  const handleCreateGoal = (goalData: { title: string; content: string; category: string }) => {
+    addGoal(goalData);
     console.log('새 목표 생성:', goalData);
-    // 여기에 목표 생성 로직 추가
-    // 예: API 호출, 상태 업데이트 등
   };
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mb-4">
@@ -58,7 +59,7 @@ const MenuSection: React.FC = () => {
           <div className="mt-1 ml-8 space-y-1">
             <Link
               to="/friends"
-              className="flex items-center space-x-3 text-gray-600 hover:bg-gray-50 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
+              className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
             >
               <span>친구 목록</span>
             </Link>
@@ -86,7 +87,7 @@ const MenuSection: React.FC = () => {
             >
               <span>친구 찾기</span>
             </a>
-            
+
             {isSearchOpen && (
               <FriendSearchModal onClose={() => setIsSearchOpen(false)} isStandalone={true} />
             )}
