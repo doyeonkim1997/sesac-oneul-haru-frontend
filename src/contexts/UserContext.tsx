@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 interface User {
   user_id: number;
@@ -12,7 +13,7 @@ interface UserContextType {
   user: User;
   updateNickname: (newNickname: string) => void;
   updatePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
-  updateProfileImage: (imageUrl: string) => void;
+  updateProfileImage: (file: File) => Promise<boolean>;
   withdrawUser: (password: string) => Promise<boolean>;
 }
 
@@ -74,9 +75,45 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     return true;
   };
 
-  const updateProfileImage = (imageUrl: string) => {
-    setUser((prev) => ({ ...prev, profileImage: imageUrl }));
-    alert('프로필 이미지가 변경되었습니다');
+  const updateProfileImage = async (file: File): Promise<boolean> => {
+    try {
+      // FormData 생성
+      const formData = new FormData();
+      formData.append('profileImage', file);
+
+      // Axios를 사용하여 이미지 업로드
+      const response = await axios.post('/api/user/profile-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.status === 200) {
+        const imageUrl = response.data.imageUrl;
+        setUser((prev) => ({ ...prev, profileImage: imageUrl }));
+        alert('프로필 이미지가 성공적으로 변경되었습니다');
+        return true;
+      } else {
+        alert('이미지 업로드에 실패했습니다');
+        return false;
+      }
+    } catch (error) {
+      console.error('이미지 업로드 오류:', error);
+
+      // 개발 환경에서는 로컬 스토리지에 저장하는 방식으로 fallback
+      if (import.meta.env.DEV) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const imageUrl = e.target?.result as string;
+          setUser((prev) => ({ ...prev, profileImage: imageUrl }));
+        };
+        reader.readAsDataURL(file);
+        return true;
+      }
+
+      alert('이미지 업로드 중 오류가 발생했습니다');
+      return false;
+    }
   };
 
   const withdrawUser = async (password: string): Promise<boolean> => {

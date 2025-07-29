@@ -10,7 +10,7 @@ import { useGoals } from '../../../contexts/GoalContext';
 
 const BookmarkList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState<'my' | 'friends'>('friends'); // 기본값을 친구 북마크로 설정
+  const [activeTab, setActiveTab] = useState<'my' | 'friends'>('my'); // 기본값을 내 북마크로 설정
   const { goals: allGoals, bookmarks } = useGoals();
 
   // 탭과 검색어에 따른 북마크된 목표 데이터
@@ -123,6 +123,7 @@ const BookmarkList: React.FC = () => {
                         key={goalWithUser.goal.goal_id}
                         goalWithUser={goalWithUser}
                         isBookmarkMode={true}
+                        disableExpiredEffect={true}
                       />
                     ))}
                   </div>

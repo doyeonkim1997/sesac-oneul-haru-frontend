@@ -1,6 +1,6 @@
 import logo from '../../assets/logo.svg';
 import { Link } from 'react-router-dom';
-import { useState } from "react";
+import { useState } from 'react';
 import FriendModal from '../modals/FriendModal';
 import HeartModal from '../modals/HeartModal';
 
@@ -9,7 +9,7 @@ const Header = () => {
   const [showHeartModal, setShowHeartModal] = useState(false);
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
@@ -25,16 +25,16 @@ const Header = () => {
             </Link>
           </div>
 
-          <div className="flex items-center space-x-6 text-gray-900">
+          <div className="flex items-center space-x-6 text-gray-900 dark:text-white">
             <button className="hover:text-sky-400" onClick={() => setShowFriendModal(true)}>
               <span className="material-icons !text-[28px] translate-y-[3px]">people</span>
             </button>
             {showFriendModal && <FriendModal onClose={() => setShowFriendModal(false)} />}
 
-            <button
-              className="hover:text-sky-400"
-              onClick={() => setShowHeartModal(true)}>
-              <span className="material-icons !text-[28px] translate-y-[2.5px]">favorite_border</span>
+            <button className="hover:text-sky-400" onClick={() => setShowHeartModal(true)}>
+              <span className="material-icons !text-[28px] translate-y-[2.5px]">
+                favorite_border
+              </span>
             </button>
             {showHeartModal && <HeartModal onClose={() => setShowHeartModal(false)} />}
 
@@ -54,7 +54,7 @@ const Header = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Header;
