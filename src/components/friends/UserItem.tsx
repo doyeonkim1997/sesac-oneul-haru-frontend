@@ -33,7 +33,7 @@ const UserItem: React.FC<{ user: User; onDelete: (id: string) => void; onNicknam
           {/* 닉네임 클릭 시 이벤트 */}
           <button
             onClick={() => onNicknameClick?.(user)}
-            className="hover:underline hover:text-blue-600"
+            className="hover:underline hover:text-sky-400"
           >
             {user.nickname}
           </button>

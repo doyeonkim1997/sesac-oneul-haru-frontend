@@ -2,9 +2,11 @@ import logo from '../../assets/logo.svg';
 import { Link } from 'react-router-dom';
 import { useState } from "react";
 import FriendModal from '../modals/FriendModal';
+import HeartModal from '../modals/HeartModal';
 
 const Header = () => {
   const [showFriendModal, setShowFriendModal] = useState(false);
+  const [showHeartModal, setShowHeartModal] = useState(false);
 
   return (
     <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -17,7 +19,9 @@ const Header = () => {
                 alt="logo"
                 className="w-[23px] h-[23px] object-contain translate-y-[0.25px]"
               />
-              <span className="ml-[2px] text-[32px] font-bold text-gray-900 leading-none font-stretch-expanded hover:text-sky-400">Haru</span>
+              <span className="ml-[2px] text-[32px] font-bold leading-none font-stretch-expanded text-gray-900 dark:text-white hover:!text-sky-400 dark:hover:!text-sky-400">
+                Haru
+              </span>
             </Link>
           </div>
 
@@ -27,12 +31,24 @@ const Header = () => {
             </button>
             {showFriendModal && <FriendModal onClose={() => setShowFriendModal(false)} />}
 
-            <button className="hover:text-sky-400">
+            <button
+              className="hover:text-sky-400"
+              onClick={() => setShowHeartModal(true)}>
               <span className="material-icons !text-[28px] translate-y-[2.5px]">favorite_border</span>
             </button>
+            {showHeartModal && <HeartModal onClose={() => setShowHeartModal(false)} />}
 
-            <button className="hover:text-sky-400" onClick={() => window.location.reload()}>
-              <span className="material-icons !text-[28px] translate-y-[2.5px]">refresh</span>
+            <button
+              className="hover:text-sky-400"
+              onClick={() => {
+                // 임시
+                localStorage.removeItem('authToken');
+                // 로그인 페이지 이동
+                window.location.href = '/login';
+              }}
+              aria-label="로그아웃 버튼"
+            >
+              <span className="material-icons !text-[28px] translate-y-[2.5px]">logout</span>
             </button>
           </div>
         </div>

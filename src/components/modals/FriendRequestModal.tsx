@@ -36,20 +36,20 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
           {dummyRequests.map((request) => (
             <li
               key={request.id}
-              className="flex items-center justify-between p-3 rounded-xl border border-gray-300"
+              className="flex items-center justify-between p-3 rounded-xl border border-gray-300 min-h-24"
             >
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center">
                 <img
                   src={request.imageUrl}
                   alt="프로필"
-                  className="w-10 h-10 rounded-full object-cover"
+                  className="w-16 h-16 rounded-full object-cover mr-6"
                 />
-                <div>
+                <div className="h-16 flex flex-col justify-start">
                   <p className="font-semibold text-gray-800">{request.nickname}</p>
                   <p className="text-sm text-gray-500">{request.email}</p>
                 </div>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex space-x-1">
                 <button
                   onClick={() => handleAccept(request.id)}
                   className="text-sm bg-sky-400 text-white px-3 py-1 rounded hover:bg-sky-500"
@@ -73,8 +73,8 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
   if (isStandalone) {
     // 독립 모달일 때 - 오버레이 + 박스 + 닫기 버튼 포함
     return (
-      <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+      <div className="fixed inset-0 z-50 bg-black/10 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative transform hover:scale-[1.01] transition-transform duration-300">
           <button
             className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
             onClick={onClose}
