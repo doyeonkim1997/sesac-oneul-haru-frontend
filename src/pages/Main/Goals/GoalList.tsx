@@ -143,7 +143,11 @@ const GoalList: React.FC = () => {
                   <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {/* GoalCard 컴포넌트들 - 개별 목표 카드들 */}
                     {goals.map((goalWithUser) => (
-                      <GoalCard key={goalWithUser.goal.goal_id} goalWithUser={goalWithUser} />
+                      <GoalCard
+                        key={goalWithUser.goal.goal_id}
+                        goalWithUser={goalWithUser}
+                        disableExpiredEffect={true}
+                      />
                     ))}
                   </div>
                 </div>

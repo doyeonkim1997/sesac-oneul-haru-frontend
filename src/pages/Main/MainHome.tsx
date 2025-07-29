@@ -10,7 +10,7 @@ import { useGoals } from '../../contexts/GoalContext';
 
 const MainHome: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'my' | 'friends'>('my');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'my' | 'friends'>('all');
   const { goals: allGoals } = useGoals();
 
   // 필터에 따른 목표 데이터

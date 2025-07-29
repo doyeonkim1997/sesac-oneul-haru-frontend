@@ -9,12 +9,14 @@ interface GoalCardProps {
   goalWithUser: GoalWithUser;
   isBookmarkMode?: boolean; // 북마크 모드 여부
   onEditClick?: () => void; // 수정 버튼 클릭 핸들러
+  disableExpiredEffect?: boolean; // 만료 효과 비활성화 여부
 }
 
 const GoalCard: React.FC<GoalCardProps> = ({
   goalWithUser,
   isBookmarkMode = false,
   onEditClick,
+  disableExpiredEffect = false,
 }) => {
   const { goal, user } = goalWithUser;
   const { toggleGoalCompletion, toggleBookmark, deleteGoal, bookmarks } = useGoals();
@@ -56,7 +58,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
   return (
     <div
       className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-gray-600 transition-transform duration-200 cursor-pointer transform hover:scale-[1.01] ${
-        isExpired ? 'opacity-60 blur-[0.5px]' : ''
+        isExpired && !disableExpiredEffect ? 'opacity-60 blur-[0.5px]' : ''
       }`}
     >
       <div className="flex items-start space-x-6 pl-2">
@@ -88,7 +90,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
                   )}
                 </button>
               </div>
-              <p className="text-2xl font-medium text-gray-800 dark:text-white mt-4 mb-6">
+              <p className="text-xl font-medium text-gray-800 dark:text-white mt-4 mb-6">
                 {goal.content}
               </p>
             </div>
@@ -118,14 +120,14 @@ const GoalCard: React.FC<GoalCardProps> = ({
 
                   {/* 드롭다운 메뉴 */}
                   {isDropdownOpen && (
-                    <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                    <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onEditClick?.();
                           setIsDropdownOpen(false);
                         }}
-                        className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
+                        className="w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg"
                       >
                         수정
                       </button>
@@ -137,7 +139,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
                           }
                           setIsDropdownOpen(false);
                         }}
-                        className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 rounded-b-lg"
+                        className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg"
                       >
                         삭제
                       </button>
@@ -152,7 +154,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
       <div className="mt-4">
         {/* 키워드 영역 */}
         <div className="flex flex-wrap gap-2 mb-4 pl-24">
-          <span className="text-base bg-gray-100 text-gray-600 px-4 py-2 rounded-full">
+          <span className="text-base bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-4 py-2 rounded-full">
             #{CATEGORY_DISPLAY_NAMES[goal.category as keyof typeof CATEGORY_DISPLAY_NAMES]}
           </span>
         </div>

@@ -35,7 +35,7 @@ const Terms: React.FC = () => {
             <div className="col-span-9 flex flex-col overflow-hidden">
               <div className="flex-1 overflow-y-auto">
                 <div className="pt-16 space-y-6">
-                  <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 max-h-[calc(100vh-15.5rem)] overflow-y-auto">
+                  <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md max-h-[calc(100vh-15.5rem)] overflow-y-auto">
                     <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
                       이용약관 및 정책
                     </h1>
@@ -88,7 +88,7 @@ const Terms: React.FC = () => {
 
                       {/* 목표 관리 정책 */}
                       <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                           제3조 (목표 관리 정책)
                         </h2>
                         <div className="space-y-3">
@@ -109,7 +109,7 @@ const Terms: React.FC = () => {
 
                       {/* 친구 기능 정책 */}
                       <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                           제4조 (친구 기능 정책)
                         </h2>
                         <div className="space-y-3">
@@ -130,7 +130,7 @@ const Terms: React.FC = () => {
 
                       {/* 서비스 이용 제한 */}
                       <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                           제5조 (서비스 이용 제한)
                         </h2>
                         <div className="space-y-3">
@@ -146,7 +146,7 @@ const Terms: React.FC = () => {
 
                       {/* 계정 관리 */}
                       <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                           제6조 (계정 관리)
                         </h2>
                         <div className="space-y-3">
@@ -165,7 +165,7 @@ const Terms: React.FC = () => {
 
                       {/* 서비스 변경 및 중단 */}
                       <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                           제7조 (서비스 변경 및 중단)
                         </h2>
                         <div className="space-y-3">
@@ -186,7 +186,7 @@ const Terms: React.FC = () => {
 
                       {/* 책임 제한 */}
                       <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                           제8조 (책임 제한)
                         </h2>
                         <div className="space-y-3">
@@ -207,7 +207,7 @@ const Terms: React.FC = () => {
 
                       {/* 약관 변경 */}
                       <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                           제9조 (약관 변경)
                         </h2>
                         <div className="space-y-3">
@@ -225,7 +225,9 @@ const Terms: React.FC = () => {
 
                       {/* 기타 */}
                       <section>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">제10조 (기타)</h2>
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                          제10조 (기타)
+                        </h2>
                         <div className="space-y-3">
                           <p>
                             본 약관에 명시되지 않은 사항은 관련 법령 및 서비스 제공자가 정한

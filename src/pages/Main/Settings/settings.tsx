@@ -11,10 +11,12 @@ const Settings: React.FC = () => {
   const { user, updateNickname, updatePassword, updateProfileImage, withdrawUser } = useUser();
   const [nickname, setNickname] = useState(user.nickname);
   const [tempProfileImage, setTempProfileImage] = useState(user.profileImage);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [withdrawPassword, setWithdrawPassword] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 닉네임 수정 핸들러
@@ -41,6 +43,20 @@ const Settings: React.FC = () => {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // 파일 크기 검증 (5MB 이하)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('파일 크기는 5MB 이하여야 합니다.');
+        return;
+      }
+
+      // 파일 타입 검증
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드 가능합니다.');
+        return;
+      }
+
+      setSelectedFile(file);
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
@@ -135,7 +151,7 @@ const Settings: React.FC = () => {
 
                         {/* 비밀번호 설정 */}
                         <div className="w-full">
-                          <h3 className="text-base font-semibold text-gray-800 mb-3">
+                          <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3">
                             비밀번호 설정
                           </h3>
                           <div className="flex flex-col space-y-3">
@@ -168,29 +184,48 @@ const Settings: React.FC = () => {
                     {/* 전체 박스 중앙에 저장 버튼 */}
                     <div className="flex justify-center mt-6">
                       <button
-                        onClick={() => {
-                          // 프로필 이미지가 변경된 경우에만 업데이트
-                          if (tempProfileImage !== user.profileImage) {
-                            updateProfileImage(tempProfileImage);
-                          }
-                          handleNicknameUpdate();
-                          if (currentPassword && newPassword) {
-                            handlePasswordUpdate();
+                        onClick={async () => {
+                          setIsUploading(true);
+                          try {
+                            // 프로필 이미지가 선택된 경우에만 업데이트
+                            if (selectedFile) {
+                              const success = await updateProfileImage(selectedFile);
+                              if (success) {
+                                setSelectedFile(null);
+                              }
+                            }
+
+                            handleNicknameUpdate();
+                            if (currentPassword && newPassword) {
+                              await handlePasswordUpdate();
+                            }
+                          } catch (error) {
+                            console.error('저장 중 오류:', error);
+                            alert('저장 중 오류가 발생했습니다.');
+                          } finally {
+                            setIsUploading(false);
                           }
                         }}
-                        className="w-32 py-2 bg-sky-400 hover:bg-sky-500 text-white font-medium rounded-lg transition-colors text-sm"
+                        disabled={isUploading}
+                        className={`w-32 py-2 font-medium rounded-lg transition-colors text-sm ${
+                          isUploading
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-sky-400 hover:bg-sky-500 text-white'
+                        }`}
                       >
-                        저장
+                        {isUploading ? '업로드 중...' : '저장'}
                       </button>
                     </div>
                   </div>
 
                   {/* 회원 탈퇴 */}
-                  <div className="bg-white p-8 pb-16 rounded-xl shadow-md border border-gray-200">
+                  <div className="bg-white dark:bg-gray-800 p-8 pb-16 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
                     <div className="flex flex-col items-center space-y-6 w-full max-w-md mx-auto pt-4">
                       <div className="w-full">
-                        <h3 className="text-base font-semibold text-gray-800 mb-3">회원 탈퇴</h3>
-                        <p className="text-sm text-gray-600 mb-4 text-center">
+                        <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3">
+                          회원 탈퇴
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
                           회원 탈퇴 시 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
                         </p>
                         <div className="flex flex-col space-y-4">
