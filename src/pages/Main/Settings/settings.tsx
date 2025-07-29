@@ -9,6 +9,7 @@ import { useUser } from '../../../contexts/UserContext';
 
 const Settings: React.FC = () => {
   const { user, updateNickname, updatePassword, updateProfileImage, withdrawUser } = useUser();
+  const isSocialUser = user.auth_type !== 'EMAIL';
   const [nickname, setNickname] = useState(user.nickname);
   const [tempProfileImage, setTempProfileImage] = useState(user.profileImage);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -85,15 +86,9 @@ const Settings: React.FC = () => {
                 <div className="mt-6"></div>
                 {/* MenuSection 컴포넌트 - 내 목표 관리, 친구 관리, 설정 메뉴 */}
                 <MenuSection />
-                <div className="h-[12rem]"></div>
-                <div className="relative pt-8">
-                  {/* DarkModeToggle 컴포넌트 - 다크모드/라이트모드 토글 버튼 (절대 위치) */}
-                  <div className="absolute -top-4 right-0">
-                    <DarkModeToggle />
-                  </div>
-                  {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
-                  <CalendarSection />
-                </div>
+                <div className="mt-6"></div>
+                {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
+                <CalendarSection />
               </div>
             </aside>
             <div className="col-span-9 flex flex-col overflow-hidden">
@@ -134,49 +129,105 @@ const Settings: React.FC = () => {
                       {/* 설정 폼 */}
                       <div className="flex flex-col items-center space-y-6 flex-1 max-w-md">
                         {/* 닉네임 설정 */}
-                        <div className="w-full">
-                          <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3">
+                        <div className={`w-full ${isSocialUser ? 'opacity-50' : ''}`}>
+                          <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3 flex items-center">
                             닉네임 설정
+                            {isSocialUser && (
+                              <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                                소셜 로그인
+                              </span>
+                            )}
                           </h3>
-                          <div className="flex items-center">
-                            <input
-                              type="text"
-                              placeholder="닉네임을 입력해 주세요."
-                              value={nickname}
-                              onChange={(e) => setNickname(e.target.value)}
-                              className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                            />
-                          </div>
+                          {isSocialUser ? (
+                            <div className="space-y-2">
+                              <input
+                                type="text"
+                                value={nickname}
+                                disabled
+                                aria-label="닉네임 (변경 불가)"
+                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                              />
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                소셜 로그인 사용자는 닉네임을 변경할 수 없습니다.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="flex items-center">
+                              <input
+                                type="text"
+                                placeholder="닉네임을 입력해 주세요."
+                                value={nickname}
+                                onChange={(e) => setNickname(e.target.value)}
+                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                              />
+                            </div>
+                          )}
                         </div>
 
                         {/* 비밀번호 설정 */}
-                        <div className="w-full">
-                          <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3">
+                        <div className={`w-full ${isSocialUser ? 'opacity-50' : ''}`}>
+                          <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3 flex items-center">
                             비밀번호 설정
+                            {isSocialUser && (
+                              <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                                소셜 로그인
+                              </span>
+                            )}
                           </h3>
-                          <div className="flex flex-col space-y-3">
-                            <input
-                              type="password"
-                              placeholder="기존 비밀번호를 입력해 주세요."
-                              value={currentPassword}
-                              onChange={(e) => setCurrentPassword(e.target.value)}
-                              className="w-full h-8 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                            />
-                            <input
-                              type="password"
-                              placeholder="새 비밀번호를 입력해 주세요."
-                              value={newPassword}
-                              onChange={(e) => setNewPassword(e.target.value)}
-                              className="w-full h-8 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                            />
-                            <input
-                              type="password"
-                              placeholder="새 비밀번호를 다시 입력해 주세요."
-                              value={confirmPassword}
-                              onChange={(e) => setConfirmPassword(e.target.value)}
-                              className="w-full h-8 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                            />
-                          </div>
+                          {isSocialUser ? (
+                            <div className="space-y-2">
+                              <div className="flex flex-col space-y-3">
+                                <input
+                                  type="password"
+                                  value="••••••••"
+                                  disabled
+                                  aria-label="기존 비밀번호 (변경 불가)"
+                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                                />
+                                <input
+                                  type="password"
+                                  value="••••••••"
+                                  disabled
+                                  aria-label="새 비밀번호 (변경 불가)"
+                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                                />
+                                <input
+                                  type="password"
+                                  value="••••••••"
+                                  disabled
+                                  aria-label="새 비밀번호 확인 (변경 불가)"
+                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                                />
+                              </div>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col space-y-3">
+                              <input
+                                type="password"
+                                placeholder="기존 비밀번호를 입력해 주세요."
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                              />
+                              <input
+                                type="password"
+                                placeholder="새 비밀번호를 입력해 주세요."
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                              />
+                              <input
+                                type="password"
+                                placeholder="새 비밀번호를 다시 입력해 주세요."
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -195,9 +246,12 @@ const Settings: React.FC = () => {
                               }
                             }
 
-                            handleNicknameUpdate();
-                            if (currentPassword && newPassword) {
-                              await handlePasswordUpdate();
+                            // 소셜 로그인 사용자가 아닌 경우에만 닉네임/비밀번호 업데이트
+                            if (!isSocialUser) {
+                              handleNicknameUpdate();
+                              if (currentPassword && newPassword) {
+                                await handlePasswordUpdate();
+                              }
                             }
                           } catch (error) {
                             console.error('저장 중 오류:', error);
@@ -234,10 +288,13 @@ const Settings: React.FC = () => {
                             placeholder="비밀번호를 입력해 주세요."
                             value={withdrawPassword}
                             onChange={(e) => setWithdrawPassword(e.target.value)}
-                            className="w-full h-8 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                           />
                           <div className="flex justify-center space-x-3">
-                            <button className="w-32 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors text-sm font-medium">
+                            <button
+                              onClick={() => setWithdrawPassword('')}
+                              className="w-32 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-sm font-medium"
+                            >
                               취소
                             </button>
                             <button

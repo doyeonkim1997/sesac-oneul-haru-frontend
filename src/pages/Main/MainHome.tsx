@@ -60,15 +60,9 @@ const MainHome: React.FC = () => {
                 <div className="mt-6"></div>
                 {/* MenuSection 컴포넌트 - 내 목표 관리, 친구 관리, 설정 메뉴 */}
                 <MenuSection />
-                <div className="h-[12rem]"></div>
-                <div className="relative pt-8">
-                  {/* DarkModeToggle 컴포넌트 - 다크모드/라이트모드 토글 버튼 (절대 위치) */}
-                  <div className="absolute -top-4 right-0">
-                    <DarkModeToggle />
-                  </div>
-                  {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
-                  <CalendarSection />
-                </div>
+                <div className="mt-6"></div>
+                {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
+                <CalendarSection />
               </div>
             </aside>
 
@@ -120,19 +114,9 @@ const MainHome: React.FC = () => {
                 <div className="border-b-2 border-gray-300 dark:border-gray-600 mx-6"></div>
               </div>
               <div className="flex-1 flex flex-col overflow-hidden">
-                {/* 검색바 공간 - 여백으로 대체 */}
-                <div className="p-6 pb-4 flex-shrink-0">
-                  <div className="flex justify-end">
-                    <div className="relative">
-                      {/* 검색창 제거하고 여백만 유지 */}
-                      <div className="w-64 h-10"></div>
-                    </div>
-                  </div>
-                </div>
-
                 {/* 목표 목록 스크롤 영역 */}
-                <div className="flex-1 overflow-y-auto px-6 pb-6 max-h-[calc(100vh-20rem)]">
-                  <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
+                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1110px]">
+                  <div className="space-y-4 pt-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {/* GoalCard 컴포넌트들 - 개별 목표 카드들 (프로필, 내용, 태그, 완료 상태 등) */}
                     {goals.map((goalWithUser) => (
                       <GoalCard key={goalWithUser.goal.goal_id} goalWithUser={goalWithUser} />
