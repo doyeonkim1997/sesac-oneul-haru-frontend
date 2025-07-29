@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import CreateGoalModal from '../modals/CreateGoalModal';
 import FriendRequestModal from '../modals/FriendRequestModal';
 import FriendSearchModal from '../modals/FriendSearchModal';
+import DarkModeToggle from './DarkModeToggle';
 import { useGoals } from '../../contexts/GoalContext';
 
 const MenuSection: React.FC = () => {
@@ -109,6 +110,12 @@ const MenuSection: React.FC = () => {
             >
               <span>회원 정보 수정</span>
             </Link>
+            <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 px-3 py-2.5 rounded-lg font-medium text-sm">
+              <span>다크모드</span>
+              <div className="ml-auto">
+                <DarkModeToggle />
+              </div>
+            </div>
           </div>
         </div>
       </nav>

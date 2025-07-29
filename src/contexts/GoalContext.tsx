@@ -46,9 +46,10 @@ export const GoalProvider: React.FC<GoalProviderProps> = ({ children }) => {
 
     const allGoals = [
       ...filteredDummyGoals,
-      ...customGoals.map((goal) => ({
-        goal,
-        user: {
+      ...customGoals.map((goal) => {
+        // 기존 더미 데이터에서 해당 사용자 정보를 찾기
+        const originalGoal = dummyGoals.find((g) => g.goal.goal_id === goal.goal_id);
+        const user = originalGoal?.user || {
           user_id: 1,
           nickname: '닉네임',
           email: 'user@example.com',
@@ -57,8 +58,13 @@ export const GoalProvider: React.FC<GoalProviderProps> = ({ children }) => {
           created_at: '2025-01-01 00:00:00',
           profileImage:
             'https://lh3.googleusercontent.com/aida-public/AB6AXuAxXs7vDKXMRvI3IZHHf5Ual3o0KgDnebg8JGYnS3N0bRmgVIPTB7HoOTX5ZkkKi1Hz3JMwW7WDKIcVbl3pO-tMjQrV8_8jJnB-MpiCl_wXTrc8adxUAF-7NE2m2-GOF88PNtm4xA_5RqMzvRMPgMwCXr2-VdePIbvy0qZ9aWcRAWZfR0_DYpHJzgZPB-wW5EklI___Z1ePt2SfQvrvEVcNsVQaV_-6naKmZ523fItMRU6mLabXPoPUGQZBDS3OdHUFqA_ov8DiNdE',
-        },
-      })),
+        };
+
+        return {
+          goal,
+          user,
+        };
+      }),
     ];
 
     // 삭제되지 않은 목표만 필터링
@@ -87,7 +93,7 @@ export const GoalProvider: React.FC<GoalProviderProps> = ({ children }) => {
         ),
       );
     } else {
-      // 더미 데이터 목표는 새로운 커스텀 목표로 복사해서 수정
+      // 더미 데이터 목표는 기존 사용자 정보를 유지하면서 수정
       const dummyGoal = goals.find((g) => g.goal.goal_id === goalId);
       if (dummyGoal) {
         const updatedGoal = {
@@ -95,6 +101,7 @@ export const GoalProvider: React.FC<GoalProviderProps> = ({ children }) => {
           is_completed: !dummyGoal.goal.is_completed,
           updated_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
         };
+        // 기존 사용자 정보를 유지하기 위해 user_id를 보존
         setCustomGoals((prev) => [...prev, updatedGoal]);
       }
     }

@@ -61,15 +61,15 @@ const GoalCard: React.FC<GoalCardProps> = ({
         isExpired && !disableExpiredEffect ? 'opacity-60 blur-[0.5px]' : ''
       }`}
     >
-      <div className="flex items-start space-x-6 pl-2">
+      <div className="flex items-start space-x-6">
         <img
           alt={`${user.nickname} 프로필 이미지`}
-          className="h-20 w-20 rounded-full object-cover"
+          className="h-20 w-20 rounded-full object-cover flex-shrink-0"
           src={user.profileImage || ''}
         />
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-3">
                 <span className="text-xl font-semibold text-gray-900 dark:text-white">
                   @{user.nickname}
@@ -79,18 +79,22 @@ const GoalCard: React.FC<GoalCardProps> = ({
                     e.stopPropagation();
                     toggleGoalCompletion(goal.goal_id);
                   }}
-                  className={`w-7 h-7 rounded border-2 transition-colors ${
+                  className={`w-7 h-7 rounded border-2 transition-colors flex-shrink-0 flex items-center justify-center ${
                     goal.is_completed
                       ? 'bg-sky-400 border-sky-400'
                       : 'bg-white border-gray-300 dark:border-gray-600'
                   }`}
                 >
                   {goal.is_completed && (
-                    <span className="text-white text-sm flex items-center justify-center">✓</span>
+                    <span className="text-white font-bold text-lg leading-none">✓</span>
                   )}
                 </button>
               </div>
-              <p className="text-xl font-medium text-gray-800 dark:text-white mt-4 mb-6">
+              <p
+                className={`text-xl font-medium text-gray-800 dark:text-white mt-4 mb-6 ${
+                  goal.is_completed ? 'line-through text-gray-500 dark:text-gray-400' : ''
+                }`}
+              >
                 {goal.content}
               </p>
             </div>
@@ -151,22 +155,20 @@ const GoalCard: React.FC<GoalCardProps> = ({
           </div>
         </div>
       </div>
-      <div className="mt-4">
+      <div className="mt-4 ml-26">
         {/* 키워드 영역 */}
-        <div className="flex flex-wrap gap-2 mb-4 pl-24">
+        <div className="flex flex-wrap gap-2 mb-2">
           <span className="text-base bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-4 py-2 rounded-full">
             #{CATEGORY_DISPLAY_NAMES[goal.category as keyof typeof CATEGORY_DISPLAY_NAMES]}
           </span>
         </div>
         {/* 날짜 표시 및 하트 */}
-        <div className="pl-24 mb-4 flex justify-between items-center">
+        <div className="flex justify-between items-center">
           <span className="text-sm text-gray-400 dark:text-gray-500">{goal.created_at}</span>
           <button className="text-gray-400 hover:text-red-500">
             <span className="material-icons !text-3xl">favorite_border</span>
           </button>
         </div>
-        {/* 하단 버튼 영역 - 빈 공간으로 유지 */}
-        <div className="flex justify-end items-center space-x-4"></div>
       </div>
     </div>
   );

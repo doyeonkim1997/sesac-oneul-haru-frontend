@@ -7,6 +7,7 @@ interface User {
   email: string;
   profileImage: string;
   password: string;
+  auth_type: 'EMAIL' | 'GOOGLE' | 'KAKAO' | 'NAVER';
 }
 
 interface UserContextType {
@@ -45,6 +46,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       profileImage:
         'https://lh3.googleusercontent.com/aida-public/AB6AXuAxXs7vDKXMRvI3IZHHf5Ual3o0KgDnebg8JGYnS3N0bRmgVIPTB7HoOTX5ZkkKi1Hz3JMwW7WDKIcVbl3pO-tMjQrV8_8jJnB-MpiCl_wXTrc8adxUAF-7NE2m2-GOF88PNtm4xA_5RqMzvRMPgMwCXr2-VdePIbvy0qZ9aWcRAWZfR0_DYpHJzgZPB-wW5EklI___Z1ePt2SfQvrvEVcNsVQaV_-6naKmZ523fItMRU6mLabXPoPUGQZBDS3OdHUFqA_ov8DiNdE',
       password: 'password123',
+      auth_type: 'EMAIL', // 개발용: 이메일 가입 사용자로 설정 (테스트 후 'GOOGLE'로 변경)
     };
   });
 
@@ -53,6 +55,11 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   }, [user]);
 
   const updateNickname = (newNickname: string) => {
+    if (user.auth_type !== 'EMAIL') {
+      alert('소셜 로그인 사용자는 닉네임을 변경할 수 없습니다.');
+      return;
+    }
+
     if (newNickname.trim()) {
       setUser((prev) => ({ ...prev, nickname: newNickname.trim() }));
       alert('회원 정보가 정상적으로 수정되었습니다');
@@ -60,6 +67,11 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   };
 
   const updatePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
+    if (user.auth_type !== 'EMAIL') {
+      alert('소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.');
+      return false;
+    }
+
     if (currentPassword !== user.password) {
       alert('비밀번호가 일치하지 않습니다.');
       return false;
@@ -128,7 +140,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       localStorage.removeItem('goals');
       localStorage.removeItem('bookmarks');
 
-      window.location.href = '/';
+      window.location.href = '/login';
       return true;
     }
     return false;
