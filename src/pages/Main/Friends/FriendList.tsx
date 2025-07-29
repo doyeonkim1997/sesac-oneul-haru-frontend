@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../../../components/ui/Header';
 import CalendarSection from '../../../components/ui/Calendar';
 import DarkModeToggle from '../../../components/ui/DarkModeToggle';
@@ -6,6 +6,9 @@ import MenuSection from '../../../components/ui/MenuSection';
 import ProfileSection from '../../../components/ui/ProfileSection';
 import Footer from '../../../components/ui/Footer';
 import UserItem from '../../../components/friends/UserItem';
+import type { User } from '../../../components/friends/UserItem';
+import FriendProfileModal from '../../../components/modals/FriendProfileModal';
+
 import { DUMMY_USERS } from '../../../data/users';
 
 const FriendList: React.FC = () => {
@@ -18,6 +21,19 @@ const FriendList: React.FC = () => {
   const rightColumnUsers = DUMMY_USERS.slice(half);
 
   const users = [...leftColumnUsers, ...rightColumnUsers];
+
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleNicknameClick = (user: User) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -53,9 +69,18 @@ const FriendList: React.FC = () => {
                     [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full"
                 >
                   {users.map((user) => (
-                    <UserItem key={user.id} user={user} onDelete={handleDeleteUser} />
+                    <UserItem
+                      key={user.id}
+                      user={user}
+                      onDelete={handleDeleteUser}
+                      onNicknameClick={handleNicknameClick}
+                    />
                   ))}
                 </div>
+                {/* 모달 */}
+      {isModalOpen && selectedUser && (
+        <FriendProfileModal user={selectedUser} onClose={closeModal} />
+      )}
               </div>
             </div>
           </div>
