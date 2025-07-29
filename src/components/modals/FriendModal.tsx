@@ -10,11 +10,11 @@ const FriendModal: React.FC<FriendModalProps> = ({ onClose }) => {
   const [tab, setTab] = useState<'request' | 'search'>('request');
 
 return (
-  <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+  <div className="fixed inset-0 z-50 bg-black/20 flex items-center justify-center p-4">
     <div className="bg-white rounded-2xl shadow-lg w-full max-w-md relative">
       {/* 닫기 버튼 */}
       <button
-        className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 z-10"
+        className="absolute top-[9px] right-3 text-gray-400 hover:text-gray-600 z-10"
         onClick={onClose}
         aria-label="닫기"
       >
