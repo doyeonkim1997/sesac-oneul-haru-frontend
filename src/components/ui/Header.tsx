@@ -7,11 +7,13 @@ import HeartModal from '../modals/HeartModal';
 const MAX_CHEER_COUNT: number = 15;
 
 const getHeartColor = (count: number): string => {
+  if (count === 0) {
+    return 'rgb(0, 0, 0)'; // cheerCount 0일 땐 검정색
+  }
+
   const intensity = Math.min(count / MAX_CHEER_COUNT, 1);
 
-  // 시작 색 (회색) - #d1d5db → rgb(209, 213, 219)
-  const start = { r: 209, g: 213, b: 219 };
-  // 끝 색 (#ff0050) → rgb(255, 0, 80)
+  const start = { r: 255, g: 180, b: 190 };
   const end = { r: 255, g: 60, b: 158 };
 
   const r = Math.round(start.r + (end.r - start.r) * intensity);
@@ -24,6 +26,7 @@ const getHeartColor = (count: number): string => {
 const Header = () => {
   const [showFriendModal, setShowFriendModal] = useState(false);
   const [showHeartModal, setShowHeartModal] = useState(false);
+  const [isHeartHovered, setIsHeartHovered] = useState(false);
 
   // 테스트용 (실제론 props나 context에서)
   const [cheerCount, setCheerCount] = useState(0);
@@ -46,27 +49,31 @@ const Header = () => {
           </div>
 
           <div className="flex items-center space-x-6 text-gray-900 dark:text-white">
+            {/* 임시 버튼 */}
+            <button onClick={() => setCheerCount(prev => Math.min(prev + 1, 100))}>
+              임시 버튼 (+1)
+            </button>
 
-{/* 임시 버튼 */}
-<button onClick={() => setCheerCount(prev => Math.min(prev + 2, 100))}>임시 버튼 (+2)</button>
-
-            {/* 친구 버튼 */}
             <button className="hover:text-sky-400" onClick={() => setShowFriendModal(true)}>
               <span className="material-icons !text-[28px] translate-y-[3px]">people</span>
             </button>
             {showFriendModal && <FriendModal onClose={() => setShowFriendModal(false)} />}
 
-            <button className="hover:text-sky-400" onClick={() => setShowHeartModal(true)}>
+            <button
+              className="hover:text-sky-400"
+              onClick={() => setShowHeartModal(true)}
+              onMouseEnter={() => setIsHeartHovered(true)}
+              onMouseLeave={() => setIsHeartHovered(false)}
+            >
               <span
                 className="material-icons !text-[28px] translate-y-[2.5px]"
-                style={{ color: getHeartColor(cheerCount) }}
+                style={{ color: isHeartHovered ? 'rgb(56, 189, 248)' : getHeartColor(cheerCount) }}
               >
-                {cheerCount > 0 ? 'favorite' : 'favorite_border'}
+                {cheerCount === 0 ? 'favorite_border' : 'favorite'}
               </span>
             </button>
             {showHeartModal && <HeartModal onClose={() => setShowHeartModal(false)} />}
 
-            {/* 로그아웃 버튼 */}
             <button
               className="hover:text-sky-400"
               onClick={() => {
