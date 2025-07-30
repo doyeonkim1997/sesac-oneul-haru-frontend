@@ -1,14 +1,40 @@
 import { useState } from 'react';
 import logo from '../assets/logo.svg';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  
+  const { setAccessToken } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('로그인 시도:', { email, password })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post(
+        '/api/auth/login/email',
+        { email, password },
+        { withCredentials: true }
+      );
+
+      setAccessToken(res.data.accessToken);
+      console.log('로그인 성공:', res.data.accessToken);
+
+      navigate('/main');
+
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('로그인 실패:', error.response?.data?.message || error.message);
+        alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+      } else {
+        console.error('알 수 없는 에러 발생');
+      }
+    }
   }
 
   return (
