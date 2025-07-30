@@ -65,39 +65,37 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl border-2 border-gray-100 dark:border-gray-700 backdrop-blur-sm bg-opacity-95 hover:shadow-2xl transition-transform duration-300 w-full max-w-lg mx-4 transform hover:scale-[1.01]">
-        {/* Header/User Section */}
-        <div className="flex items-start space-x-6 pl-2 mb-6">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/10">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg backdrop-blur-sm bg-opacity-95 hover:shadow-2xl transition-transform duration-300 w-full max-w-lg mx-4 transform hover:scale-[1.01]">
+        {/* User 정보 및 입력 박스 */}
+        <div className="flex items-start space-x-6 pl-2">
+          {/* 이미지 */}
           <img
             alt="프로필 이미지"
-            className="h-16 w-16 rounded-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxXs7vDKXMRvI3IZHHf5Ual3o0KgDnebg8JGYnS3N0bRmgVIPTB7HoOTX5ZkkKi1Hz3JMwW7WDKIcVbl3pO-tMjQrV8_8jJnB-MpiCl_wXTrc8adxUAF-7NE2m2-GOF88PNtm4xA_5RqMzvRMPgMwCXr2-VdePIbvy0qZ9aWcRAWZfR0_DYpHJzgZPB-wW5EklI___Z1ePt2SfQvrvEVcNsVQaV_-6naKmZ523fItMRU6mLabXPoPUGQZBDS3OdHUFqA_ov8DiNdE"
-          />
-          <div className="flex-1">
-            <div className="flex items-center space-x-2">
+            className="h-18 w-18 rounded-full object-cover"
+            src="..." />
+
+          {/* 텍스트 + 입력 박스 */}
+          <div className="flex-1 ml-1 ">
+            {/* 닉네임 */}
+            <div className="flex items-center space-x-2 mb-1">
               <span className="font-semibold text-gray-900 dark:text-white">@닉네임</span>
-              <span className="text-xs text-gray-400 dark:text-gray-500">(ME)</span>
+              <span className="text-gray-400 dark:text-gray-500">(ME)</span>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-              | {mode === 'edit' ? '목표를 수정해주세요' : '오늘 하루 목표는 무엇인가요?'}
-            </p>
+
+            {/* 입력 박스 */}
+            <textarea
+              value={goalContent}
+              onChange={(e) => setGoalContent(e.target.value)}
+              placeholder="오늘 하루 목표는 무엇인가요?"
+              className="mt-3 w-full h-28 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 resize-none text-xl font-medium text-gray-800 dark:text-white bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400"
+            />
           </div>
         </div>
 
-        {/* Goal Content Input */}
-        <div className="mb-6 pl-24">
-          <textarea
-            value={goalContent}
-            onChange={(e) => setGoalContent(e.target.value)}
-            placeholder="목표를 입력해주세요..."
-            className="w-full h-24 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 resize-none text-xl font-medium text-gray-800 dark:text-white bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400"
-          />
-        </div>
-
         {/* Tag Selection Section */}
-        <div className="mb-6 pl-24">
-          <p className="text-gray-700 dark:text-gray-300 font-medium mb-3">태그를 선택하세요!</p>
+        <div className="mt-6 mb-6 pl-[108px]">
+          <p className="text-gray-900 dark:text-white font-semibold mb-3">태그를 선택하세요!</p>
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <button
