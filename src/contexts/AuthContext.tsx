@@ -1,18 +1,32 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import { setAccessToken as setTokenHelper } from '../api/axiosInstance';
 
 type AuthContextType = {
-  accessToken: string;
-  setAccessToken: (token: string) => void;
-  
+  accessToken: string | null;
+  setAccessToken: (token: string | null) => void;
+  logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [accessToken, setAccessToken] = useState('');
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  const updateAccessToken = (token: string | null) => {
+    setAccessToken(token);
+    setTokenHelper(token || '');
+  };
+
+  const logout = () => updateAccessToken(null);
 
   return (
-    <AuthContext.Provider value={{ accessToken, setAccessToken }}>
+    <AuthContext.Provider
+      value={{
+        accessToken,
+        setAccessToken: updateAccessToken,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
