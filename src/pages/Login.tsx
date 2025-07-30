@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import axiosInstance from '../api/axiosInstance'; // API 요청 보낼 때 사용할 커스텀 axios 인스턴스
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -16,8 +17,8 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        '/api/auth/login/email',
+      const res = await axiosInstance.post(
+      '/auth/login/email',
         { email, password },
         { withCredentials: true }
       );
