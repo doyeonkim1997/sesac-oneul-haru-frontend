@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import Header from '../../../components/ui/Header';
 import ProfileSection from '../../../components/ui/ProfileSection';
 import MenuSection from '../../../components/ui/MenuSection';
-import DarkModeToggle from '../../../components/ui/DarkModeToggle';
 import CalendarSection from '../../../components/ui/Calendar';
 import Footer from '../../../components/ui/Footer';
 import GoalCard from '../../../components/ui/GoalCard';
@@ -61,13 +60,14 @@ const GoalList: React.FC = () => {
                 <div className="mt-6"></div>
                 {/* MenuSection 컴포넌트 - 내 목표 관리, 친구 관리, 설정 메뉴 */}
                 <MenuSection />
-                <div className="mt-6"></div>
+                <div className="mt-2"></div>
                 {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
                 <CalendarSection />
               </div>
             </aside>
+
             <div className="col-span-9 flex flex-col">
-              <div className="bg-gray-50 dark:bg-gray-900 flex-shrink-0">
+              <div className="bg-gray-50 dark:bg-gray-900 flex-shrink-0 mt-2">
                 <div className="flex justify-center">
                   <nav className="flex">
                     <button

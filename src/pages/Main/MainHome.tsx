@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import Header from '../../components/ui/Header';
 import CalendarSection from '../../components/ui/Calendar';
-import DarkModeToggle from '../../components/ui/DarkModeToggle';
 import MenuSection from '../../components/ui/MenuSection';
 import ProfileSection from '../../components/ui/ProfileSection';
 import GoalCard from '../../components/ui/GoalCard';
@@ -60,14 +59,14 @@ const MainHome: React.FC = () => {
                 <div className="mt-6"></div>
                 {/* MenuSection 컴포넌트 - 내 목표 관리, 친구 관리, 설정 메뉴 */}
                 <MenuSection />
-                <div className="mt-6"></div>
+                <div className="mt-2"></div>
                 {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
                 <CalendarSection />
               </div>
             </aside>
 
             <div className="col-span-9 flex flex-col">
-              <div className="bg-gray-50 dark:bg-gray-900 flex-shrink-0">
+              <div className="bg-gray-50 dark:bg-gray-900 flex-shrink-0 mt-2">
                 <div className="flex justify-center">
                   <nav className="flex">
                     <button
@@ -115,7 +114,7 @@ const MainHome: React.FC = () => {
               </div>
               <div className="flex-1 flex flex-col overflow-hidden">
                 {/* 목표 목록 스크롤 영역 */}
-                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1110px]">
+                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1096px]">
                   <div className="space-y-4 pt-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {/* GoalCard 컴포넌트들 - 개별 목표 카드들 (프로필, 내용, 태그, 완료 상태 등) */}
                     {goals.map((goalWithUser) => (

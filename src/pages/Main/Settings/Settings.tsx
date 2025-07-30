@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import Header from '../../../components/ui/Header';
 import ProfileSection from '../../../components/ui/ProfileSection';
 import MenuSection from '../../../components/ui/MenuSection';
-import DarkModeToggle from '../../../components/ui/DarkModeToggle';
 import CalendarSection from '../../../components/ui/Calendar';
 import Footer from '../../../components/ui/Footer';
 import { useUser } from '../../../contexts/UserContext';
@@ -86,16 +85,17 @@ const Settings: React.FC = () => {
                 <div className="mt-6"></div>
                 {/* MenuSection 컴포넌트 - 내 목표 관리, 친구 관리, 설정 메뉴 */}
                 <MenuSection />
-                <div className="mt-6"></div>
+                <div className="mt-2"></div>
                 {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
                 <CalendarSection />
               </div>
             </aside>
+
             <div className="col-span-9 flex flex-col overflow-hidden">
               <div className="flex-1 overflow-y-auto">
-                <div className="pt-32 space-y-6">
+                <div className="pt-16 space-y-6">
                   {/* 닉네임 및 비밀번호 설정 */}
-                  <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+                  <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm ">
                     <div className="flex items-start space-x-8 justify-center">
                       {/* 프로필 이미지 영역 */}
                       <div className="flex flex-col items-center space-y-4 mt-16 -ml-8">
@@ -272,24 +272,25 @@ const Settings: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* 회원 탈퇴 */}
-                  <div className="bg-white dark:bg-gray-800 p-8 pb-16 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+                  {/* 회원 탈퇴.. */}
+                  <div className="bg-white dark:bg-gray-800 p-8 pb-16 rounded-xl shadow-sm">
                     <div className="flex flex-col items-center space-y-6 w-full max-w-md mx-auto pt-4">
                       <div className="w-full">
-                        <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3">
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">
                           회원 탈퇴
                         </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
-                          회원 탈퇴 시 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
-                        </p>
-                        <div className="flex flex-col space-y-4">
+                        
+                        <div className="flex flex-col space-y-4 items-center">
                           <input
                             type="password"
                             placeholder="비밀번호를 입력해 주세요."
                             value={withdrawPassword}
                             onChange={(e) => setWithdrawPassword(e.target.value)}
-                            className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-[450px] h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                           />
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
+                          *회원 탈퇴 시 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
+                          </p>
                           <div className="flex justify-center space-x-3">
                             <button
                               onClick={() => setWithdrawPassword('')}

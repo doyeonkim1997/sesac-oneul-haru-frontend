@@ -11,7 +11,7 @@ import MainHome from './pages/Main/MainHome';
 import GoalList from './pages/Main/Goals/GoalList';
 import BookmarkList from './pages/Main/Goals/BookmarkList';
 import FriendList from './pages/Main/Friends/FriendList';
-import Settings from './pages/Main/Settings/settings';
+import Settings from './pages/Main/Settings/Settings';
 
 function AppContent() {
   const { isVisible, hideToast, currentMessage, currentType } = useToast();

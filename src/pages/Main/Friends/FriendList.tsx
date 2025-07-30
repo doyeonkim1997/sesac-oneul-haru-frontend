@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Header from '../../../components/ui/Header';
 import CalendarSection from '../../../components/ui/Calendar';
-import DarkModeToggle from '../../../components/ui/DarkModeToggle';
 import MenuSection from '../../../components/ui/MenuSection';
 import ProfileSection from '../../../components/ui/ProfileSection';
 import Footer from '../../../components/ui/Footer';
@@ -49,22 +48,16 @@ const FriendList: React.FC = () => {
                 <div className="mt-6"></div>
                 {/* MenuSection 컴포넌트 - 내 목표 관리, 친구 관리, 설정 메뉴 */}
                 <MenuSection />
-                <div className="h-[12rem]"></div>
-                <div className="relative pt-8">
-                  {/* DarkModeToggle 컴포넌트 - 다크모드/라이트모드 토글 버튼 (절대 위치) */}
-                  <div className="absolute -top-4 right-0">
-                    <DarkModeToggle />
-                  </div>
-                  {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
-                  <CalendarSection />
-                </div>
+                <div className="mt-2"></div>
+                {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
+                <CalendarSection />
               </div>
             </aside>
 
             <div className="col-span-9 flex flex-col overflow-hidden">
-              <div className="overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mt-16 h-[752px]">
+              <div className="overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mt-16 h-[803px]">
                 <div
-                  className="grid grid-cols-2 h-[706px] overflow-y-auto
+                  className="grid grid-cols-2 h-[100%] overflow-y-auto
                     [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent
                     [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full"
                 >
@@ -78,9 +71,13 @@ const FriendList: React.FC = () => {
                   ))}
                 </div>
                 {/* 모달 */}
-      {isModalOpen && selectedUser && (
-        <FriendProfileModal user={selectedUser} onClose={closeModal} />
-      )}
+                {isModalOpen && selectedUser && (
+                  <FriendProfileModal
+                    user={selectedUser}
+                    onClose={closeModal}
+                    onDelete={handleDeleteUser} // 추가
+                  />
+                )}
               </div>
             </div>
           </div>
