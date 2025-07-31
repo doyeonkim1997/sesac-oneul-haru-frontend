@@ -1,8 +1,9 @@
 import logo from '../../assets/logo.svg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import FriendModal from '../modals/FriendModal';
 import HeartModal from '../modals/HeartModal';
+import axiosInstance, { setAccessToken } from '../../api/axiosInstance';
 
 const MAX_CHEER_COUNT: number = 15;
 
@@ -27,6 +28,8 @@ const Header = () => {
   const [showFriendModal, setShowFriendModal] = useState(false);
   const [showHeartModal, setShowHeartModal] = useState(false);
   const [isHeartHovered, setIsHeartHovered] = useState(false);
+
+  const navigate = useNavigate();
 
   // 테스트용 (실제론 props나 context에서)
   const [cheerCount, setCheerCount] = useState(0);
@@ -76,9 +79,15 @@ const Header = () => {
 
             <button
               className="hover:text-sky-400"
-              onClick={() => {
-                localStorage.removeItem('authToken');
-                window.location.href = '/login';
+              onClick={async () => {
+                try {
+                  await axiosInstance.post('/auth/logout'); // 백엔드에 로그아웃 요청
+                } catch (error) {
+                  console.error('로그아웃 실패:', error);
+                } finally {
+                  setAccessToken(null); // 프론트에서도
+                  navigate('/login', { replace: true });
+                }
               }}
               aria-label="로그아웃 버튼"
             >
