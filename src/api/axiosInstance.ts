@@ -2,12 +2,32 @@ import axios, { AxiosError, type AxiosRequestConfig } from 'axios';
 
 let accessToken: string | null = null;
 
+let imageUrl: string | null = null;
+
+let nickName: string | null = null;
+
 export function setAccessToken(token: string | null): void {
   accessToken = token;
 }
 
 export function getAccessToken(): string | null {
   return accessToken;
+}
+
+export function setImageUrl(image: string | null): void {
+  imageUrl = image;
+}
+
+export function getImageUrl(): string | null {
+  return imageUrl;
+}
+
+export function setNickName(name: string | null): void {
+  nickName = name;
+}
+
+export function getNickName(): string | null {
+  return nickName;
 }
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
@@ -42,10 +62,15 @@ instance.interceptors.response.use(
         const res = await axios.post(
           `${import.meta.env.VITE_BACKEND_ADDRESS}/auth/refresh`,
           {},
-          { withCredentials: true }
+          { withCredentials: true },
         );
-        const newToken = res.data.accessToken;
+
+        const { accessToken: newToken, nickName, imageUrl } = res.data;
+
         setAccessToken(newToken);
+        setNickName(nickName);
+        setImageUrl(imageUrl);
+
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
         }
@@ -56,7 +81,7 @@ instance.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default instance;
