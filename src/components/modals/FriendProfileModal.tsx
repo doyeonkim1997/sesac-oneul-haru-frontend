@@ -1,17 +1,11 @@
 import React from "react";
 import FriendCalendar from "./FriendCalendar";
-
-interface User {
-  id: string;
-  nickname: string;
-  email: string;
-  imageUrl?: string;
-}
+import { type User } from "../friends/UserItem";
 
 interface FriendProfileModalProps {
   user: User;
   onClose: () => void;
-  onDelete: (id: string) => void; // ✅ 추가
+  onDelete: (id: string) => void;
 }
 
 const FriendProfileModal: React.FC<FriendProfileModalProps> = ({ user, onClose }) => {
@@ -35,7 +29,7 @@ const FriendProfileModal: React.FC<FriendProfileModalProps> = ({ user, onClose }
             )}
           </div>
           <div className="flex flex-col -mt-1.5"> {/* flex-col 추가로 세로 배치 */}
-            <div className="text-lg font-bold">{user.nickname}</div>
+            <div className="text-lg font-bold">{user.nickName}</div>
             <div className="text-sm text-gray-500">{user.email}</div>
             <button
               onClick={() => console.log("삭제")}
@@ -47,7 +41,7 @@ const FriendProfileModal: React.FC<FriendProfileModalProps> = ({ user, onClose }
         </div>
 
         <div className="flex justify-center mt-0">
-          <FriendCalendar userId={user.id} />
+          <FriendCalendar userId={user.userId} />
         </div>
       </div>
     </div>

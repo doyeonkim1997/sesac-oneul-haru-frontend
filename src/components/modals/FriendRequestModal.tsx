@@ -1,41 +1,62 @@
+import { useEffect, useState } from 'react';
+import axiosInstance from '../../api/axiosInstance';
+
+type FriendRequest = {
+  userId: number;
+  nickName: string;
+  email: string;
+  imageUrl: string;
+};
+
 type Props = {
   onClose: () => void;
-  isStandalone?: boolean; // 기본 false
+  isStandalone?: boolean;
 };
 
 const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
-  const dummyRequests = [
-    {
-      id: 'r1',
-      nickname: '요청자1',
-      email: 'request1@example.com',
-      imageUrl: 'https://via.placeholder.com/40?text=R1',
-    },
-    {
-      id: 'r2',
-      nickname: '요청자2',
-      email: 'request2@example.com',
-      imageUrl: 'https://via.placeholder.com/40?text=R2',
-    },
-  ];
+  const [requests, setRequests] = useState<FriendRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAccept = (id: string) => {
-    console.log(`수락: ${id}`);
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        setLoading(true);
+        const res = await axiosInstance.get<FriendRequest[]>('/friend/requests');
+        setRequests(res.data);
+        setError(null);
+      } catch (err) {
+        setError('친구 요청을 불러오는데 실패했습니다.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRequests();
+  }, []);
+
+  const handleAccept = (userId: number) => {
+    console.log(`수락: ${userId}`);
   };
 
-  const handleReject = (id: string) => {
-    console.log(`거절: ${id}`);
+  const handleReject = (userId: number) => {
+    console.log(`거절: ${userId}`);
   };
 
   const content = (
     <>
-      {dummyRequests.length === 0 ? (
+      {loading ? (
+        <p className="text-gray-500 text-sm">로딩 중...</p>
+      ) : error ? (
+        <p className="text-red-500 text-sm">{error}</p>
+      ) : requests.length === 0 ? (
         <p className="text-gray-500 text-sm">친구 요청이 없습니다.</p>
       ) : (
         <ul className="space-y-3 max-h-60 overflow-y-auto">
-          {dummyRequests.map((request) => (
+          {requests.map((request) => (
             <li
-              key={request.id}
+              key={request.userId}
               className="flex items-center justify-between p-3 rounded-xl border border-gray-300 min-h-24"
             >
               <div className="flex items-center">
@@ -45,19 +66,19 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
                   className="w-16 h-16 rounded-full object-cover mr-6"
                 />
                 <div className="h-16 flex flex-col justify-start">
-                  <p className="font-semibold text-gray-800">{request.nickname}</p>
+                  <p className="font-semibold text-gray-800">{request.nickName}</p>
                   <p className="text-sm text-gray-500">{request.email}</p>
                 </div>
               </div>
               <div className="flex space-x-1">
                 <button
-                  onClick={() => handleAccept(request.id)}
+                  onClick={() => handleAccept(request.userId)}
                   className="text-sm bg-sky-400 text-white px-3 py-1 rounded hover:bg-sky-500"
                 >
                   수락
                 </button>
                 <button
-                  onClick={() => handleReject(request.id)}
+                  onClick={() => handleReject(request.userId)}
                   className="text-sm bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400"
                 >
                   거절
@@ -71,7 +92,6 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
   );
 
   if (isStandalone) {
-    // 독립 모달일 때 - 오버레이 + 박스 + 닫기 버튼 포함
     return (
       <div className="fixed inset-0 z-50 bg-black/10 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative transform hover:scale-[1.01] transition-transform duration-300">
@@ -90,7 +110,6 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
     );
   }
 
-  // 탭 안에서 쓸 때 - 박스 없이 내용만 렌더링
   return <>{content}</>;
 };
 

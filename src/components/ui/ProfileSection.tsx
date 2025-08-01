@@ -6,7 +6,7 @@ import { getImageUrl, getNickName } from '../../api/axiosInstance';
 const ProfileSection: React.FC = () => {
   const { user } = useUser();
 
-  const { imageUrl } = getImageUrl();
+  const imageUrl = getImageUrl();
 
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm flex flex-col items-center">

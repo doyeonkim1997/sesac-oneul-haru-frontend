@@ -1,12 +1,7 @@
 import { useState } from 'react';
-import { DUMMY_USERS } from '../../data/users';
-
-type User = {
-  id: string;
-  nickname: string;
-  email: string;
-  imageUrl?: string;
-};
+import { sendFriendRequest } from '../../api/sendFriendRequest';
+import { type User } from '../friends/UserItem';
+import { getUsersByEmail } from '../../api/getUsersByEmail';
 
 type Props = {
   onClose: () => void;
@@ -17,18 +12,27 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<User[]>([]);
 
-  const handleSearch = () => {
-    if (!searchTerm.trim()) return; // 빈 입력은 검색x
-  
-    const filtered = DUMMY_USERS.filter(user => {
-      const emailPrefix = user.email.split('@')[0];
-      return emailPrefix.toLowerCase().includes(searchTerm.toLowerCase());
-    });
-    setResults(filtered);
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
+
+    try {
+      const result = await getUsersByEmail(searchTerm);
+      setResults(result);
+    } catch (err) {
+      alert('사용자 검색에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
-  const handleSelect = (user: User) => {
-    alert(`${user.nickname}님에게 친구 요청을 보냅니다!`);
+  const handleSelect = async (user: User) => {
+    const confirm = window.confirm(`${user.nickName}님에게 친구 요청을 보낼까요?`);
+    if (!confirm) return;
+
+    try {
+      await sendFriendRequest(user.userId);
+      alert(`${user.nickName}님에게 친구 요청을 보냈습니다.`);
+    } catch (error) {
+      alert(`친구 요청에 실패했습니다. 다시 시도해주세요.`);
+    }
   };
 
   // 박스 스타일 분리
@@ -61,7 +65,7 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
         <ul className="max-h-60 overflow-y-auto border border-gray-300 rounded-lg">
           {results.map((user) => (
             <li
-              key={user.id}
+              key={user.userId}
               className="cursor-default px-4 py-2 w-full h-24 text-left hover:bg-sky-100 flex items-center justify-between"
               role="listitem"
             >
@@ -74,7 +78,7 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
                   )}
                 </div>
                 <div className="h-16 flex flex-col justify-start">
-                  <div className="font-semibold text-gray-800">{user.nickname}</div>
+                  <div className="font-semibold text-gray-800">{user.nickName}</div>
                   <div className="text-sm text-gray-500">{user.email}</div>
                 </div>
               </div>
