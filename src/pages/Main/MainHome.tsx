@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Header from '../../components/ui/Header';
 import CalendarSection from '../../components/ui/Calendar';
 import MenuSection from '../../components/ui/MenuSection';
@@ -6,11 +6,15 @@ import ProfileSection from '../../components/ui/ProfileSection';
 import GoalCard from '../../components/ui/GoalCard';
 import Footer from '../../components/ui/Footer';
 import { useGoals } from '../../contexts/GoalContext';
+import axiosInstance, { setAccessToken } from '../../api/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 const MainHome: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'my' | 'friends'>('all');
   const { goals: allGoals } = useGoals();
+
+  const navigate = useNavigate();
 
   // 필터에 따른 목표 데이터
   const goals = useMemo(() => {

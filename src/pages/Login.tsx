@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../assets/logo.svg';
 import { Link, useNavigate } from "react-router-dom";
 
@@ -37,6 +37,45 @@ export default function Login() {
       }
     }
   }
+
+  const checkLoginStatus = async () => {
+    try {
+      const res = await axiosInstance.post('/auth/refresh', null, {
+        withCredentials: true,
+      });
+      const accessToken = res.data.accessToken;
+      if (accessToken) {
+        setAccessToken(accessToken);
+        console.log('소셜 로그인 성공, accessToken:', accessToken);
+        navigate('/main');
+      } else {
+        console.warn('accessToken이 없습니다');
+      }
+    } catch (error) {
+      console.error('소셜 로그인 실패:', error);
+    }
+  };
+
+  const handleSocialLogin = (provider: string) => {  
+    const popup = window.open(
+      `http://localhost:3000/auth/login/${provider}`,
+      '_blank',
+      'width=500,height=600'
+    );
+
+    if (!popup) {
+      alert('팝업 차단됨. 브라우저 설정 확인하세요.');
+      return;
+    }
+    
+    const timer = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(timer);
+        // 팝업 닫힌 뒤, 토큰 요청해서 로그인 상태 체크
+        checkLoginStatus();
+      }
+    }, 500);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 pt-12 pb-16">
@@ -99,35 +138,42 @@ export default function Login() {
           </button>
         </form>
 
-        {/* 소셜 로그인 */}
+        {/* OAuth 로그인 */}
         <div className="mt-8">
           <p className="text-center text-gray-500 mb-4">다른 방법으로 로그인하기</p>
-          <div className="flex justify-center space-x-3 flex-wrap">
+
+          <div className="flex justify-center flex-wrap gap-3">
+            {/* Google */}
             <button
               type="button"
-              className="flex items-center px-4 py-2 border rounded-lg shadow hover:bg-gray-100 transition"
-              onClick={() => alert('구글 로그인 클릭')}
+              className="w-[120px] flex items-center justify-center gap-2 h-16 px-4 rounded-lg shadow-md 
+                         bg-[#4285F4] hover:bg-[#3367D6] transition text-white"
+              onClick={() => handleSocialLogin('google')}
             >
-              <img src="/icons/google.svg" alt="Google" className="w-6 h-6 mr-2" />
-              구글
+              <img src="/google.svg" alt="Google" className="w-7 h-7 bg-white rounded-full p-1" />
+              <span className="font-bold">Google</span>
             </button>
 
+            {/* Naver */}
             <button
               type="button"
-              className="flex items-center px-4 py-2 border rounded-lg shadow hover:bg-green-50 text-green-600 transition"
-              onClick={() => alert('네이버 로그인 클릭')}
+              className="w-[120px] flex items-center justify-center gap-2 h-16 px-4 rounded-lg shadow-md 
+                         bg-[#03C75A] hover:bg-[#02b254] transition text-white"
+              onClick={() => handleSocialLogin("naver")}
             >
-              <img src="/icons/naver.svg" alt="Naver" className="w-6 h-6 mr-2" />
-              네이버
+              <img src="/naver.svg" alt="Naver" className="w-7 h-7 " />
+              <span className="font-bold">Naver</span>
             </button>
 
+            {/* Kakao */}
             <button
               type="button"
-              className="flex items-center px-4 py-2 border rounded-lg shadow hover:bg-yellow-50 text-yellow-600 transition"
-              onClick={() => alert('카카오 로그인 클릭')}
+              className="w-[120px] flex items-center justify-center gap-2 h-16 px-4 rounded-lg shadow-md 
+                         bg-[#FEE500] hover:bg-[#e5cc00] transition text-white"
+              onClick={() => handleSocialLogin("kakao")}
             >
-              <img src="/icons/kakao.svg" alt="Kakao" className="w-6 h-6 mr-2" />
-              카카오
+              <img src="/kakao.svg" alt="Kakao" className="w-7 h-7 " />
+              <span className="font-bold text-[#3C1E1E]">Kakao</span>
             </button>
           </div>
         </div>
