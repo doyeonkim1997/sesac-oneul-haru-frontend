@@ -1,25 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../../../api/axiosInstance';
+
 import Header from '../../../components/ui/Header';
 import CalendarSection from '../../../components/ui/Calendar';
 import MenuSection from '../../../components/ui/MenuSection';
 import ProfileSection from '../../../components/ui/ProfileSection';
 import Footer from '../../../components/ui/Footer';
-import UserItem from '../../../components/friends/UserItem';
-import type { User } from '../../../components/friends/UserItem';
+import UserItem, { type User } from '../../../components/friends/UserItem';
 import FriendProfileModal from '../../../components/modals/FriendProfileModal';
 
-import { DUMMY_USERS } from '../../../data/users';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const FriendList: React.FC = () => {
-  const handleDeleteUser = (id: string) => {
-    console.log(`(화면 구현용) 사용자 ID ${id} 삭제 요청`);
-  };
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const half = Math.ceil(DUMMY_USERS.length / 2);
-  const leftColumnUsers = DUMMY_USERS.slice(0, half);
-  const rightColumnUsers = DUMMY_USERS.slice(half);
+  const { userId } = useAuth();
 
-  const users = [...leftColumnUsers, ...rightColumnUsers];
+  useEffect(() => {
+    async function fetchFriends() {
+      setLoading(true);
+      try {
+        const res = await axiosInstance.get(`/friend/friends`);
+        // API 응답 구조에 맞게
+        const friendList = res.data.map((friend: any) => ({
+          userId: String(friend.userId),
+          nickName: friend.nickName,
+          email: friend.email,
+          imageUrl: friend.image?.imageUrl,
+        }));
+        setUsers(friendList);
+
+        console.log(res.data)
+
+      } catch (err) {
+        setError('친구 목록을 불러오는데 실패했습니다.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchFriends();
+  }, [userId]);
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,6 +58,17 @@ const FriendList: React.FC = () => {
     setSelectedUser(null);
   };
 
+  const handleDeleteUser = (id: string) => {
+    console.log(`사용자 ID ${id} 삭제 요청`);
+    // TODO: 삭제 API 호출 후 상태 갱신 처리
+    setUsers(users.filter(user => user.userId !== id));
+    // 모달 닫기
+    closeModal();
+  };
+
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       <Header />
@@ -43,13 +78,10 @@ const FriendList: React.FC = () => {
             <aside className="col-span-3 flex flex-col">
               <div className="flex flex-col h-full">
                 <div className="pt-16"></div>
-                {/* ProfileSection 컴포넌트 - 프로필 이미지, 닉네임, 팔로워 정보 */}
                 <ProfileSection />
                 <div className="mt-6"></div>
-                {/* MenuSection 컴포넌트 - 내 목표 관리, 친구 관리, 설정 메뉴 */}
                 <MenuSection />
                 <div className="mt-2"></div>
-                {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
                 <CalendarSection />
               </div>
             </aside>
@@ -61,21 +93,21 @@ const FriendList: React.FC = () => {
                     [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent
                     [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full"
                 >
-                  {users.map((user) => (
+                  {users.map(user => (
                     <UserItem
-                      key={user.id}
+                      key={user.userId}
                       user={user}
                       onDelete={handleDeleteUser}
-                      onNicknameClick={handleNicknameClick}
+                      onNickNameClick={handleNicknameClick}
                     />
                   ))}
                 </div>
-                {/* 모달 */}
+
                 {isModalOpen && selectedUser && (
                   <FriendProfileModal
                     user={selectedUser}
                     onClose={closeModal}
-                    onDelete={handleDeleteUser} // 추가
+                    onDelete={handleDeleteUser}
                   />
                 )}
               </div>

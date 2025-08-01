@@ -1,22 +1,22 @@
 export interface User {
-  id: string;
-  nickname: string;
+  userId: string;
+  nickName: string;
   email: string;
   imageUrl?: string;
-  unreadCount?: number; // 읽지 않은 알림 수
+  unreadCount?: number; // 읽지 않은 알림 수?
 }
 
-const UserItem: React.FC<{ user: User; onDelete: (id: string) => void; onNicknameClick?: (user: User) => void }> = ({
+const UserItem: React.FC<{ user: User; onDelete: (userId: string) => void; onNickNameClick?: (user: User) => void }> = ({
   user,
   onDelete,
-  onNicknameClick,
+  onNickNameClick,
 }) => {
   return (
     <div className="m-2 flex items-center p-2 border-b border-gray-200 last:border-b-0 h-[80px]">
       {/* 이미지 */}
       <div className="mb-4 relative w-15 h-15 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
         {user.imageUrl ? (
-          <img src={user.imageUrl} alt={`${user.nickname} 프로필`} className="w-full h-full object-cover" />
+          <img src={user.imageUrl} alt={`${user.nickName} 프로필`} className="w-full h-full object-cover" />
         ) : (
           <span className="text-sm text-gray-600">이미지</span>
         )}
@@ -32,15 +32,15 @@ const UserItem: React.FC<{ user: User; onDelete: (id: string) => void; onNicknam
         <div className="flex items-center text-gray-800 font-semibold text-base">
           {/* 닉네임 클릭 시 이벤트 */}
           <button
-            onClick={() => onNicknameClick?.(user)}
+            onClick={() => onNickNameClick?.(user)}
             className="hover:underline hover:text-sky-400"
           >
-            {user.nickname}
+            {user.nickName}
           </button>
 
           {/* 삭제 버튼 */}
           <button
-            onClick={() => onDelete(user.id)}
+            onClick={() => onDelete(user.userId)}
             className="ml-2 px-2 py-0.5 text-xs bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
           >
             삭제
