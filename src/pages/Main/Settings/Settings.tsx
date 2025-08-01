@@ -94,11 +94,11 @@ const Settings: React.FC = () => {
             <div className="col-span-9 flex flex-col overflow-hidden">
               <div className="flex-1 overflow-y-auto">
                 <div className="pt-16 space-y-6">
-                  {/* 닉네임 및 비밀번호 설정 */}
-                  <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm ">
+                  {/* 닉네임, 프로필 및 비밀번호 설정 */}
+                  <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm">
                     <div className="flex items-start space-x-8 justify-center">
                       {/* 프로필 이미지 영역 */}
-                      <div className="flex flex-col items-center space-y-4 mt-16 -ml-8">
+                      <div className="flex flex-col items-center space-y-4 -ml-8">
                         <div className="w-24 h-24 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-700 overflow-hidden">
                           {tempProfileImage ? (
                             <img
@@ -126,8 +126,8 @@ const Settings: React.FC = () => {
                         </button>
                       </div>
 
-                      {/* 설정 폼 */}
-                      <div className="flex flex-col items-center space-y-6 flex-1 max-w-md">
+                      {/* 닉네임 및 비밀번호 설정 */}
+                      <div className="flex flex-col items-center space-y-8 flex-1 max-w-md">
                         {/* 닉네임 설정 */}
                         <div className={`w-full ${isSocialUser ? 'opacity-50' : ''}`}>
                           <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3 flex items-center">
@@ -158,8 +158,14 @@ const Settings: React.FC = () => {
                                 placeholder="닉네임을 입력해 주세요."
                                 value={nickname}
                                 onChange={(e) => setNickname(e.target.value)}
-                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                className="flex-1 h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                               />
+                              <button
+                                onClick={handleNicknameUpdate}
+                                className="h-8 px-4 bg-sky-400 hover:bg-sky-500 text-white rounded-r-lg text-sm transition-colors"
+                              >
+                                수정
+                              </button>
                             </div>
                           )}
                         </div>
@@ -204,35 +210,37 @@ const Settings: React.FC = () => {
                               </p>
                             </div>
                           ) : (
-                            <div className="flex flex-col space-y-3">
-                              <input
-                                type="password"
-                                placeholder="기존 비밀번호를 입력해 주세요."
-                                value={currentPassword}
-                                onChange={(e) => setCurrentPassword(e.target.value)}
-                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                              />
-                              <input
-                                type="password"
-                                placeholder="새 비밀번호를 입력해 주세요."
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                              />
-                              <input
-                                type="password"
-                                placeholder="새 비밀번호를 다시 입력해 주세요."
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                              />
+                            <div className="space-y-4">
+                              <div className="flex flex-col space-y-3">
+                                <input
+                                  type="password"
+                                  placeholder="기존 비밀번호를 입력해 주세요."
+                                  value={currentPassword}
+                                  onChange={(e) => setCurrentPassword(e.target.value)}
+                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                />
+                                <input
+                                  type="password"
+                                  placeholder="새 비밀번호를 입력해 주세요."
+                                  value={newPassword}
+                                  onChange={(e) => setNewPassword(e.target.value)}
+                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                />
+                                <input
+                                  type="password"
+                                  placeholder="새 비밀번호를 다시 입력해 주세요."
+                                  value={confirmPassword}
+                                  onChange={(e) => setConfirmPassword(e.target.value)}
+                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                />
+                              </div>
                             </div>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    {/* 전체 박스 중앙에 저장 버튼 */}
+                    {/* 저장 버튼 */}
                     <div className="flex justify-center mt-6">
                       <button
                         onClick={async () => {
@@ -279,7 +287,7 @@ const Settings: React.FC = () => {
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">
                           회원 탈퇴
                         </h3>
-                        
+
                         <div className="flex flex-col space-y-4 items-center">
                           <input
                             type="password"
@@ -289,7 +297,7 @@ const Settings: React.FC = () => {
                             className="w-[450px] h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                           />
                           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
-                          *회원 탈퇴 시 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
+                            *회원 탈퇴 시 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
                           </p>
                           <div className="flex justify-center space-x-3">
                             <button

@@ -8,11 +8,10 @@ import GoalCard from '../../../components/ui/GoalCard';
 import { useGoals } from '../../../contexts/GoalContext';
 
 const BookmarkList: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'my' | 'friends'>('my'); // 기본값을 내 북마크로 설정
   const { goals: allGoals, bookmarks } = useGoals();
 
-  // 탭과 검색어에 따른 북마크된 목표 데이터
+  // 탭에 따른 북마크된 목표 데이터
   const goals = useMemo(() => {
     let filteredGoals = allGoals.filter((goalWithUser) => bookmarks.has(goalWithUser.goal.goal_id));
 
@@ -23,17 +22,8 @@ const BookmarkList: React.FC = () => {
       filteredGoals = filteredGoals.filter((goalWithUser) => goalWithUser.goal.user_id !== 1);
     }
 
-    // 검색어 필터링
-    if (searchTerm.trim()) {
-      filteredGoals = filteredGoals.filter(
-        (goalWithUser) =>
-          goalWithUser.goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          goalWithUser.user.nickname.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-    }
-
     return filteredGoals;
-  }, [activeTab, searchTerm, allGoals, bookmarks]);
+  }, [activeTab, allGoals, bookmarks]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -89,27 +79,9 @@ const BookmarkList: React.FC = () => {
                 <div className="border-b-2 border-gray-300 dark:border-gray-600 mx-6"></div>
               </div>
               <div className="flex-1 flex flex-col overflow-hidden">
-                {/* 검색바 공간 */}
-                <div className="p-6 pb-4 flex-shrink-0">
-                  <div className="flex justify-end">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="북마크 검색"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-64 h-10 px-4 pl-10 pr-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                      />
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span className="material-icons text-sky-400 text-sm">search</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 {/* 북마크 목록 스크롤 영역 */}
-                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1035px]">
-                  <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
+                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1096px]">
+                  <div className="space-y-4 pt-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {/* GoalCard 컴포넌트들 - 북마크된 목표 카드들 */}
                     {goals.map((goalWithUser) => (
                       <GoalCard
