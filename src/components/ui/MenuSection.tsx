@@ -1,4 +1,3 @@
-// 메뉴 섹션 컴포넌트
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import CreateGoalModal from '../modals/CreateGoalModal';
@@ -21,12 +20,11 @@ const MenuSection: React.FC = () => {
     <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mb-4">
       <nav className="space-y-1">
         <div>
-          <div className="flex items-center justify-between w-full text-left space-x-3 text-sky-400 px-3 py-3 rounded-lg font-bold">
+          <div className="flex items-center justify-between w-full text-left space-x-3 text-sky-400 px-3 py-3 rounded-xl font-bold border-b-2 border-sky-400">
             <div className="flex items-center space-x-3">
               <span className="material-icons text-lg">list_alt</span>
               <span>내 목표 관리</span>
             </div>
-            {/* <span className="material-icons text-sm rotate-180">expand_more</span> */}
           </div>
           <div className="mt-1 ml-8 space-y-1">
             <button
@@ -49,13 +47,13 @@ const MenuSection: React.FC = () => {
             </Link>
           </div>
         </div>
+
         <div>
-          <div className="flex items-center justify-between w-full text-left space-x-3 text-white bg-sky-200 px-3 py-3 rounded-lg font-medium">
+          <div className="flex items-center justify-between w-full text-left space-x-3 text-sky-400 px-3 py-3 rounded-xl font-bold border-b-2 border-sky-400">
             <div className="flex items-center space-x-3">
               <span className="material-icons text-lg">people</span>
               <span>친구 관리</span>
             </div>
-            {/* <span className="material-icons text-sm rotate-180">expand_more</span> */}
           </div>
           <div className="mt-1 ml-8 space-y-1">
             <Link
@@ -69,8 +67,8 @@ const MenuSection: React.FC = () => {
               className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer"
               href="#"
               onClick={(e) => {
-                e.preventDefault(); // 페이지 이동 막기
-                setIsRequestOpen(true); // 모달 열기
+                e.preventDefault();
+                setIsRequestOpen(true);
               }}
             >
               <span>친구 요청</span>
@@ -96,12 +94,11 @@ const MenuSection: React.FC = () => {
         </div>
 
         <div>
-          <div className="flex items-center justify-between w-full text-left space-x-3 text-gray-600 border border-sky-400 px-3 py-3 rounded-lg font-medium">
+          <div className="flex items-center justify-between w-full text-left space-x-3 text-sky-400 px-3 py-3 rounded-xl font-bold border-b-2 border-sky-400">
             <div className="flex items-center space-x-3">
               <span className="material-icons text-lg">settings</span>
               <span>설정</span>
             </div>
-            {/* <span className="material-icons text-sm rotate-180">expand_more</span> */}
           </div>
           <div className="mt-1 ml-8 space-y-1">
             <Link
