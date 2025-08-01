@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 import axios from 'axios';
-
-// axios 기본 설정
-axios.defaults.baseURL = 'http://localhost:3000';
-axios.defaults.withCredentials = true;
+import axiosInstance from '../api/axiosInstance'; // API 요청 보낼 때 사용할 커스텀 axios 인스턴스
 
 const Signup: React.FC = () => {
   // 상태 관리
@@ -34,21 +31,21 @@ const Signup: React.FC = () => {
     setIsLoading(true);
     try {
       // 이메일 중복 확인
-      const checkRes = await axios.post('/auth/check/email', { email });
+      const checkRes = await axiosInstance.post('/auth/check/email', { email });
       if (checkRes.data === true) {
         // 인증 코드 전송
-        await axios.post('/mail/send', { email });
+        await axiosInstance.post('/mail/send', { email });
         setIsEmailVerified(true);
         alert('인증 코드가 이메일로 전송되었습니다.');
       } else {
         alert('이미 사용 중인 이메일입니다.');
       }
     } catch (error) {
-      console.error('이메일 확인 실패:', error);
       if (axios.isAxiosError(error)) {
-        console.error('상세 에러:', error.response?.data);
+        console.error('이메일 확인 실패:', error.response?.data?.message || error.message);
         alert(`이메일 확인 실패: ${error.response?.data?.message || error.message}`);
       } else {
+        console.error('알 수 없는 에러 발생');
         alert('이메일 확인 중 오류가 발생했습니다.');
       }
     } finally {
@@ -65,7 +62,7 @@ const Signup: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const res = await axios.post('/mail/verify', { email, validCode: authCode });
+      const res = await axiosInstance.post('/mail/verify', { email, validCode: authCode });
       if (res.data === true) {
         setIsCodeVerified(true);
         alert('인증이 완료되었습니다.');
@@ -73,11 +70,11 @@ const Signup: React.FC = () => {
         alert('인증 코드가 올바르지 않습니다.');
       }
     } catch (error) {
-      console.error('인증 코드 확인 실패:', error);
       if (axios.isAxiosError(error)) {
-        console.error('상세 에러:', error.response?.data);
+        console.error('인증 코드 확인 실패:', error.response?.data?.message || error.message);
         alert(`인증 코드 확인 실패: ${error.response?.data?.message || error.message}`);
       } else {
+        console.error('알 수 없는 에러 발생');
         alert('인증 코드 확인 중 오류가 발생했습니다.');
       }
     } finally {
@@ -112,7 +109,7 @@ const Signup: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await axios.post('/auth/signup/email', {
+      await axiosInstance.post('/auth/signup/email', {
         email,
         password,
         confirmPassword,
@@ -122,11 +119,11 @@ const Signup: React.FC = () => {
       alert('회원가입이 완료되었습니다!');
       navigate('/login');
     } catch (error) {
-      console.error('회원가입 실패:', error);
       if (axios.isAxiosError(error)) {
-        console.error('상세 에러:', error.response?.data);
+        console.error('회원가입 실패:', error.response?.data?.message || error.message);
         alert(`회원가입 실패: ${error.response?.data?.message || error.message}`);
       } else {
+        console.error('알 수 없는 에러 발생');
         alert('회원가입 중 오류가 발생했습니다.');
       }
     } finally {
