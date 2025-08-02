@@ -3,7 +3,9 @@ export interface User {
   requestId: number;
   nickName: string;
   email: string;
-  imageUrl: string;
+  image?: {
+    imageUrl: string;
+  };
   unreadCount?: number; // 읽지 않은 알림 수?
 }
 
@@ -16,11 +18,16 @@ const UserItem: React.FC<{ user: User; onDelete: (requestId: number) => void; on
     <div className="m-2 flex items-center p-2 border-b border-gray-200 last:border-b-0 h-[80px]">
       {/* 이미지 */}
       <div className="mb-4 relative w-15 h-15 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-        {user.imageUrl ? (
-          <img src={user.imageUrl} alt={`${user.nickName} 프로필`} className="w-full h-full object-cover" />
+        {user.image?.imageUrl ? (
+          <img
+            src={`${import.meta.env.VITE_BACKEND_ADDRESS}${user.image.imageUrl}`}
+            alt={`${user.nickName} 프로필`}
+            className="w-full h-full object-cover"
+          />
         ) : (
           <span className="text-sm text-gray-600">이미지</span>
         )}
+
         {user.unreadCount && user.unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
             {user.unreadCount}

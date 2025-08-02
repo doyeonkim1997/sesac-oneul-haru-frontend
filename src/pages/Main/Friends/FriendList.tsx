@@ -31,7 +31,9 @@ const FriendList: React.FC = () => {
           requestId: Number(friend.requestId),
           nickName: friend.nickName,
           email: friend.email,
-          imageUrl: friend.imageUrl,
+          image: {
+            imageUrl: friend.imageUrl || '',
+          },
         }));
         setUsers(friendList);
         setError(null);
