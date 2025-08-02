@@ -21,18 +21,23 @@ const FriendProfileModal: React.FC<FriendProfileModalProps> = ({ user, onClose, 
 
         {/* 프로필 정보 */}
         <div className="flex items-center gap-5">
-          <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200">
-            {user.imageUrl ? (
-              <img src={user.imageUrl} alt="프로필" className="w-full h-full object-cover" />
-            ) : (
-              <div className="flex items-center justify-center w-full h-full text-gray-600">이미지</div>
-            )}
-          </div>
+<div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200">
+  {user.image?.imageUrl ? (
+    <img
+      src={`${import.meta.env.VITE_BACKEND_ADDRESS}${user.image.imageUrl}`}
+      alt="프로필"
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <div className="flex items-center justify-center w-full h-full text-gray-600">이미지</div>
+  )}
+</div>
+
           <div className="flex flex-col -mt-1.5"> {/* flex-col 추가로 세로 배치 */}
             <div className="text-lg font-bold">{user.nickName}</div>
             <div className="text-sm text-gray-500">{user.email}</div>
             <button
-              onClick={() => onDelete(user.userId)}
+              onClick={() => onDelete(user.requestId)}
               className="mt-2 px-2 py-0.5 text-xs bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors w-max"
             >
               삭제
