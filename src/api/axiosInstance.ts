@@ -8,6 +8,8 @@ let nickName: string | null = null;
 
 let tier: string | null = null;
 
+let authType: string | null = null;
+
 export function setAccessToken(token: string | null): void {
   accessToken = token;
 }
@@ -38,6 +40,14 @@ export function setTier(userTier: string | null): void {
 
 export function getTier(): string | null {
   return tier;
+}
+
+export function setAuthType(type: string | null): void {
+  authType = type;
+}
+
+export function getAuthType(): string | null {
+  return authType;
 }
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
@@ -75,12 +85,13 @@ instance.interceptors.response.use(
           { withCredentials: true },
         );
 
-        const { accessToken: newToken, nickName, imageUrl, tier } = res.data;
+        const { accessToken: newToken, nickName, imageUrl, tier, authType } = res.data;
 
         setAccessToken(newToken);
         setNickName(nickName);
         setImageUrl(imageUrl.imageUrl);
         setTier(tier);
+        setAuthType(authType);
 
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
