@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { sendFriendRequest } from '../../api/Friend'; 
+import { useEffect, useState } from 'react';
+import { fetchFriends, sendFriendRequest } from '../../api/Friend';
 import { type User } from '../friends/UserItem';
-import { getUsersByEmail } from '../../api/getUsersByEmail'; 
+import { getUsersByEmail } from '../../api/getUsersByEmail';
 
 type Props = {
   onClose: () => void;
@@ -12,13 +12,28 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<User[]>([]);
   const [requestedUserIds, setRequestedUserIds] = useState<number[]>([]);
+  const [friendIds, setFriendIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    const loadFriendIds = async () => {
+      try {
+        const friends = await fetchFriends();
+        const ids = friends.map(friend => friend.userId);
+        setFriendIds(ids);
+      } catch (err) {
+        console.error('친구 목록 불러오기 실패:', err);
+      }
+    };
+
+    loadFriendIds();
+  }, []);
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
-  
+
     try {
       const result = await getUsersByEmail(searchTerm);
-    
+
       const formattedResults: User[] = result.map(user => ({
         userId: Number(user.userId),
         requestId: Number(user.requestId),
@@ -29,12 +44,12 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
         },
         unreadCount: user.unreadCount,
       }));
-    
+
       const filteredResults = formattedResults.filter(user => {
         const emailPrefix = user.email.split('@')[0];
         return emailPrefix.toLowerCase().includes(searchTerm.toLowerCase());
       });
-    
+
       setResults(filteredResults);
     } catch (err) {
       alert('사용자 검색에 실패했습니다. 다시 시도해주세요.');
@@ -49,9 +64,9 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
     try {
       await sendFriendRequest(user.userId);
       alert(`${user.nickName}님에게 친구 요청을 보냈습니다.`);
-      setRequestedUserIds((prev) => [...prev, user.userId]);
+      setRequestedUserIds(prev => [...prev, user.userId]);
     } catch (error) {
-      alert(`친구 요청에 실패했습니다. 다시 시도해주세요.`);
+      alert('친구 요청에 실패했습니다. 다시 시도해주세요.');
       console.error(error);
     }
   };
@@ -85,6 +100,7 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
         <ul className="max-h-60 overflow-y-auto border border-gray-300 rounded-lg">
           {results.map((user) => {
             const isRequested = requestedUserIds.includes(user.userId);
+            const isFriend = friendIds.includes(user.userId);
 
             return (
               <li
@@ -101,7 +117,9 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">이미지</div>
+                      <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">
+                        이미지
+                      </div>
                     )}
                   </div>
                   <div className="h-16 flex flex-col justify-start">
@@ -113,14 +131,18 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
                 <button
                   onClick={() => handleSelect(user)}
                   className={`ml-4 text-sm font-semibold py-1 px-3 rounded-lg transition
-                    ${isRequested
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-sky-400 text-white hover:bg-sky-600'}
+                    ${
+                      isFriend
+                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : isRequested
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-sky-400 text-white hover:bg-sky-600'
+                    }
                   `}
-                  disabled={isRequested}
+                  disabled={isFriend || isRequested}
                   type="button"
                 >
-                  {isRequested ? '요청 완료' : '친구 요청'}
+                  {isFriend ? '친구' : isRequested ? '요청 완료' : '친구 요청'}
                 </button>
               </li>
             );
