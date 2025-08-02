@@ -17,9 +17,21 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
 
     try {
       const result = await getUsersByEmail(searchTerm);
-      setResults(result);
+      const formattedResults: User[] = result.map(user => ({
+        userId: Number(user.userId),
+        requestId: Number(user.requestId),
+        nickName: user.nickName,
+        email: user.email,
+        image: {
+          imageUrl: user.image?.imageUrl || '',
+        },
+        unreadCount: user.unreadCount,
+      }));
+
+      setResults(formattedResults);
     } catch (err) {
       alert('사용자 검색에 실패했습니다. 다시 시도해주세요.');
+      console.error(err);
     }
   };
 
@@ -32,10 +44,10 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
       alert(`${user.nickName}님에게 친구 요청을 보냈습니다.`);
     } catch (error) {
       alert(`친구 요청에 실패했습니다. 다시 시도해주세요.`);
+      console.error(error);
     }
   };
 
-  // 박스 스타일 분리
   const containerClass = isStandalone
     ? "bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative transform hover:scale-[1.01] transition-transform duration-300 min-h-[230px] backdrop-blur-sm bg-opacity-95 hover:shadow-2xl"
     : "";
@@ -71,8 +83,12 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
             >
               <div className="flex items-center">
                 <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 mr-4 flex-shrink-0">
-                  {user.imageUrl ? (
-                    <img src={user.imageUrl} alt="프로필" className="w-full h-full object-cover" />
+                  {user.image?.imageUrl ? (
+                    <img
+                      src={`${import.meta.env.VITE_BACKEND_ADDRESS}${user.image.imageUrl}`}
+                      alt="프로필"
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">이미지</div>
                   )}

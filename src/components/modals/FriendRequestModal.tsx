@@ -17,8 +17,15 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
     const fetchRequests = async () => {
       try {
         setLoading(true);
-        const res = await axiosInstance.get<User[]>('/friend/requests');
-        setRequests(res.data);
+        const res = await axiosInstance.get('/friend/requests');
+
+        // imageUrl 문자열 → image 객체로 변환
+        const formattedRequests: User[] = res.data.map((user: any) => ({
+          ...user,
+          image: user.imageUrl ? { imageUrl: user.imageUrl } : undefined,
+        }));
+
+        setRequests(formattedRequests);
         setError(null);
       } catch (err) {
         setError('친구 요청을 불러오는데 실패했습니다.');
@@ -70,7 +77,7 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
             >
               <div className="flex items-center">
                 <img
-                  src={request.imageUrl}
+                  src={`${import.meta.env.VITE_BACKEND_ADDRESS}${request.image?.imageUrl || ''}`}
                   alt="프로필"
                   className="w-16 h-16 rounded-full object-cover mr-6"
                 />
