@@ -11,7 +11,7 @@ import FriendProfileModal from '../../../components/modals/FriendProfileModal';
 
 import { useAuth } from '../../../contexts/AuthContext';
 
-import { deleteFriend } from '../../../api/Friend';
+import { deleteFriend, fetchFriends } from '../../../api/Friend';
 
 const FriendList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -21,20 +21,10 @@ const FriendList: React.FC = () => {
   const { email: userId } = useAuth();
 
   useEffect(() => {
-    async function fetchFriends() {
+    async function loadFriends() {
       setLoading(true);
       try {
-        const res = await axiosInstance.get<User[]>(`/friend/friends`);
-        console.log('친구 목록 응답:', res.data);
-        const friendList = res.data.map((friend: any) => ({
-          userId: Number(friend.userId),
-          requestId: Number(friend.requestId),
-          nickName: friend.nickName,
-          email: friend.email,
-          image: {
-            imageUrl: friend.imageUrl || '',
-          },
-        }));
+        const friendList = await fetchFriends(); // 변경된 부분
         setUsers(friendList);
         setError(null);
       } catch (err) {
@@ -44,8 +34,8 @@ const FriendList: React.FC = () => {
         setLoading(false);
       }
     }
-
-    fetchFriends();
+  
+    loadFriends();
   }, [userId]);
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);

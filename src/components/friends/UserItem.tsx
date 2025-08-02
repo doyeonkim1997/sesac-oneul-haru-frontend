@@ -15,48 +15,47 @@ const UserItem: React.FC<{ user: User; onDelete: (requestId: number) => void; on
   onNickNameClick,
 }) => {
   return (
-    <div className="m-2 flex items-center p-2 border-b border-gray-200 last:border-b-0 h-[80px]">
-      {/* 이미지 */}
-      <div className="mb-4 relative w-15 h-15 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-        {user.image?.imageUrl ? (
-          <img
-            src={`${import.meta.env.VITE_BACKEND_ADDRESS}${user.image.imageUrl}`}
-            alt={`${user.nickName} 프로필`}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-sm text-gray-600">이미지</span>
-        )}
+<div className="m-3 flex items-center p-4 border-b border-gray-300 last:border-b-0 h-[100px]">
+  {/* 이미지 */}
+  <div className="mb-4 relative w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+    {user.image?.imageUrl ? (
+      <img
+        src={`${import.meta.env.VITE_BACKEND_ADDRESS}${user.image.imageUrl}`}
+        alt={`${user.nickName} 프로필`}
+        className="w-full h-full object-cover"
+      />
+    ) : (
+      <span className="text-base text-gray-600">이미지</span>
+    )}
 
-        {user.unreadCount && user.unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {user.unreadCount}
-          </span>
-        )}
-      </div>
+    {user.unreadCount && user.unreadCount > 0 && (
+      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-sm font-bold rounded-full h-6 w-6 flex items-center justify-center">
+        {user.unreadCount}
+      </span>
+    )}
+  </div>
 
-      {/* 사용자 정보 */}
-      <div className="mb-8 ml-4 flex-grow">
-        <div className="flex items-center text-gray-800 font-semibold text-base">
-          {/* 닉네임 클릭 시 이벤트 */}
-          <button
-            onClick={() => onNickNameClick?.(user)}
-            className="hover:underline hover:text-sky-400"
-          >
-            {user.nickName}
-          </button>
+  {/* 사용자 정보 */}
+  <div className="mb-8 ml-6 flex-grow">
+    <div className="flex items-center text-gray-800 font-semibold text-lg">
+      <button
+        onClick={() => onNickNameClick?.(user)}
+        className="hover:underline hover:text-sky-500"
+      >
+        {user.nickName}
+      </button>
 
-          {/* 삭제 버튼 */}
-          <button
-            onClick={() => onDelete(user.requestId)}
-            className="ml-2 px-2 py-0.5 text-xs bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
-          >
-            삭제
-          </button>
-        </div>
-        <div className="text-sm text-gray-500">{user.email}</div>
-      </div>
+      <button
+        onClick={() => onDelete(user.requestId)}
+        className="ml-3 px-3 py-1 text-sm bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors"
+      >
+        삭제
+      </button>
     </div>
+    <div className="text-base text-gray-600">{user.email}</div>
+  </div>
+</div>
+
   );
 };
 
