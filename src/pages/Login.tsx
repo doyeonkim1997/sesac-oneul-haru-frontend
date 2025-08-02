@@ -59,7 +59,13 @@ export default function Login() {
       const accessToken = res.data.accessToken;
       if (accessToken) {
         setAccessToken(accessToken);
+        setImageUrl(res.data.imageUrl.imageUrl);
+        setNickName(res.data.nickName);
+        setTier(res.data.tier);
         console.log('소셜 로그인 성공, accessToken:', accessToken);
+        console.log('로그인 이미지:', getImageUrl());
+        console.log('로그인 닉네임:', getNickName());
+        console.log('로그인 티어:', getTier());
         navigate('/main');
       } else {
         console.warn('accessToken이 없습니다');
