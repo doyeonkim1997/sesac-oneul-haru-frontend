@@ -5,9 +5,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import axiosInstance, {
+  getAuthType,
   getImageUrl,
   getNickName,
   getTier,
+  setAuthType,
   setImageUrl,
   setNickName,
   setTier,
@@ -34,11 +36,13 @@ export default function Login() {
       setImageUrl(res.data.imageUrl.imageUrl);
       setNickName(res.data.nickName);
       setTier(res.data.tier);
+      setAuthType(res.data.authType);
 
       console.log('로그인 성공:', res.data.accessToken);
       console.log('로그인 이미지:', getImageUrl());
       console.log('로그인 닉네임:', getNickName());
       console.log('로그인 티어:', getTier());
+      console.log('로그인 타입:', getAuthType());
 
       navigate('/main');
     } catch (error) {
@@ -62,10 +66,12 @@ export default function Login() {
         setImageUrl(res.data.imageUrl.imageUrl);
         setNickName(res.data.nickName);
         setTier(res.data.tier);
+        setAuthType(res.data.authType);
         console.log('소셜 로그인 성공, accessToken:', accessToken);
-        console.log('로그인 이미지:', getImageUrl());
-        console.log('로그인 닉네임:', getNickName());
-        console.log('로그인 티어:', getTier());
+        console.log('소셜 로그인 이미지:', getImageUrl());
+        console.log('소셜 로그인 닉네임:', getNickName());
+        console.log('소셜 로그인 티어:', getTier());
+        console.log('소셜 로그인 타입:', getAuthType());
         navigate('/main');
       } else {
         console.warn('accessToken이 없습니다');

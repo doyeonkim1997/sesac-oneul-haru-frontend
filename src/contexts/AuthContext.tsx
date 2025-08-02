@@ -12,9 +12,10 @@ type AuthContextType = {
   nickName: string | null;
   imageUrl: string | null;
   tier: string | null;
+  authType: string | null;
   setAccessToken: (
     token: string | null,
-    info?: { nickName?: string; imageUrl?: string; tier?: string },
+    info?: { nickName?: string; imageUrl?: string; tier?: string; authType?: string },
   ) => void;
   logout: () => void;
 };
@@ -27,6 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [nickName, setNickName] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [tier, setTier] = useState<string | null>(null);
+  const [authType, setAuthType] = useState<string | null>(null);
 
   useEffect(() => {
     if (accessToken) {
@@ -44,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateAccessToken = (
     token: string | null,
-    info?: { nickName?: string; imageUrl?: string; tier?: string },
+    info?: { nickName?: string; imageUrl?: string; tier?: string; authType?: string },
   ) => {
     setAccessToken(token);
     setTokenHelper(token || '');
@@ -53,11 +55,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setNickName(info.nickName || null);
       setImageUrl(info.imageUrl || null);
       setTier(info.tier || null);
+      setAuthType(info.authType || null);
     } else if (token === null) {
       // 로그아웃 시 초기화
       setNickName(null);
       setImageUrl(null);
       setTier(null);
+      setAuthType(null);
     }
   };
 
@@ -71,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         nickName,
         imageUrl,
         tier,
+        authType,
         setAccessToken: updateAccessToken,
         logout,
       }}
