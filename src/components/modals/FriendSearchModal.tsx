@@ -73,7 +73,7 @@ const FriendSearchModal = ({
       alert(`${user.nickName}님에게 친구 요청을 보냈습니다.`);
       setRequestedUserIds(prev => [...prev, user.userId]);
     } catch (error) {
-      alert('친구 요청에 실패했습니다. 다시 시도해주세요.');
+      alert('이미 친구 요청을 보냈습니다'); // 여기를 수정하는 방법도
       console.error(error);
     }
   };
