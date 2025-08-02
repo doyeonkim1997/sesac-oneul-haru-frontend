@@ -6,10 +6,8 @@ import ProfileSection from '../../../components/ui/ProfileSection';
 import Footer from '../../../components/ui/Footer';
 import UserItem, { type User } from '../../../components/friends/UserItem';
 import FriendProfileModal from '../../../components/modals/FriendProfileModal';
-
 import { useAuth } from '../../../contexts/AuthContext';
-
-import { deleteFriend, fetchFriends } from '../../../api/Friend';
+import { deleteFriend, fetchFriends, getFriendProfile } from '../../../api/Friend'; // 👈 getFriendProfile 추가
 
 const FriendList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -18,11 +16,14 @@ const FriendList: React.FC = () => {
 
   const { email: userId } = useAuth();
 
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   useEffect(() => {
     async function loadFriends() {
       setLoading(true);
       try {
-        const friendList = await fetchFriends(); // 변경된 부분
+        const friendList = await fetchFriends();
         setUsers(friendList);
         setError(null);
       } catch (err) {
@@ -32,16 +33,22 @@ const FriendList: React.FC = () => {
         setLoading(false);
       }
     }
-  
+
     loadFriends();
   }, [userId]);
 
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleNicknameClick = (user: User) => {
-    setSelectedUser(user);
-    setIsModalOpen(true);
+  const handleNicknameClick = async (user: User) => {
+    try {
+      const latestUser = await getFriendProfile(user.userId);
+      if (!latestUser.requestId) {
+        latestUser.requestId = user.requestId;  // 기존 requestId 복사
+      }
+      setSelectedUser(latestUser);
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error('프로필 불러오기 실패:', err);
+      alert('프로필 정보를 불러오는 데 실패했습니다.');
+    }
   };
 
   const closeModal = () => {
@@ -50,11 +57,13 @@ const FriendList: React.FC = () => {
   };
 
   const handleDeleteUser = async (requestId: number) => {
+      console.log('삭제 요청 requestId:', requestId);
+
     try {
-      await deleteFriend(requestId);
+      await deleteFriend(requestId); // API 호출
       alert('친구가 삭제되었습니다.');
-      setUsers((prevUsers) => prevUsers.filter(user => user.requestId !== requestId));
-      closeModal();
+      setUsers(prev => prev.filter(user => user.requestId !== requestId));
+      closeModal(); // 모달 닫기
     } catch (err) {
       alert('친구 삭제에 실패했습니다. 다시 시도해주세요.');
       console.error(err);

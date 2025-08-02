@@ -12,6 +12,8 @@ const MenuSection: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { createNewGoal } = useApiGoals();
 
+  const [requestedUserIds, setRequestedUserIds] = useState<number[]>([]);
+
   const handleCreateGoal = async (goalData: {
     title: string;
     content: string;
@@ -97,9 +99,14 @@ const MenuSection: React.FC = () => {
               <span>친구 찾기</span>
             </a>
 
-            {isSearchOpen && (
-              <FriendSearchModal onClose={() => setIsSearchOpen(false)} isStandalone={true} />
-            )}
+{isSearchOpen && (
+  <FriendSearchModal
+    onClose={() => setIsSearchOpen(false)}
+    isStandalone={true}
+    requestedUserIds={requestedUserIds}
+    setRequestedUserIds={setRequestedUserIds}
+  />
+)}
           </div>
         </div>
 
