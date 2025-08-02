@@ -1,16 +1,48 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Header from '../../../components/ui/Header';
 import ProfileSection from '../../../components/ui/ProfileSection';
 import MenuSection from '../../../components/ui/MenuSection';
 import CalendarSection from '../../../components/ui/Calendar';
 import Footer from '../../../components/ui/Footer';
 import { useUser } from '../../../contexts/UserContext';
+import { useAuth } from '../../../contexts/AuthContext';
+import { getImageUrl, getNickName, getAuthType } from '../../../api/axiosInstance';
 
 const Settings: React.FC = () => {
   const { user, updateNickname, updatePassword, updateProfileImage, withdrawUser } = useUser();
-  const isSocialUser = user.auth_type !== 'EMAIL';
-  const [nickname, setNickname] = useState(user.nickname);
-  const [tempProfileImage, setTempProfileImage] = useState(user.profileImage);
+  const { nickName, imageUrl, email, authType } = useAuth(); // AuthContext의 state
+
+  // axiosInstance에서 직접 authType 가져오기 (더 정확함)
+  const directAuthType = getAuthType();
+  const isSocialUser = directAuthType !== 'EMAIL'; // axiosInstance의 authType 사용
+
+  // axiosInstance에서 직접 가져온 유저 정보 사용
+  const currentNickName = getNickName();
+  const currentImageUrl = getImageUrl();
+
+  // Debug logs (wrapped in useEffect to prevent excessive logging)
+  useEffect(() => {
+    console.log('🔍 Settings - AuthContext authType:', authType);
+    console.log('🔍 Settings - axiosInstance authType:', directAuthType);
+    console.log('🔍 Settings - isSocialUser:', isSocialUser);
+    console.log('🔍 Settings - UserContext user.auth_type:', user?.auth_type);
+  }, [authType, directAuthType, isSocialUser, user?.auth_type]);
+
+  // AuthContext의 데이터로 로컬 상태 초기화
+  const [nickname, setNickname] = useState(currentNickName || '');
+  const [tempProfileImage, setTempProfileImage] = useState(currentImageUrl || '');
+
+  // AuthContext 데이터가 변경될 때마다 로컬 상태 업데이트
+  useEffect(() => {
+    const updatedNickName = getNickName();
+    const updatedImageUrl = getImageUrl();
+    if (updatedNickName) {
+      setNickname(updatedNickName);
+    }
+    if (updatedImageUrl) {
+      setTempProfileImage(updatedImageUrl);
+    }
+  }, [nickName, imageUrl]); // Dependencies from AuthContext
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -20,17 +52,29 @@ const Settings: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 닉네임 수정 핸들러
-  const handleNicknameUpdate = () => {
-    updateNickname(nickname);
+  const handleNicknameUpdate = async () => {
+    if (isSocialUser) {
+      // Check isSocialUser based on directAuthType
+      alert('소셜 로그인 사용자는 닉네임을 변경할 수 없습니다.');
+      return;
+    }
+    const success = await updateNickname(nickname);
+    if (success) {
+      console.log('닉네임 업데이트 성공');
+    }
   };
 
   // 비밀번호 수정 핸들러
   const handlePasswordUpdate = async () => {
+    if (isSocialUser) {
+      // Check isSocialUser based on directAuthType
+      alert('소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.');
+      return;
+    }
     if (newPassword !== confirmPassword) {
       alert('새 비밀번호가 일치하지 않습니다.');
       return;
     }
-
     const success = await updatePassword(currentPassword, newPassword);
     if (success) {
       setCurrentPassword('');
@@ -68,7 +112,12 @@ const Settings: React.FC = () => {
 
   // 회원 탈퇴 핸들러
   const handleWithdraw = async () => {
-    await withdrawUser(withdrawPassword);
+    // 사용자 타입에 따라 비밀번호 처리
+    const passwordToUse = isSocialUser ? '' : withdrawPassword;
+    const success = await withdrawUser(passwordToUse);
+    if (success) {
+      console.log('회원 탈퇴 성공');
+    }
   };
 
   return (
@@ -102,7 +151,7 @@ const Settings: React.FC = () => {
                         <div className="w-24 h-24 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-700 overflow-hidden">
                           {tempProfileImage ? (
                             <img
-                              src={tempProfileImage}
+                              src={import.meta.env.VITE_BACKEND_ADDRESS + tempProfileImage}
                               alt="프로필"
                               className="w-full h-full object-cover rounded-full"
                             />
@@ -128,6 +177,23 @@ const Settings: React.FC = () => {
 
                       {/* 닉네임 및 비밀번호 설정 */}
                       <div className="flex flex-col items-center space-y-8 flex-1 max-w-md">
+                        {/* 이메일 표시 */}
+                        <div className="w-full">
+                          <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3">
+                            이메일
+                          </h3>
+                          <input
+                            type="email"
+                            value={email || ''}
+                            disabled
+                            aria-label="이메일 (변경 불가)"
+                            className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                          />
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            이메일은 변경할 수 없습니다.
+                          </p>
+                        </div>
+
                         {/* 닉네임 설정 */}
                         <div className={`w-full ${isSocialUser ? 'opacity-50' : ''}`}>
                           <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3 flex items-center">
@@ -142,7 +208,7 @@ const Settings: React.FC = () => {
                             <div className="space-y-2">
                               <input
                                 type="text"
-                                value={nickname}
+                                value={currentNickName || '사용자'}
                                 disabled
                                 aria-label="닉네임 (변경 불가)"
                                 className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
@@ -289,13 +355,28 @@ const Settings: React.FC = () => {
                         </h3>
 
                         <div className="flex flex-col space-y-4 items-center">
-                          <input
-                            type="password"
-                            placeholder="비밀번호를 입력해 주세요."
-                            value={withdrawPassword}
-                            onChange={(e) => setWithdrawPassword(e.target.value)}
-                            className="w-[450px] h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                          />
+                          {isSocialUser ? ( // Conditional rendering for withdrawal password
+                            <div className="w-full space-y-2">
+                              <input
+                                type="password"
+                                value="••••••••"
+                                disabled
+                                aria-label="비밀번호 (소셜 로그인 사용자는 불필요)"
+                                className="w-[450px] h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                              />
+                              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                                소셜 로그인 사용자는 비밀번호 없이 탈퇴할 수 있습니다.
+                              </p>
+                            </div>
+                          ) : (
+                            <input
+                              type="password"
+                              placeholder="비밀번호를 입력해 주세요."
+                              value={withdrawPassword}
+                              onChange={(e) => setWithdrawPassword(e.target.value)}
+                              className="w-[450px] h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            />
+                          )}
                           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
                             *회원 탈퇴 시 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
                           </p>

@@ -1,18 +1,28 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { useAuth } from './AuthContext';
+import {
+  getNickName,
+  getImageUrl,
+  setNickName,
+  setImageUrl,
+  getAuthType,
+} from '../api/axiosInstance';
+import { updateUserProfile } from '../api/updateUserProfile';
+import { updateUserPassword } from '../api/updateUserPassword';
+import { withdrawUser as apiWithdrawUser } from '../api/withdrawUser';
+import { uploadImage } from '../api/uploadImage';
 
 interface User {
   user_id: number;
   nickname: string;
   email: string;
   profileImage: string;
-  password: string;
   auth_type: 'EMAIL' | 'GOOGLE' | 'KAKAO' | 'NAVER';
 }
 
 interface UserContextType {
   user: User;
-  updateNickname: (newNickname: string) => void;
+  updateNickname: (newNickname: string) => Promise<boolean>;
   updatePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
   updateProfileImage: (file: File) => Promise<boolean>;
   withdrawUser: (password: string) => Promise<boolean>;
@@ -20,49 +30,93 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const useUser = () => {
+function useUser() {
   const context = useContext(UserContext);
   if (context === undefined) {
     throw new Error('useUser must be used within a UserProvider');
   }
   return context;
-};
+}
+
+export { useUser };
 
 interface UserProviderProps {
   children: React.ReactNode;
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User>(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      return JSON.parse(savedUser);
-    }
-
-    return {
-      user_id: 1,
-      nickname: '닉네임',
-      email: 'user@example.com',
-      profileImage:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAxXs7vDKXMRvI3IZHHf5Ual3o0KgDnebg8JGYnS3N0bRmgVIPTB7HoOTX5ZkkKi1Hz3JMwW7WDKIcVbl3pO-tMjQrV8_8jJnB-MpiCl_wXTrc8adxUAF-7NE2m2-GOF88PNtm4xA_5RqMzvRMPgMwCXr2-VdePIbvy0qZ9aWcRAWZfR0_DYpHJzgZPB-wW5EklI___Z1ePt2SfQvrvEVcNsVQaV_-6naKmZ523fItMRU6mLabXPoPUGQZBDS3OdHUFqA_ov8DiNdE',
-      password: 'password123',
-      auth_type: 'EMAIL', // 개발용: 이메일 가입 사용자로 설정 (테스트 후 'GOOGLE'로 변경)
-    };
+  const { accessToken, email, nickName, imageUrl, authType } = useAuth();
+  const [user, setUser] = useState<User>({
+    user_id: 0,
+    nickname: '',
+    email: '',
+    profileImage: '',
+    auth_type: 'EMAIL',
   });
 
   useEffect(() => {
-    localStorage.setItem('user', JSON.stringify(user));
-  }, [user]);
+    if (accessToken && email) {
+      const currentNickName = nickName || getNickName();
+      const currentImageUrl = imageUrl || getImageUrl();
 
-  const updateNickname = (newNickname: string) => {
+      // authType을 더 강력하게 가져오기
+      let currentAuthType = authType;
+      if (!currentAuthType) {
+        currentAuthType = getAuthType();
+      }
+      // 여전히 없으면 기본값 설정
+      if (!currentAuthType) {
+        currentAuthType = 'EMAIL';
+      }
+
+      console.log('🔄 UserContext 사용자 정보 업데이트:', {
+        email,
+        nickName: currentNickName,
+        imageUrl: currentImageUrl,
+        authType: currentAuthType,
+        authTypeFromContext: authType,
+        authTypeFromAxios: getAuthType(),
+        isSocialUser: currentAuthType !== 'EMAIL',
+        accessToken: accessToken ? '있음' : '없음',
+      });
+
+      setUser({
+        user_id: 0, // TODO: 백엔드에서 userId를 제공하는 경우 사용
+        nickname: currentNickName || '사용자',
+        email: email,
+        profileImage: currentImageUrl || '',
+        auth_type: currentAuthType as 'EMAIL' | 'GOOGLE' | 'KAKAO' | 'NAVER',
+      });
+    } else {
+      setUser({
+        user_id: 0,
+        nickname: '사용자',
+        email: '',
+        profileImage: '',
+        auth_type: 'EMAIL',
+      });
+    }
+  }, [accessToken, email, nickName, imageUrl, authType]);
+
+  const updateNickname = async (newNickname: string): Promise<boolean> => {
     if (user.auth_type !== 'EMAIL') {
       alert('소셜 로그인 사용자는 닉네임을 변경할 수 없습니다.');
-      return;
+      return false;
     }
-
-    if (newNickname.trim()) {
+    if (!newNickname.trim()) {
+      alert('닉네임을 입력해주세요.');
+      return false;
+    }
+    try {
+      await updateUserProfile({ nickName: newNickname.trim() });
       setUser((prev) => ({ ...prev, nickname: newNickname.trim() }));
-      alert('회원 정보가 정상적으로 수정되었습니다');
+      setNickName(newNickname.trim()); // axiosInstance 글로벌 상태 업데이트
+      alert('닉네임이 성공적으로 변경되었습니다.');
+      return true;
+    } catch (error: any) {
+      console.error('닉네임 업데이트 실패:', error);
+      alert(error.response?.data?.message || '닉네임 변경 중 오류가 발생했습니다.');
+      return false;
     }
   };
 
@@ -71,79 +125,86 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       alert('소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.');
       return false;
     }
-
-    if (currentPassword !== user.password) {
-      alert('비밀번호가 일치하지 않습니다.');
+    if (!currentPassword || !newPassword) {
+      alert('모든 필드를 입력해주세요.');
       return false;
     }
-
     if (newPassword.length < 6) {
       alert('새 비밀번호는 6자 이상이어야 합니다.');
       return false;
     }
-
-    setUser((prev) => ({ ...prev, password: newPassword }));
-    alert('회원 정보가 정상적으로 수정되었습니다');
-    return true;
+    try {
+      await updateUserPassword({
+        currentPassword,
+        newPassword,
+        confirmPassword: newPassword,
+      });
+      alert('비밀번호가 성공적으로 변경되었습니다.');
+      return true;
+    } catch (error: any) {
+      console.error('비밀번호 업데이트 실패:', error);
+      alert(error.response?.data?.message || '비밀번호 변경 중 오류가 발생했습니다.');
+      return false;
+    }
   };
 
   const updateProfileImage = async (file: File): Promise<boolean> => {
     try {
-      // FormData 생성
-      const formData = new FormData();
-      formData.append('profileImage', file);
+      const result = await uploadImage(file);
+      const fullImageUrl = import.meta.env.VITE_BACKEND_ADDRESS + result.imageUrl;
 
-      // Axios를 사용하여 이미지 업로드
-      const response = await axios.post('/api/user/profile-image', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.status === 200) {
-        const imageUrl = response.data.imageUrl;
-        setUser((prev) => ({ ...prev, profileImage: imageUrl }));
-        alert('프로필 이미지가 성공적으로 변경되었습니다');
-        return true;
-      } else {
-        alert('이미지 업로드에 실패했습니다');
-        return false;
-      }
-    } catch (error) {
-      console.error('이미지 업로드 오류:', error);
-
-      // 개발 환경에서는 로컬 스토리지에 저장하는 방식으로 fallback
-      if (import.meta.env.DEV) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const imageUrl = e.target?.result as string;
-          setUser((prev) => ({ ...prev, profileImage: imageUrl }));
-        };
-        reader.readAsDataURL(file);
-        return true;
-      }
-
-      alert('이미지 업로드 중 오류가 발생했습니다');
+      setUser((prev) => ({ ...prev, profileImage: fullImageUrl }));
+      setImageUrl(result.imageUrl); // axiosInstance 글로벌 상태 업데이트 (백엔드 주소 제외)
+      alert('프로필 이미지가 성공적으로 변경되었습니다.');
+      return true;
+    } catch (error: any) {
+      console.error('프로필 이미지 업데이트 실패:', error);
+      alert(error.response?.data?.message || '프로필 이미지 변경 중 오류가 발생했습니다.');
       return false;
     }
   };
 
   const withdrawUser = async (password: string): Promise<boolean> => {
-    if (password !== user.password) {
-      alert('비밀번호가 일치하지 않습니다.');
+    // 실시간으로 authType 다시 확인
+    const realTimeAuthType = getAuthType() || user.auth_type;
+
+    console.log('🔍 회원 탈퇴 시도:', {
+      userAuthType: user.auth_type,
+      realTimeAuthType: realTimeAuthType,
+      password: password,
+      passwordLength: password.length,
+      isEmailUser: realTimeAuthType === 'EMAIL',
+      needPassword: realTimeAuthType === 'EMAIL' && !password,
+    });
+
+    // 이메일 사용자는 비밀번호 필요
+    if (realTimeAuthType === 'EMAIL' && !password) {
+      alert('비밀번호를 입력해주세요.');
       return false;
     }
 
-    if (window.confirm('정말로 회원 탈퇴하시겠습니까? 모든 데이터가 영구적으로 삭제됩니다.')) {
-      localStorage.removeItem('user');
-      localStorage.removeItem('darkMode');
-      localStorage.removeItem('goals');
-      localStorage.removeItem('bookmarks');
+    if (!window.confirm('정말로 회원 탈퇴하시겠습니까? 모든 데이터가 영구적으로 삭제됩니다.')) {
+      return false;
+    }
 
+    try {
+      // 사용자 타입에 따라 다른 API 호출
+      if (realTimeAuthType === 'EMAIL') {
+        // 이메일 사용자 - 비밀번호와 함께 호출
+        await apiWithdrawUser(password);
+      } else {
+        // 소셜 사용자 - 비밀번호 없이 호출
+        await apiWithdrawUser();
+      }
+
+      alert('회원 탈퇴가 완료되었습니다.');
       window.location.href = '/login';
       return true;
+    } catch (error: any) {
+      console.error('회원 탈퇴 실패:', error);
+      alert(error.response?.data?.message || '회원 탈퇴 중 오류가 발생했습니다.');
+      return false;
     }
-    return false;
   };
 
   return (
