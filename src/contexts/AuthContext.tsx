@@ -1,21 +1,21 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { setAccessToken as setTokenHelper } from '../api/axiosInstance';
 
 interface TokenPayload {
-  userId: string;
+  email: string;
 }
 
 type AuthContextType = {
   accessToken: string | null;
-  userId: string | null;
-  setAccessToken: (token: string | null) => void;
+  email: string | null;
+  nickName: string | null;
+  imageUrl: string | null;
+  tier: string | null;
+  setAccessToken: (
+    token: string | null,
+    info?: { nickName?: string; imageUrl?: string; tier?: string },
+  ) => void;
   logout: () => void;
 };
 
@@ -23,25 +23,42 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [nickName, setNickName] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [tier, setTier] = useState<string | null>(null);
 
   useEffect(() => {
     if (accessToken) {
       try {
         const decoded = jwtDecode<TokenPayload>(accessToken);
-        setUserId(decoded.userId);
+        setEmail(decoded.email);
       } catch (e) {
         console.error('AccessToken 디코딩 실패:', e);
-        setUserId(null);
+        setEmail(null);
       }
     } else {
-      setUserId(null);
+      setEmail(null);
     }
   }, [accessToken]);
 
-  const updateAccessToken = (token: string | null) => {
+  const updateAccessToken = (
+    token: string | null,
+    info?: { nickName?: string; imageUrl?: string; tier?: string },
+  ) => {
     setAccessToken(token);
     setTokenHelper(token || '');
+
+    if (info) {
+      setNickName(info.nickName || null);
+      setImageUrl(info.imageUrl || null);
+      setTier(info.tier || null);
+    } else if (token === null) {
+      // 로그아웃 시 초기화
+      setNickName(null);
+      setImageUrl(null);
+      setTier(null);
+    }
   };
 
   const logout = () => updateAccessToken(null);
@@ -50,7 +67,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         accessToken,
-        userId,
+        email,
+        nickName,
+        imageUrl,
+        tier,
         setAccessToken: updateAccessToken,
         logout,
       }}

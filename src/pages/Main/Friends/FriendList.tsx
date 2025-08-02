@@ -16,7 +16,7 @@ const FriendList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { userId } = useAuth();
+  const { email: userId } = useAuth();
 
   useEffect(() => {
     async function fetchFriends() {

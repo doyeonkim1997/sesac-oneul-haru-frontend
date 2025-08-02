@@ -79,7 +79,7 @@ instance.interceptors.response.use(
 
         setAccessToken(newToken);
         setNickName(nickName);
-        setImageUrl(imageUrl);
+        setImageUrl(imageUrl.imageUrl);
         setTier(tier);
 
         if (originalRequest.headers) {
