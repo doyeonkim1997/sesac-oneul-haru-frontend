@@ -4,17 +4,27 @@ import CreateGoalModal from '../modals/CreateGoalModal';
 import FriendRequestModal from '../modals/FriendRequestModal';
 import FriendSearchModal from '../modals/FriendSearchModal';
 import DarkModeToggle from './DarkModeToggle';
-import { useGoals } from '../../contexts/GoalContext';
+import { useApiGoals } from '../../contexts/ApiGoalContext';
 
 const MenuSection: React.FC = () => {
   const [isCreateGoalModalOpen, setIsCreateGoalModalOpen] = useState(false);
   const [isRequestOpen, setIsRequestOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { addGoal } = useGoals();
+  const { createNewGoal } = useApiGoals();
 
-  const handleCreateGoal = (goalData: { title: string; content: string; category: string }) => {
-    addGoal(goalData);
-    console.log('새 목표 생성:', goalData);
+  const handleCreateGoal = async (goalData: {
+    title: string;
+    content: string;
+    category: string;
+  }) => {
+    console.log('🎯 MenuSection - 목표 생성 요청:', goalData);
+    try {
+      await createNewGoal({ content: goalData.content, category: goalData.category });
+      console.log('✅ MenuSection - 목표 생성 성공');
+    } catch (error) {
+      console.error('❌ MenuSection - 목표 생성 실패:', error);
+      alert('목표 생성에 실패했습니다.');
+    }
   };
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mb-4">

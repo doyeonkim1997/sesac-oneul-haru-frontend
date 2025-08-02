@@ -11,7 +11,11 @@ export default function AuthLoader({ children }: { children: React.ReactNode }) 
     async function refresh() {
       try {
         const res = await axiosInstance.post('/auth/refresh');
-        setAccessToken(res.data.accessToken);
+        setAccessToken(res.data.accessToken, {
+          nickName: res.data.nickName,
+          imageUrl: res.data.imageUrl.imageUrl,
+          tier: res.data.tier,
+        });
         setNickName(res.data.nickName);
         setImageUrl(res.data.imageUrl.imageUrl);
         setTier(res.data.tier);

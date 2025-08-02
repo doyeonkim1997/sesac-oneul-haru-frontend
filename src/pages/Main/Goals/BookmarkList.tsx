@@ -5,25 +5,31 @@ import MenuSection from '../../../components/ui/MenuSection';
 import CalendarSection from '../../../components/ui/Calendar';
 import Footer from '../../../components/ui/Footer';
 import GoalCard from '../../../components/ui/GoalCard';
-import { useGoals } from '../../../contexts/GoalContext';
+import { useApiGoals } from '../../../contexts/ApiGoalContext';
 
 const BookmarkList: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'my' | 'friends'>('my'); // 기본값을 내 북마크로 설정
-  const { goals: allGoals, bookmarks } = useGoals();
+  const { myGoals, friendGoals, bookmarks } = useApiGoals();
 
   // 탭에 따른 북마크된 목표 데이터
   const goals = useMemo(() => {
-    let filteredGoals = allGoals.filter((goalWithUser) => bookmarks.has(goalWithUser.goal.goal_id));
+    let filteredGoals: any[] = [];
 
-    // 탭에 따른 추가 필터링
+    // 탭에 따른 필터링
     if (activeTab === 'my') {
-      filteredGoals = filteredGoals.filter((goalWithUser) => goalWithUser.goal.user_id === 1);
+      // 내 목표 중 북마크된 것들
+      filteredGoals = myGoals.filter((goal) =>
+        bookmarks.some((bookmark) => bookmark.goalId === goal.goalId),
+      );
     } else {
-      filteredGoals = filteredGoals.filter((goalWithUser) => goalWithUser.goal.user_id !== 1);
+      // 친구 목표 중 북마크된 것들
+      filteredGoals = friendGoals.filter((goal) =>
+        bookmarks.some((bookmark) => bookmark.goalId === goal.goalId),
+      );
     }
 
     return filteredGoals;
-  }, [activeTab, allGoals, bookmarks]);
+  }, [activeTab, myGoals, friendGoals, bookmarks]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -83,14 +89,41 @@ const BookmarkList: React.FC = () => {
                 <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1096px]">
                   <div className="space-y-4 pt-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {/* GoalCard 컴포넌트들 - 북마크된 목표 카드들 */}
-                    {goals.map((goalWithUser) => (
-                      <GoalCard
-                        key={goalWithUser.goal.goal_id}
-                        goalWithUser={goalWithUser}
-                        isBookmarkMode={true}
-                        disableExpiredEffect={true}
-                      />
-                    ))}
+                    {goals.map((goal) => {
+                      const goalWithUser = {
+                        goal: {
+                          goal_id: goal.goalId,
+                          user_id: goal.goalId, // 임시로 goalId 사용
+                          title: goal.content,
+                          content: goal.content,
+                          category: goal.category,
+                          is_completed: goal.isCompleted,
+                          is_deleted: false,
+                          cheer_count: goal.cheerCount || 0,
+                          created_at: goal.createdAt,
+                          updated_at: goal.updatedAt,
+                        },
+                        user: {
+                          user_id: goal.goalId, // 임시로 goalId 사용
+                          nickname: goal.nickName || '사용자',
+                          email: 'user@example.com',
+                          auth_type: 'EMAIL',
+                          tier: 'BRONZE',
+                          created_at: goal.createdAt,
+                          profileImage: goal.imageUrl
+                            ? import.meta.env.VITE_BACKEND_ADDRESS + goal.imageUrl
+                            : 'https://via.placeholder.com/150',
+                        },
+                      };
+                      return (
+                        <GoalCard
+                          key={goal.goalId}
+                          goalWithUser={goalWithUser}
+                          isBookmarkMode={true}
+                          disableExpiredEffect={true}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               </div>
