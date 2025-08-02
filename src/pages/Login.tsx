@@ -32,7 +32,12 @@ export default function Login() {
         { withCredentials: true },
       );
 
-      setAccessToken(res.data.accessToken);
+      setAccessToken(res.data.accessToken, {
+        nickName: res.data.nickName,
+        imageUrl: res.data.imageUrl.imageUrl,
+        tier: res.data.tier,
+        authType: res.data.authType,
+      });
       setImageUrl(res.data.imageUrl.imageUrl);
       setNickName(res.data.nickName);
       setTier(res.data.tier);
@@ -62,16 +67,35 @@ export default function Login() {
       });
       const accessToken = res.data.accessToken;
       if (accessToken) {
-        setAccessToken(accessToken);
+        console.log('🔍 소셜 로그인 응답 데이터:', res.data); // 전체 응답 확인
+
+        // authType이 제대로 설정되었는지 확인
+        const authTypeFromResponse = res.data.authType;
+        console.log('🔍 소셜 로그인 - authType 확인:', authTypeFromResponse);
+
+        setAccessToken(accessToken, {
+          nickName: res.data.nickName,
+          imageUrl: res.data.imageUrl.imageUrl,
+          tier: res.data.tier,
+          authType: authTypeFromResponse,
+        });
         setImageUrl(res.data.imageUrl.imageUrl);
         setNickName(res.data.nickName);
         setTier(res.data.tier);
-        setAuthType(res.data.authType);
+        setAuthType(authTypeFromResponse);
+
+        // 즉시 확인
         console.log('소셜 로그인 성공, accessToken:', accessToken);
         console.log('소셜 로그인 이미지:', getImageUrl());
         console.log('소셜 로그인 닉네임:', getNickName());
         console.log('소셜 로그인 티어:', getTier());
-        console.log('소셜 로그인 타입:', getAuthType());
+        console.log('소셜 로그인 타입 (즉시 확인):', getAuthType());
+
+        // 잠시 대기 후 다시 확인
+        setTimeout(() => {
+          console.log('소셜 로그인 타입 (지연 확인):', getAuthType());
+        }, 100);
+
         navigate('/main');
       } else {
         console.warn('accessToken이 없습니다');

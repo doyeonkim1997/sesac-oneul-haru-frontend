@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { setAccessToken as setTokenHelper } from '../api/axiosInstance';
+import {
+  setAccessToken as setTokenHelper,
+  setAuthType as setAxiosAuthType,
+} from '../api/axiosInstance';
 
 interface TokenPayload {
   email: string;
@@ -56,12 +59,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setImageUrl(info.imageUrl || null);
       setTier(info.tier || null);
       setAuthType(info.authType || null);
+      setAxiosAuthType(info.authType || null); // axiosInstance와 동기화
     } else if (token === null) {
       // 로그아웃 시 초기화
       setNickName(null);
       setImageUrl(null);
       setTier(null);
       setAuthType(null);
+      setAxiosAuthType(null); // axiosInstance와 동기화
     }
   };
 
