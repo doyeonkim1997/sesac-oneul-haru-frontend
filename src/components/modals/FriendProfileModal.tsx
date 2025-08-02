@@ -5,7 +5,7 @@ import { type User } from "../friends/UserItem";
 interface FriendProfileModalProps {
   user: User;
   onClose: () => void;
-  onDelete: (id: number) => void;
+  onDelete: (requestId: number) => void;
 }
 
 const FriendProfileModal: React.FC<FriendProfileModalProps> = ({ user, onClose, onDelete }) => {

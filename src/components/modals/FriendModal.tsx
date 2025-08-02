@@ -9,6 +9,8 @@ interface FriendModalProps {
 const FriendModal: React.FC<FriendModalProps> = ({ onClose }) => {
   const [tab, setTab] = useState<'request' | 'search'>('request');
 
+  const [requestedUserIds, setRequestedUserIds] = useState<number[]>([]);
+
 return (
   <div className="fixed inset-0 z-50 bg-black/20 flex items-center justify-center p-4">
     <div className="bg-white rounded-2xl shadow-lg w-full max-w-md relative">
@@ -59,7 +61,11 @@ return (
         {tab === 'request' ? (
           <FriendRequestModal onClose={onClose} />
         ) : (
-          <FriendSearchModal onClose={onClose} />
+<FriendSearchModal
+      onClose={onClose}
+      requestedUserIds={requestedUserIds}
+      setRequestedUserIds={setRequestedUserIds}
+    />
         )}
       </div>
     </div>

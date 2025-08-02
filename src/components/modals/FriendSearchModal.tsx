@@ -6,12 +6,19 @@ import { getUsersByEmail } from '../../api/getUsersByEmail';
 type Props = {
   onClose: () => void;
   isStandalone?: boolean;
+  requestedUserIds: number[];
+  setRequestedUserIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
-const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
+const FriendSearchModal = ({
+  onClose,
+  isStandalone = false,
+  requestedUserIds,
+  setRequestedUserIds,
+}: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<User[]>([]);
-  const [requestedUserIds, setRequestedUserIds] = useState<number[]>([]);
+  // const [requestedUserIds, setRequestedUserIds] = useState<number[]>([]);
   const [friendIds, setFriendIds] = useState<number[]>([]);
 
   useEffect(() => {
