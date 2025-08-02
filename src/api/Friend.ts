@@ -1,5 +1,6 @@
 import axiosInstance from './axiosInstance';
 import { type User } from '../components/friends/UserItem';
+import { type CalendarGoalsArrayResponse } from './getCalendarGoals';
 
 export const fetchFriends = async (): Promise<User[]> => {
   const res = await axiosInstance.get<User[]>(`/friend/friends`);
@@ -65,4 +66,13 @@ export const getFriendProfile = async (friendId: number): Promise<User> => {
     console.error('친구 프로필 조회 실패:', err);
     throw err;
   }
+};
+
+export const getFriendCalendar = async (
+  friendId: number,
+  year: number,
+  month: number
+): Promise<CalendarGoalsArrayResponse> => {
+  const res = await axiosInstance.get(`/goals/calender/${friendId}?year=${year}&month=${month}`);
+  return res.data;
 };

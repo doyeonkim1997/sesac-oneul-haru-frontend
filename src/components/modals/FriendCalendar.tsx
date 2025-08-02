@@ -1,63 +1,88 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from 'react';
+import { getFriendCalendar } from '../../api/Friend';
+import { type CalendarGoal } from '../../api/getCalendarGoals';
 
-interface FriendCalendarProps {
-  userId: number;
-}
+type Props = {
+  friendId: number;
+};
 
-const FriendCalendar: React.FC<FriendCalendarProps> = ({ userId }) => {
-  const [today, setToday] = useState(new Date());
+const FriendCalendar: React.FC<Props> = ({ friendId }) => {
+  const [calendarGoals, setCalendarGoals] = useState<CalendarGoal[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const year = new Date().getFullYear();
+  const month = new Date().getMonth() + 1;
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-
-      // 연도나 월이 달라졌는지 확인
-      if (
-        now.getFullYear() !== today.getFullYear() ||
-        now.getMonth() !== today.getMonth()
-      ) {
-        setToday(now);
+    const fetchFriendCalendar = async () => {
+      if (!friendId) return;
+    
+      setLoading(true);
+      setError(null);
+    
+      try {
+        const data = await getFriendCalendar(friendId, year, month);
+        setCalendarGoals(data);
+      } catch (err: any) {
+        setError(err.message || '친구 캘린더 불러오기 실패');
+      } finally {
+        setLoading(false);
       }
-    }, 1000 * 60); // 1분마다 확인
+    };
+  
+    fetchFriendCalendar();
+  }, [friendId, year, month]);
 
-    return () => clearInterval(timer);
-  }, [today]);
+  const completedGoalDates = useMemo(() => {
+    const dates = new Set<string>();
+    calendarGoals.forEach(goal => {
+      if (goal.isCompleted && goal.year && goal.month && goal.day) {
+        const dateString = `${goal.year}-${String(goal.month).padStart(2, '0')}-${String(goal.day).padStart(2, '0')}`;
+        dates.add(dateString);
+      }
+    });
 
-  const year = today.getFullYear();
-  const month = today.getMonth(); // 0부터 시작
-  const currentDate = today.getDate();
+    return dates;
+  }, [calendarGoals]);
 
-  const firstDayOfMonth = new Date(year, month, 1).getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month - 1, 1);
+  const firstWeekday = firstDay.getDay();
+  const daysInMonth = new Date(year, month, 0).getDate();
 
-  const totalCells = firstDayOfMonth + lastDate;
-  const calendarDates = Array.from({ length: totalCells }, (_, i) => {
-    const date = i - firstDayOfMonth + 1;
-    return date > 0 ? date : null;
-  });
+  const isCompletedDate = (day: number) => {
+    const dateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return completedGoalDates.has(dateString);
+  };
+
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div className="text-red-500">에러: {error}</div>;
 
   return (
-    <div className="mt-8 flex justify-center">
-      <div className="grid grid-cols-7 gap-0 text-[13px] text-center text-gray-800 w-[252px] mx-auto">
-        {calendarDates.map((date, index) => {
-          if (date === null) {
-            return <div key={index} className="w-6 h-6" />;
-          }
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm max-w-md">
+      <h3 className="text-center text-lg font-semibold mb-4 dark:text-white">이달 목표 달성 현황</h3>
+      <div className="grid grid-cols-7 gap-1 text-center text-xs mb-2 text-gray-500 dark:text-gray-400">
+        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+      </div>
 
-          const isToday = date === currentDate;
-          const checkedDates = [1, 2, 3, 4, 11, 12, 16, 17]; // 임시 데이터
-          const isChecked = checkedDates.includes(date);
+      <div className="grid grid-cols-7 gap-1 text-center text-sm">
+        {Array.from({ length: firstWeekday }, (_, i) => (
+          <div key={`empty-${i}`} className="text-gray-400">&nbsp;</div>
+        ))}
+
+        {Array.from({ length: daysInMonth }, (_, i) => {
+          const day = i + 1;
+          const completed = isCompletedDate(day);
 
           return (
-            <div
-              key={index}
-              className={`
-                w-10 h-10 flex items-center justify-center
-                ${isToday ? 'bg-sky-400 text-white rounded-full' : ''}
-                ${isChecked ? 'bg-sky-200' : ''}
-              `}
-            >
-              {date}
+            <div key={day} className="relative">
+              <span
+                className={`inline-block w-8 h-8 leading-8 rounded-full select-none
+                  ${completed ? 'bg-sky-400 text-white font-bold' : 'hover:bg-gray-100 dark:hover:bg-gray-700 cursor-default text-gray-900 dark:text-white'}
+                  `}
+              >
+                {day}
+              </span>
             </div>
           );
         })}

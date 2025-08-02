@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../../api/axiosInstance';
-
 import Header from '../../../components/ui/Header';
 import CalendarSection from '../../../components/ui/Calendar';
 import MenuSection from '../../../components/ui/MenuSection';
@@ -51,18 +49,17 @@ const FriendList: React.FC = () => {
     setSelectedUser(null);
   };
 
-const handleDeleteUser = async (requestId: number) => {
-  try {
-    await deleteFriend(requestId);
-    alert('친구가 삭제되었습니다.');
-    setUsers((prevUsers) => prevUsers.filter(user => user.requestId !== requestId));
-    closeModal();
-  } catch (err) {
-    alert('친구 삭제에 실패했습니다. 다시 시도해주세요.');
-    console.error(err);
-  }
-};
-
+  const handleDeleteUser = async (requestId: number) => {
+    try {
+      await deleteFriend(requestId);
+      alert('친구가 삭제되었습니다.');
+      setUsers((prevUsers) => prevUsers.filter(user => user.requestId !== requestId));
+      closeModal();
+    } catch (err) {
+      alert('친구 삭제에 실패했습니다. 다시 시도해주세요.');
+      console.error(err);
+    }
+  };
 
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;
