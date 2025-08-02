@@ -7,6 +7,7 @@ import { deleteGoal } from '../api/deleteGoal';
 import { toggleGoalComplete } from '../api/toggleGoalComplete';
 import { getBookmarks, type BookmarkResponse } from '../api/getBookmarks';
 import { toggleBookmark as apiToggleBookmark } from '../api/toggleBookmark';
+import { increaseCheer, decreaseCheer, type CheerResponse } from '../api/toggleCheer';
 import { getNickName, getImageUrl } from '../api/axiosInstance';
 
 // API 기반 목표 타입 (실제 백엔드 응답과 동일)
@@ -31,6 +32,7 @@ interface ApiGoalContextType {
   deleteExistingGoal: (goalId: string) => Promise<void>;
   toggleGoalCompletion: (goalId: string) => Promise<void>;
   toggleBookmarkStatus: (goalId: number) => Promise<void>;
+  toggleCheerStatus: (goalId: number) => Promise<void>;
 }
 
 const ApiGoalContext = createContext<ApiGoalContextType | undefined>(undefined);
@@ -330,6 +332,47 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
     }
   };
 
+  // 응원 토글 (Optimistic Update 적용)
+  const toggleCheerStatus = async (goalId: number) => {
+    console.log('💖 응원 토글 시작:', goalId);
+
+    // 현재 목표 찾기
+    const currentGoal = goals.find((g) => g.goalId === goalId);
+    if (!currentGoal) {
+      console.error('❌ 목표를 찾을 수 없습니다:', goalId);
+      return;
+    }
+
+    // 1. 즉시 UI 업데이트 (Optimistic)
+    const updateCheerInState = (goalsList: ApiGoal[]) => {
+      return goalsList.map((goal) =>
+        goal.goalId === goalId ? { ...goal, cheerCount: goal.cheerCount + 1 } : goal,
+      );
+    };
+
+    // 모든 state 즉시 업데이트
+    const prevGoals = goals;
+    const prevMyGoals = myGoals;
+    const prevFriendGoals = friendGoals;
+
+    setGoals(updateCheerInState(goals));
+    setMyGoals(updateCheerInState(myGoals));
+    setFriendGoals(updateCheerInState(friendGoals));
+
+    try {
+      // 2. API 호출 (응원 증가)
+      await increaseCheer(goalId);
+      console.log('✅ 응원 증가 API 성공');
+    } catch (error) {
+      console.error('❌ 응원 증가 API 실패, 상태 되돌리기:', error);
+      // 3. 실패시 원래 상태로 복원
+      setGoals(prevGoals);
+      setMyGoals(prevMyGoals);
+      setFriendGoals(prevFriendGoals);
+      throw error;
+    }
+  };
+
   // 초기 데이터 로드
   // 내 목표 계산 (현재 로그인한 사용자의 목표만)
   useEffect(() => {
@@ -368,6 +411,7 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
         deleteExistingGoal,
         toggleGoalCompletion,
         toggleBookmarkStatus,
+        toggleCheerStatus,
       }}
     >
       {children}

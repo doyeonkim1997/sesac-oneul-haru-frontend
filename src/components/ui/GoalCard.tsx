@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { GoalWithUser } from '../../data/goals';
-import { CATEGORY_DISPLAY_NAMES } from '../../data/goals';
+import { CATEGORY_DISPLAY_NAMES, CATEGORY_COLORS } from '../../data/goals';
 import { useApiGoals } from '../../contexts/ApiGoalContext';
 import CreateGoalModal from '../modals/CreateGoalModal';
 
@@ -19,8 +19,14 @@ const GoalCard: React.FC<GoalCardProps> = ({
   disableExpiredEffect = false,
 }) => {
   const { goal, user } = goalWithUser;
-  const { toggleGoalCompletion, toggleBookmarkStatus, deleteExistingGoal, bookmarks, myGoalIds } =
-    useApiGoals();
+  const {
+    toggleGoalCompletion,
+    toggleBookmarkStatus,
+    deleteExistingGoal,
+    bookmarks,
+    myGoalIds,
+    toggleCheerStatus,
+  } = useApiGoals();
 
   // 내 목표인지 정확하게 판단
   const isMyGoal = myGoalIds.has(goal.goal_id);
@@ -185,7 +191,12 @@ const GoalCard: React.FC<GoalCardProps> = ({
       <div className="mt-4 ml-26">
         {/* 키워드 영역 */}
         <div className="flex flex-wrap gap-2 mb-2">
-          <span className="text-base bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-4 py-2 rounded-full">
+          <span
+            className={`text-base px-4 py-2 rounded-full ${
+              CATEGORY_COLORS[goal.category as keyof typeof CATEGORY_COLORS] ||
+              'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+            }`}
+          >
             #{CATEGORY_DISPLAY_NAMES[goal.category as keyof typeof CATEGORY_DISPLAY_NAMES]}
           </span>
         </div>
@@ -208,8 +219,24 @@ const GoalCard: React.FC<GoalCardProps> = ({
                   minute: '2-digit',
                 })}
           </span>
-          <button className="text-gray-400 hover:text-red-500">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isMyGoal) {
+                // 자신의 목표는 응원할 수 없음
+                toggleCheerStatus(goal.goal_id);
+              }
+            }}
+            disabled={isMyGoal}
+            title={isMyGoal ? '자신의 목표는 응원할 수 없습니다' : '응원하기'}
+            className={`flex items-center space-x-1 ${
+              isMyGoal ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:text-red-500'
+            }`}
+          >
             <span className="material-icons !text-3xl">favorite_border</span>
+            {goal.cheer_count > 0 && (
+              <span className="text-sm font-medium">{goal.cheer_count}</span>
+            )}
           </button>
         </div>
       </div>
