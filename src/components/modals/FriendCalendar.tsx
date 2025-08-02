@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 interface FriendCalendarProps {
-  userId: string;
+  userId: number;
 }
 
 const FriendCalendar: React.FC<FriendCalendarProps> = ({ userId }) => {

@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../api/axiosInstance';
-
-type FriendRequest = {
-  userId: number;
-  nickName: string;
-  email: string;
-  imageUrl: string;
-};
+import type { User } from '../friends/UserItem';
+import { acceptFriendRequest, rejectFriendRequest } from '../../api/Friend';
 
 type Props = {
   onClose: () => void;
@@ -14,7 +9,7 @@ type Props = {
 };
 
 const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
-  const [requests, setRequests] = useState<FriendRequest[]>([]);
+  const [requests, setRequests] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,7 +17,7 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
     const fetchRequests = async () => {
       try {
         setLoading(true);
-        const res = await axiosInstance.get<FriendRequest[]>('/friend/requests');
+        const res = await axiosInstance.get<User[]>('/friend/requests');
         setRequests(res.data);
         setError(null);
       } catch (err) {
@@ -36,12 +31,26 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
     fetchRequests();
   }, []);
 
-  const handleAccept = (userId: number) => {
-    console.log(`수락: ${userId}`);
+  const handleAccept = async (requestId: number) => {
+    try {
+      await acceptFriendRequest(requestId);
+      alert('친구 요청을 수락했습니다.');
+      setRequests((prev) => prev.filter((req) => req.requestId !== requestId));
+    } catch (err) {
+      alert('친구 요청 수락에 실패했습니다. 다시 시도해주세요.');
+      console.error(err);
+    }
   };
 
-  const handleReject = (userId: number) => {
-    console.log(`거절: ${userId}`);
+  const handleReject = async (requestId: number) => {
+    try {
+      await rejectFriendRequest(requestId);
+      alert('친구 요청을 거절했습니다.');
+      setRequests((prev) => prev.filter((req) => req.requestId !== requestId));
+    } catch (err) {
+      alert('친구 요청 거절에 실패했습니다. 다시 시도해주세요.');
+      console.error(err);
+    }
   };
 
   const content = (
@@ -72,13 +81,13 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
               </div>
               <div className="flex space-x-1">
                 <button
-                  onClick={() => handleAccept(request.userId)}
+                  onClick={() => handleAccept(request.requestId)}
                   className="text-sm bg-sky-400 text-white px-3 py-1 rounded hover:bg-sky-500"
                 >
                   수락
                 </button>
                 <button
-                  onClick={() => handleReject(request.userId)}
+                  onClick={() => handleReject(request.requestId)}
                   className="text-sm bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400"
                 >
                   거절
