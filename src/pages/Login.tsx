@@ -7,8 +7,10 @@ import axios from 'axios';
 import axiosInstance, {
   getImageUrl,
   getNickName,
+  getTier,
   setImageUrl,
   setNickName,
+  setTier,
 } from '../api/axiosInstance'; // API 요청 보낼 때 사용할 커스텀 axios 인스턴스
 
 export default function Login() {
@@ -29,12 +31,14 @@ export default function Login() {
       );
 
       setAccessToken(res.data.accessToken);
-      setImageUrl(res.data.imageUrl);
+      setImageUrl(res.data.imageUrl.imageUrl);
       setNickName(res.data.nickName);
+      setTier(res.data.tier);
 
       console.log('로그인 성공:', res.data.accessToken);
       console.log('로그인 이미지:', getImageUrl());
       console.log('로그인 닉네임:', getNickName());
+      console.log('로그인 티어:', getTier());
 
       navigate('/main');
     } catch (error) {
