@@ -9,6 +9,7 @@ import { getBookmarks, type BookmarkResponse } from '../api/getBookmarks';
 import { toggleBookmark as apiToggleBookmark } from '../api/toggleBookmark';
 import { increaseCheer, decreaseCheer, type CheerResponse } from '../api/toggleCheer';
 import { getNickName, getImageUrl } from '../api/axiosInstance';
+import { useAuth } from './AuthContext';
 
 // API 기반 목표 타입 (실제 백엔드 응답과 동일)
 export interface ApiGoal extends GoalApiResponse {
@@ -33,6 +34,8 @@ interface ApiGoalContextType {
   toggleGoalCompletion: (goalId: string) => Promise<void>;
   toggleBookmarkStatus: (goalId: number) => Promise<void>;
   toggleCheerStatus: (goalId: number) => Promise<void>;
+  refreshCalendar: () => void; // 캘린더 새로고침 함수
+  calendarRefreshTrigger: number; // 캘린더 새로고침 트리거
 }
 
 const ApiGoalContext = createContext<ApiGoalContextType | undefined>(undefined);
@@ -50,6 +53,7 @@ interface ApiGoalProviderProps {
 }
 
 export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
+  const { userId } = useAuth(); // 현재 로그인한 사용자 ID
   const [goals, setGoals] = useState<ApiGoal[]>([]); // 모든 목표
   const [friendGoals, setFriendGoals] = useState<ApiGoal[]>([]); // 친구 목표
   const [myGoals, setMyGoals] = useState<ApiGoal[]>([]); // 내 목표
@@ -65,9 +69,30 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
       console.log('🔄 친구 목표 로드 시작...');
       setIsLoadingFriendGoals(true);
 
-      // TODO: 친구 기능 구현 후 실제 친구 목록 API 사용
-      console.log('✅ 친구 목표 로드 완료 (친구 기능 구현 대기 중)');
-      setFriendGoals([]);
+      // 1. 친구 목록 가져오기
+      const friends = await getFriendList();
+      console.log('👥 친구 목록:', friends);
+
+      if (friends.length === 0) {
+        console.log('📝 친구가 없어서 친구 목표 없음');
+        setFriendGoals([]);
+        return;
+      }
+
+      // 2. 친구들의 ID 추출
+      const friendIds = friends.map((friend) => friend.userId);
+      console.log('🆔 친구 ID들:', friendIds);
+
+      // 3. 모든 친구들의 목표 가져오기
+      const friendGoalsData = await getAllFriendsGoals(friendIds);
+      console.log('✅ 친구 목표 로드 성공:', friendGoalsData);
+      console.log('📊 친구 목표 개수:', friendGoalsData?.length || 0);
+
+      // Soft delete된 목표들 필터링 (isDeleted가 1인 목표 제외)
+      const activeFriendGoals = friendGoalsData.filter((goal) => goal.isDeleted !== 1);
+      console.log('📊 활성 친구 목표 개수 (삭제 제외):', activeFriendGoals.length);
+
+      setFriendGoals(activeFriendGoals);
     } catch (error) {
       console.error('❌ 친구 목표 로드 실패:', error);
       setFriendGoals([]); // 실패시 빈 배열
@@ -80,6 +105,7 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
   const loadGoals = async () => {
     try {
       console.log('🔄 API 목표 로드 시작...');
+      console.log('현재 로그인한 사용자 ID:', userId);
       setIsLoadingGoals(true);
       const goalData = await getAllGoals();
       console.log('✅ API 목표 로드 성공:', goalData);
@@ -256,9 +282,12 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
       // 2. API 호출
       await toggleGoalComplete(goalId);
       console.log('✅ 목표 완료 토글 API 성공');
+
+      // 3. 캘린더 새로고침 트리거
+      refreshCalendar();
     } catch (error) {
       console.error('❌ 목표 완료 토글 API 실패, 상태 되돌리기:', error);
-      // 3. 실패시 원래 상태로 복원
+      // 4. 실패시 원래 상태로 복원
       setGoals(prevGoals);
       setMyGoals(prevMyGoals);
       setFriendGoals(prevFriendGoals);
@@ -373,17 +402,47 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
     }
   };
 
+  // 캘린더 새로고침 함수
+  const refreshCalendar = () => {
+    console.log('🔄 캘린더 새로고침 트리거');
+    // 캘린더 컴포넌트에서 이 함수를 호출하면 useEffect가 다시 실행되어 API를 호출
+    // 강제로 상태를 변경하여 useEffect 트리거
+    setCalendarRefreshTrigger((prev) => prev + 1);
+  };
+
+  // 캘린더 새로고침을 위한 트리거 상태
+  const [calendarRefreshTrigger, setCalendarRefreshTrigger] = useState(0);
+
   // 초기 데이터 로드
   // 내 목표 계산 (현재 로그인한 사용자의 목표만)
   useEffect(() => {
-    if (goals.length > 0) {
-      // 현재는 친구 기능이 구현되지 않아서 모든 목표가 내 목표
-      // 나중에 친구 기능 구현 시 현재 로그인한 사용자 ID로 필터링
+    if (goals.length > 0 && userId) {
+      // 현재 로그인한 사용자의 목표만 필터링
+      const myGoalsFiltered = goals.filter((goal) => {
+        // goal에 userId 필드가 있다면 그것으로 필터링
+        if (goal.userId !== undefined) {
+          const isMyGoal = goal.userId === userId;
+          console.log(
+            `목표 ${goal.goalId}: userId=${goal.userId}, 현재사용자=${userId}, 내목표=${isMyGoal}`,
+          );
+          return isMyGoal;
+        }
+        // userId 필드가 없다면 백엔드에서 이미 필터링된 것으로 간주
+        console.log(`목표 ${goal.goalId}: userId 필드 없음, 내 목표로 간주`);
+        return true;
+      });
+
+      setMyGoals(myGoalsFiltered);
+      setMyGoalIds(new Set(myGoalsFiltered.map((goal) => goal.goalId)));
+      console.log('📝 내 목표 (현재 로그인한 사용자):', myGoalsFiltered.length, '개');
+      console.log('📝 전체 목표:', goals.length, '개');
+      console.log('📝 사용자 ID:', userId);
+    } else if (goals.length > 0 && !userId) {
+      console.warn('⚠️ 사용자 ID가 없어서 모든 목표를 내 목표로 설정');
       setMyGoals(goals);
       setMyGoalIds(new Set(goals.map((goal) => goal.goalId)));
-      console.log('📝 내 목표 (현재 로그인한 사용자):', goals.length, '개');
     }
-  }, [goals]);
+  }, [goals, userId]);
 
   // 컴포넌트 마운트 시 자동으로 데이터 로드
   useEffect(() => {
@@ -412,6 +471,8 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
         toggleGoalCompletion,
         toggleBookmarkStatus,
         toggleCheerStatus,
+        refreshCalendar,
+        calendarRefreshTrigger,
       }}
     >
       {children}
