@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { GOAL_CATEGORIES, CATEGORY_DISPLAY_NAMES, type GoalCategory } from '../../data/goals';
+import {
+  GOAL_CATEGORIES,
+  CATEGORY_DISPLAY_NAMES,
+  CATEGORY_COLORS,
+  CATEGORY_HOVER_COLORS,
+  type GoalCategory,
+} from '../../data/goals';
 import { getImageUrl, getNickName } from '../../api/axiosInstance';
 
 interface CreateGoalModalProps {
@@ -105,10 +111,10 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-full text-base font-medium transition-all duration-200 transform hover:scale-105 ${
                   selectedCategory === category.id
-                    ? 'bg-sky-400 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-sky-400 text-white border-2 border-sky-500 shadow-lg'
+                    : `${CATEGORY_COLORS[category.id as keyof typeof CATEGORY_COLORS]} ${CATEGORY_HOVER_COLORS[category.id as keyof typeof CATEGORY_HOVER_COLORS]} hover:shadow-md`
                 }`}
               >
                 {category.tag}

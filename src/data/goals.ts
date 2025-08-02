@@ -63,6 +63,42 @@ export const CATEGORY_DISPLAY_NAMES: Record<GoalCategory, string> = {
   [GOAL_CATEGORIES.ETC]: '기타',
 };
 
+// 카테고리별 색상 매핑 (Tailwind CSS 클래스) - 부드럽고 세련된 색상
+export const CATEGORY_COLORS: Record<GoalCategory, string> = {
+  [GOAL_CATEGORIES.STUDY]:
+    'bg-blue-50 text-blue-600 border-2 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700',
+  [GOAL_CATEGORIES.EXERCISE]:
+    'bg-emerald-50 text-emerald-600 border-2 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700',
+  [GOAL_CATEGORIES.WORK]:
+    'bg-indigo-50 text-indigo-600 border-2 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-700',
+  [GOAL_CATEGORIES.HEALTH]:
+    'bg-cyan-50 text-cyan-600 border-2 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-700',
+  [GOAL_CATEGORIES.HOBBY]:
+    'bg-amber-50 text-amber-600 border-2 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-700',
+  [GOAL_CATEGORIES.FINANCE]:
+    'bg-pink-50 text-pink-600 border-2 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-700',
+  [GOAL_CATEGORIES.ETC]:
+    'bg-slate-50 text-slate-600 border-2 border-slate-200 dark:bg-slate-700/20 dark:text-slate-300 dark:border-slate-600',
+};
+
+// 카테고리별 호버 색상 매핑 (각 색상의 진한 버전)
+export const CATEGORY_HOVER_COLORS: Record<GoalCategory, string> = {
+  [GOAL_CATEGORIES.STUDY]:
+    'hover:bg-blue-100 hover:border-blue-300 dark:hover:bg-blue-900/40 dark:hover:border-blue-600',
+  [GOAL_CATEGORIES.EXERCISE]:
+    'hover:bg-emerald-100 hover:border-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:border-emerald-600',
+  [GOAL_CATEGORIES.WORK]:
+    'hover:bg-indigo-100 hover:border-indigo-300 dark:hover:bg-indigo-900/40 dark:hover:border-indigo-600',
+  [GOAL_CATEGORIES.HEALTH]:
+    'hover:bg-cyan-100 hover:border-cyan-300 dark:hover:bg-cyan-900/40 dark:hover:border-cyan-600',
+  [GOAL_CATEGORIES.HOBBY]:
+    'hover:bg-amber-100 hover:border-amber-300 dark:hover:bg-amber-900/40 dark:hover:border-amber-600',
+  [GOAL_CATEGORIES.FINANCE]:
+    'hover:bg-pink-100 hover:border-pink-300 dark:hover:bg-pink-900/40 dark:hover:border-pink-600',
+  [GOAL_CATEGORIES.ETC]:
+    'hover:bg-slate-100 hover:border-slate-300 dark:hover:bg-slate-700/40 dark:hover:border-slate-500',
+};
+
 // 더미 사용자 데이터
 export const DUMMY_USERS: User[] = [
   {
