@@ -1,6 +1,20 @@
 import axiosInstance from './axiosInstance';
 import { type User } from '../components/friends/UserItem';
 
+export const fetchFriends = async (): Promise<User[]> => {
+  const res = await axiosInstance.get<User[]>(`/friend/friends`);
+  const friendList = res.data.map((friend: any) => ({
+    userId: Number(friend.userId),
+    requestId: Number(friend.requestId),
+    nickName: friend.nickName,
+    email: friend.email,
+    image: {
+      imageUrl: friend.imageUrl || '',
+    },
+  }));
+  return friendList;
+};
+
 export const sendFriendRequest = async (receiverId: number): Promise<User[]> => {
   try {
     const res = await axiosInstance.get<User[]>(`/friend/request/${receiverId}`);

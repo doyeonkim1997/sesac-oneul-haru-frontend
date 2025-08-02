@@ -30,7 +30,6 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
         unreadCount: user.unreadCount,
       }));
     
-      // ✅ 이메일 앞부분만 필터링
       const filteredResults = formattedResults.filter(user => {
         const emailPrefix = user.email.split('@')[0];
         return emailPrefix.toLowerCase().includes(searchTerm.toLowerCase());
