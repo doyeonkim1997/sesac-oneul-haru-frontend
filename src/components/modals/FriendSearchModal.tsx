@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { sendFriendRequest } from '../../api/sendFriendRequest';
+import { sendFriendRequest } from '../../api/Friend'; 
 import { type User } from '../friends/UserItem';
-import { getUsersByEmail } from '../../api/getUsersByEmail';
+import { getUsersByEmail } from '../../api/getUsersByEmail'; 
 
 type Props = {
   onClose: () => void;
@@ -61,7 +61,7 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
         검색
       </button>
 
-      {results.length > 0 && (
+      {results.length > 0 ? (
         <ul className="max-h-60 overflow-y-auto border border-gray-300 rounded-lg">
           {results.map((user) => (
             <li
@@ -92,6 +92,10 @@ const FriendSearchModal = ({ onClose, isStandalone = false }: Props) => {
             </li>
           ))}
         </ul>
+      ) : (
+        searchTerm.trim() !== '' && (
+          <div className="text-center text-gray-500">검색 결과가 없습니다.</div>
+        )
       )}
     </>
   );

@@ -11,6 +11,8 @@ import FriendProfileModal from '../../../components/modals/FriendProfileModal';
 
 import { useAuth } from '../../../contexts/AuthContext';
 
+import { deleteFriend } from '../../../api/Friend';
+
 const FriendList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,18 +24,17 @@ const FriendList: React.FC = () => {
     async function fetchFriends() {
       setLoading(true);
       try {
-        const res = await axiosInstance.get(`/friend/friends`);
-        // API 응답 구조에 맞게
+        const res = await axiosInstance.get<User[]>(`/friend/friends`);
+        console.log('친구 목록 응답:', res.data);
         const friendList = res.data.map((friend: any) => ({
-          userId: String(friend.userId),
+          userId: Number(friend.userId),
+          requestId: Number(friend.requestId),
           nickName: friend.nickName,
           email: friend.email,
-          imageUrl: friend.image?.imageUrl,
+          imageUrl: friend.imageUrl,
         }));
         setUsers(friendList);
-
-        console.log(res.data)
-
+        setError(null);
       } catch (err) {
         setError('친구 목록을 불러오는데 실패했습니다.');
         console.error(err);
@@ -58,13 +59,18 @@ const FriendList: React.FC = () => {
     setSelectedUser(null);
   };
 
-  const handleDeleteUser = (id: string) => {
-    console.log(`사용자 ID ${id} 삭제 요청`);
-    // TODO: 삭제 API 호출 후 상태 갱신 처리
-    setUsers(users.filter(user => user.userId !== id));
-    // 모달 닫기
+const handleDeleteUser = async (requestId: number) => {
+  try {
+    await deleteFriend(requestId);
+    alert('친구가 삭제되었습니다.');
+    setUsers((prevUsers) => prevUsers.filter(user => user.requestId !== requestId));
     closeModal();
-  };
+  } catch (err) {
+    alert('친구 삭제에 실패했습니다. 다시 시도해주세요.');
+    console.error(err);
+  }
+};
+
 
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;

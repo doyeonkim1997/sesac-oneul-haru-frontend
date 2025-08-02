@@ -1,12 +1,13 @@
 export interface User {
-  userId: string;
+  userId: number;
+  requestId: number;
   nickName: string;
   email: string;
-  imageUrl?: string;
+  imageUrl: string;
   unreadCount?: number; // 읽지 않은 알림 수?
 }
 
-const UserItem: React.FC<{ user: User; onDelete: (userId: string) => void; onNickNameClick?: (user: User) => void }> = ({
+const UserItem: React.FC<{ user: User; onDelete: (requestId: number) => void; onNickNameClick?: (user: User) => void }> = ({
   user,
   onDelete,
   onNickNameClick,
@@ -40,7 +41,7 @@ const UserItem: React.FC<{ user: User; onDelete: (userId: string) => void; onNic
 
           {/* 삭제 버튼 */}
           <button
-            onClick={() => onDelete(user.userId)}
+            onClick={() => onDelete(user.requestId)}
             className="ml-2 px-2 py-0.5 text-xs bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
           >
             삭제
