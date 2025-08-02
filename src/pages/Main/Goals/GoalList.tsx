@@ -5,17 +5,17 @@ import MenuSection from '../../../components/ui/MenuSection';
 import CalendarSection from '../../../components/ui/Calendar';
 import Footer from '../../../components/ui/Footer';
 import GoalCard from '../../../components/ui/GoalCard';
-import { useGoals } from '../../../contexts/GoalContext';
+import { useApiGoals } from '../../../contexts/ApiGoalContext';
 
 const GoalList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'incomplete' | 'completed'>('all');
-  const { goals: allGoals } = useGoals();
+  const { myGoals } = useApiGoals();
 
   // 필터에 따른 목표 데이터 (내 목표만)
   const goals = useMemo(() => {
-    // 내 목표만 필터링 (user_id === 1)
-    let filteredGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id === 1);
+    // 내 목표만 사용
+    let filteredGoals = myGoals;
 
     // 완료 상태에 따른 필터링
     switch (activeFilter) {
@@ -24,11 +24,11 @@ const GoalList: React.FC = () => {
         break;
       case 'incomplete':
         // 미완료: 완료되지 않은 목표만
-        filteredGoals = filteredGoals.filter((goalWithUser) => !goalWithUser.goal.is_completed);
+        filteredGoals = filteredGoals.filter((goal) => !goal.isCompleted);
         break;
       case 'completed':
         // 완료: 완료된 목표만
-        filteredGoals = filteredGoals.filter((goalWithUser) => goalWithUser.goal.is_completed);
+        filteredGoals = filteredGoals.filter((goal) => goal.isCompleted);
         break;
       default:
         break;
@@ -37,14 +37,14 @@ const GoalList: React.FC = () => {
     // 검색어 필터링
     if (searchTerm.trim()) {
       filteredGoals = filteredGoals.filter(
-        (goalWithUser) =>
-          goalWithUser.goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          goalWithUser.user.nickname.toLowerCase().includes(searchTerm.toLowerCase()),
+        (goal) =>
+          goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          goal.nickName.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     return filteredGoals;
-  }, [activeFilter, searchTerm, allGoals]);
+  }, [activeFilter, searchTerm, myGoals]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -136,13 +136,40 @@ const GoalList: React.FC = () => {
                 <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1035px]">
                   <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {/* GoalCard 컴포넌트들 - 개별 목표 카드들 */}
-                    {goals.map((goalWithUser) => (
-                      <GoalCard
-                        key={goalWithUser.goal.goal_id}
-                        goalWithUser={goalWithUser}
-                        disableExpiredEffect={true}
-                      />
-                    ))}
+                    {goals.map((goal) => {
+                      const goalWithUser = {
+                        goal: {
+                          goal_id: goal.goalId,
+                          user_id: goal.goalId, // 임시로 goalId 사용
+                          title: goal.content,
+                          content: goal.content,
+                          category: goal.category,
+                          is_completed: goal.isCompleted,
+                          is_deleted: false,
+                          cheer_count: goal.cheerCount || 0,
+                          created_at: goal.createdAt,
+                          updated_at: goal.updatedAt,
+                        },
+                        user: {
+                          user_id: goal.goalId, // 임시로 goalId 사용
+                          nickname: goal.nickName || '사용자',
+                          email: 'user@example.com',
+                          auth_type: 'EMAIL',
+                          tier: 'BRONZE',
+                          created_at: goal.createdAt,
+                          profileImage: goal.imageUrl
+                            ? import.meta.env.VITE_BACKEND_ADDRESS + goal.imageUrl
+                            : 'https://via.placeholder.com/150',
+                        },
+                      };
+                      return (
+                        <GoalCard
+                          key={goal.goalId}
+                          goalWithUser={goalWithUser}
+                          disableExpiredEffect={true}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               </div>

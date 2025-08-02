@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GOAL_CATEGORIES, CATEGORY_DISPLAY_NAMES, type GoalCategory } from '../../data/goals';
+import { getImageUrl, getNickName } from '../../api/axiosInstance';
 
 interface CreateGoalModalProps {
   isOpen: boolean;
@@ -73,13 +74,16 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({
           <img
             alt="프로필 이미지"
             className="h-18 w-18 rounded-full object-cover"
-            src="..." />
+            src={import.meta.env.VITE_BACKEND_ADDRESS + (getImageUrl() || '')}
+          />
 
           {/* 텍스트 + 입력 박스 */}
           <div className="flex-1 ml-1 ">
             {/* 닉네임 */}
             <div className="flex items-center space-x-2 mb-1">
-              <span className="font-semibold text-gray-900 dark:text-white">@닉네임</span>
+              <span className="font-semibold text-gray-900 dark:text-white">
+                @{getNickName() || '사용자'}
+              </span>
               <span className="text-gray-400 dark:text-gray-500">(ME)</span>
             </div>
 

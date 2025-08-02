@@ -5,49 +5,78 @@ import MenuSection from '../../components/ui/MenuSection';
 import ProfileSection from '../../components/ui/ProfileSection';
 import GoalCard from '../../components/ui/GoalCard';
 import Footer from '../../components/ui/Footer';
-import { useGoals } from '../../contexts/GoalContext';
+import { useApiGoals } from '../../contexts/ApiGoalContext';
 import axiosInstance, { setAccessToken } from '../../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 const MainHome: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'my' | 'friends'>('all');
-  const { goals: allGoals } = useGoals();
+  const { goals: allGoals, myGoals, friendGoals } = useApiGoals();
 
   const navigate = useNavigate();
 
-  // 필터에 따른 목표 데이터
+  // 필터에 따른 목표 데이터 (전체탭에서 오늘의 내 목표 1개를 최상단에 고정)
   const goals = useMemo(() => {
     let filteredGoals;
     switch (activeFilter) {
       case 'all':
-        // 전체 탭: 내 목표를 맨 위에, 친구 목표를 그 아래에 배치
-        const myGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id === 1);
-        const friendsGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id !== 1);
-        filteredGoals = [...myGoals, ...friendsGoals];
+        // 전체: 오늘의 내 목표 1개를 최상단에 고정, 나머지는 최신순 정렬
+        const today = new Date().toDateString(); // 오늘 날짜 (시간 제외)
+
+        // 오늘 작성된 내 목표 찾기
+        const todayMyGoal = myGoals.find((goal) => {
+          const goalDate = new Date(goal.createdAt).toDateString();
+          return goalDate === today;
+        });
+
+        // 오늘 목표를 제외한 나머지 내 목표들
+        const otherMyGoals = myGoals
+          .filter((goal) => {
+            const goalDate = new Date(goal.createdAt).toDateString();
+            return goalDate !== today;
+          })
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        // 친구 목표들 (최신순 정렬)
+        const sortedFriendGoals = [...friendGoals].sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
+
+        // 오늘 목표가 있으면 최상단에 고정, 없으면 일반 정렬
+        if (todayMyGoal) {
+          filteredGoals = [todayMyGoal, ...otherMyGoals, ...sortedFriendGoals];
+        } else {
+          filteredGoals = [...otherMyGoals, ...sortedFriendGoals];
+        }
         break;
       case 'my':
-        filteredGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id === 1);
+        // 내 목표만 (최신순 정렬)
+        filteredGoals = [...myGoals].sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
         break;
       case 'friends':
-        // 친구들의 목표 (내가 작성하지 않은 목표)
-        filteredGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id !== 1);
+        // 친구 목표만 (최신순 정렬)
+        filteredGoals = [...friendGoals].sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
         break;
       default:
-        filteredGoals = allGoals.filter((goalWithUser) => goalWithUser.goal.user_id === 1);
+        filteredGoals = myGoals;
     }
 
     // 검색어 필터링
     if (searchTerm.trim()) {
       filteredGoals = filteredGoals.filter(
-        (goalWithUser) =>
-          goalWithUser.goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          goalWithUser.user.nickname.toLowerCase().includes(searchTerm.toLowerCase()),
+        (goal) =>
+          goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          goal.nickName.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     return filteredGoals;
-  }, [activeFilter, searchTerm, allGoals]);
+  }, [activeFilter, searchTerm, myGoals, friendGoals]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -121,9 +150,34 @@ const MainHome: React.FC = () => {
                 <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1096px]">
                   <div className="space-y-4 pt-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {/* GoalCard 컴포넌트들 - 개별 목표 카드들 (프로필, 내용, 태그, 완료 상태 등) */}
-                    {goals.map((goalWithUser) => (
-                      <GoalCard key={goalWithUser.goal.goal_id} goalWithUser={goalWithUser} />
-                    ))}
+                    {goals.map((goal) => {
+                      const goalWithUser = {
+                        goal: {
+                          goal_id: goal.goalId, // ApiGoal의 goalId를 그대로 사용
+                          user_id: goal.goalId, // 임시로 goalId 사용 (나중에 userId 필드 추가 시 수정)
+                          title: goal.content,
+                          content: goal.content,
+                          category: goal.category,
+                          is_completed: goal.isCompleted,
+                          is_deleted: false,
+                          cheer_count: goal.cheerCount || 0,
+                          created_at: goal.createdAt,
+                          updated_at: goal.updatedAt,
+                        },
+                        user: {
+                          user_id: goal.goalId, // 임시로 goalId 사용
+                          nickname: goal.nickName || '사용자',
+                          email: 'user@example.com',
+                          auth_type: 'EMAIL',
+                          tier: 'BRONZE',
+                          created_at: goal.createdAt,
+                          profileImage: goal.imageUrl
+                            ? import.meta.env.VITE_BACKEND_ADDRESS + goal.imageUrl
+                            : 'https://via.placeholder.com/150',
+                        },
+                      };
+                      return <GoalCard key={goal.goalId} goalWithUser={goalWithUser} />;
+                    })}
                   </div>
                 </div>
               </div>

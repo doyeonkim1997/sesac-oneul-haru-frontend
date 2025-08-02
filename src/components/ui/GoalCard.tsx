@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { GoalWithUser } from '../../data/goals';
 import { CATEGORY_DISPLAY_NAMES } from '../../data/goals';
-import { useGoals } from '../../contexts/GoalContext';
+import { useApiGoals } from '../../contexts/ApiGoalContext';
 import CreateGoalModal from '../modals/CreateGoalModal';
 
 interface GoalCardProps {
@@ -19,28 +19,35 @@ const GoalCard: React.FC<GoalCardProps> = ({
   disableExpiredEffect = false,
 }) => {
   const { goal, user } = goalWithUser;
-  const { toggleGoalCompletion, toggleBookmark, deleteGoal, bookmarks } = useGoals();
+  const { toggleGoalCompletion, toggleBookmarkStatus, deleteExistingGoal, bookmarks, myGoalIds } =
+    useApiGoals();
 
-  // 현재 로그인한 사용자 ID (임시로 1로 설정, 나중에 실제 로그인 상태에서 가져올 예정)
-  const currentUserId = 1;
-
-  // 내가 작성한 목표인지 확인
-  const isMyGoal = goal.user_id === currentUserId;
+  // 내 목표인지 정확하게 판단
+  const isMyGoal = myGoalIds.has(goal.goal_id);
 
   // 드롭다운 메뉴 상태
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // 북마크 상태 확인 (실제 상태 사용)
-  const isBookmarked = bookmarks.has(goal.goal_id);
+  // 북마크 상태 확인 (API 기반)
+  const isBookmarked = bookmarks.some((bookmark) => bookmark.goalId === goal.goal_id);
+
+  // 디버깅용 로그
+  console.log('🔖 북마크 상태 확인:', {
+    goalId: goal.goal_id,
+    bookmarks: bookmarks.map((b) => b.goalId),
+    isBookmarked,
+  });
 
   // 오늘 작성된 목표인지 확인 (자정 처리)
   const isTodayGoal = () => {
     const today = new Date().toISOString().split('T')[0];
-    const goalDate = goal.created_at.split(' ')[0];
+    // API에서 ISO 형식으로 오므로 'T' 기준으로 분리 (예: "2025-08-02T05:06:59.660Z" → "2025-08-02")
+    const goalDate = goal.created_at.split('T')[0];
     return goalDate === today;
   };
 
   const isExpired = !isTodayGoal();
+  const canToggleCompletion = isTodayGoal(); // 오늘 목표만 완료 토글 가능
 
   // 드롭다운 메뉴 외부 클릭 시 닫기
   React.useEffect(() => {
@@ -77,12 +84,22 @@ const GoalCard: React.FC<GoalCardProps> = ({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    toggleGoalCompletion(goal.goal_id);
+                    if (canToggleCompletion) {
+                      toggleGoalCompletion(goal.goal_id.toString());
+                    }
                   }}
+                  disabled={!canToggleCompletion}
+                  title={
+                    canToggleCompletion
+                      ? '완료 상태 변경'
+                      : '오늘 작성된 목표만 완료 상태를 변경할 수 있습니다'
+                  }
                   className={`w-7 h-7 rounded border-2 transition-colors flex-shrink-0 flex items-center justify-center ${
                     goal.is_completed
                       ? 'bg-sky-400 border-sky-400'
-                      : 'bg-white border-gray-300 dark:border-gray-600'
+                      : canToggleCompletion
+                        ? 'bg-white border-gray-300 dark:border-gray-600 hover:border-sky-400'
+                        : 'bg-gray-100 border-gray-200 dark:bg-gray-700 dark:border-gray-600 cursor-not-allowed'
                   }`}
                 >
                   {goal.is_completed && (
@@ -102,7 +119,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleBookmark(goal.goal_id);
+                  toggleBookmarkStatus(goal.goal_id);
                 }}
                 className={`${isBookmarked ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500`}
               >
@@ -128,10 +145,20 @@ const GoalCard: React.FC<GoalCardProps> = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onEditClick?.();
+                          if (isTodayGoal()) {
+                            onEditClick?.();
+                          }
                           setIsDropdownOpen(false);
                         }}
-                        className="w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg"
+                        disabled={!isTodayGoal()}
+                        title={
+                          isTodayGoal() ? '목표 수정' : '오늘 작성된 목표만 수정할 수 있습니다'
+                        }
+                        className={`w-full px-3 py-2 text-left text-sm rounded-t-lg ${
+                          isTodayGoal()
+                            ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            : 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                        }`}
                       >
                         수정
                       </button>
@@ -139,7 +166,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
                         onClick={(e) => {
                           e.stopPropagation();
                           if (window.confirm('정말로 이 목표를 삭제하시겠습니까?')) {
-                            deleteGoal(goal.goal_id);
+                            deleteExistingGoal(goal.goal_id.toString());
                           }
                           setIsDropdownOpen(false);
                         }}
@@ -164,7 +191,23 @@ const GoalCard: React.FC<GoalCardProps> = ({
         </div>
         {/* 날짜 표시 및 하트 */}
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-400 dark:text-gray-500">{goal.created_at}</span>
+          <span className="text-sm text-gray-400 dark:text-gray-500">
+            {goal.updated_at && goal.updated_at !== goal.created_at
+              ? `수정됨 ${new Date(goal.updated_at).toLocaleString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}`
+              : new Date(goal.created_at).toLocaleString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+          </span>
           <button className="text-gray-400 hover:text-red-500">
             <span className="material-icons !text-3xl">favorite_border</span>
           </button>
@@ -177,7 +220,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
 // 수정 모달을 최상위로 렌더링 (Portal 사용)
 const GoalCardWithModal: React.FC<GoalCardProps> = (props) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const { updateGoal } = useGoals();
+  const { updateExistingGoal } = useApiGoals();
   const { goalWithUser } = props;
   const { goal } = goalWithUser;
 
@@ -197,10 +240,10 @@ const GoalCardWithModal: React.FC<GoalCardProps> = (props) => {
               category: goal.category,
             }}
             onSubmit={(goalData) => {
-              updateGoal(goal.goal_id, {
-                title: goalData.title,
+              updateExistingGoal(goal.goal_id.toString(), {
                 content: goalData.content,
                 category: goalData.category,
+                isCompleted: goal.is_completed,
               });
               setIsEditModalOpen(false);
             }}

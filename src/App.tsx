@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { DarkModeProvider } from './contexts/DarkModeContext';
 import { GoalProvider } from './contexts/GoalContext';
+import { ApiGoalProvider } from './contexts/ApiGoalContext';
 import { UserProvider } from './contexts/UserContext';
 import { ToastProvider, useToast } from './contexts/ToastContext';
 import ToastNotification from './components/ui/ToastNotification';
-import { useAuth } from './contexts/AuthContext';
+import { useAuth, AuthProvider } from './contexts/AuthContext';
 
 import Signup from './pages/Signup';
 import Login from './pages/Login';
@@ -38,17 +39,13 @@ function AppContent() {
           <Route
             path="/"
             element={
-              accessToken ? (
-                <Navigate to="/main" replace />
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              accessToken ? <Navigate to="/main" replace /> : <Navigate to="/login" replace />
             }
           />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/terms" element={<Terms />} />
-          
+
           {privateRoutes.map(({ path, element }) => (
             <Route key={path} path={path} element={<PrivateRoute>{element}</PrivateRoute>} />
           ))}
@@ -71,7 +68,11 @@ function App() {
       <DarkModeProvider>
         <GoalProvider>
           <ToastProvider>
-            <AppContent />
+            <AuthProvider>
+              <ApiGoalProvider>
+                <AppContent />
+              </ApiGoalProvider>
+            </AuthProvider>
           </ToastProvider>
         </GoalProvider>
       </DarkModeProvider>
