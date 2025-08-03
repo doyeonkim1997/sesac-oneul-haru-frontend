@@ -7,7 +7,7 @@ import CreateGoalModal from '../modals/CreateGoalModal';
 
 interface GoalCardProps {
   goalWithUser: GoalWithUser;
-  isBookmarkMode?: boolean; // 북마크 모드 여부
+  isBookmarkMode?: boolean; // 북마크 여부
   onEditClick?: () => void; // 수정 버튼 클릭 핸들러
   disableExpiredEffect?: boolean; // 만료 효과 비활성화 여부
 }
@@ -28,7 +28,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
     toggleCheerStatus,
   } = useApiGoals();
 
-  // 내 목표인지 정확하게 판단
+  // 내 목표인지 여부
   const isMyGoal = myGoalIds.has(goal.goal_id);
 
   // 드롭다운 메뉴 상태
@@ -56,7 +56,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
   };
 
   const isExpired = !isTodayGoal();
-  const canToggleCompletion = isTodayGoal();
+  const canToggleCompletion = isMyGoal && isTodayGoal();
 
   // 드롭다운 메뉴 외부 클릭 시 닫기
   React.useEffect(() => {
@@ -174,7 +174,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (window.confirm('정말로 이 목표를 삭제하시겠습니까?')) {
+                          if (window.confirm('목표를 삭제하시겠습니까?')) {
                             deleteExistingGoal(goal.goal_id.toString());
                           }
                           setIsDropdownOpen(false);
