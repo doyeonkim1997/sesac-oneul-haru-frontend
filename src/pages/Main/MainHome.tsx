@@ -30,50 +30,39 @@ const MainHome: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // 필터에 따른 목표 데이터 (전체탭에서 내 오늘 목표 하나만 최상단 고정)
   const goals = useMemo(() => {
-    let filteredGoals;
+    const today = new Date().toDateString();
+    const todayMyGoal = myGoals.find(
+      (goal) => new Date(goal.createdAt).toDateString() === today
+    );
 
-    switch (activeFilter) {
-      case 'all': {
-        const today = new Date().toDateString();
+    let filteredGoals: any[] = [];
 
-        const todayMyGoal = myGoals.find(
-          (goal) => new Date(goal.createdAt).toDateString() === today
-        );
+    if (activeFilter === 'all') {
+      const otherGoals = [
+        ...myGoals.filter((goal) => new Date(goal.createdAt).toDateString() !== today),
+        ...friendGoals,
+      ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-        const otherGoals = [
-          ...myGoals.filter((goal) => new Date(goal.createdAt).toDateString() !== today),
-          ...friendGoals,
-        ];
-
-        const sortedOtherGoals = otherGoals.sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-
-        filteredGoals = todayMyGoal ? [todayMyGoal, ...sortedOtherGoals] : sortedOtherGoals;
-
-        break;
-      }
-      case 'my':
-        filteredGoals = [...myGoals].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        break;
-      case 'friends':
-        filteredGoals = [...friendGoals].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        break;
-      default:
-        filteredGoals = myGoals;
+      filteredGoals = todayMyGoal
+        ? [todayMyGoal, ...otherGoals]
+        : [{ isEmpty: true }, ...otherGoals];
+    } else if (activeFilter === 'my') {
+      filteredGoals = [...myGoals].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    } else if (activeFilter === 'friends') {
+      filteredGoals = [...friendGoals].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
     }
 
     if (searchTerm.trim()) {
-      filteredGoals = filteredGoals.filter(
-        (goal) =>
-          goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          goal.nickName.toLowerCase().includes(searchTerm.toLowerCase())
+      filteredGoals = filteredGoals.filter((goal) =>
+        goal.isEmpty
+          ? true
+          : goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            goal.nickName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -144,13 +133,23 @@ const MainHome: React.FC = () => {
                 </div>
                 <div className="border-b-2 border-gray-300 dark:border-gray-600 mx-6"></div>
               </div>
+
               <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1096px]">
+                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[840px]">
                   <div className="space-y-4 pt-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
-                    { goals.length === 0 ? (
+                    {goals.length === 0 ? (
                       <EmptyGoalCard onClick={() => setIsCreateGoalModalOpen(true)} />
                     ) : (
-                      goals.map((goal) => {
+                      goals.map((goal, index) => {
+                        if (goal.isEmpty) {
+                          return (
+                            <EmptyGoalCard
+                              key={`empty-${index}`}
+                              onClick={() => setIsCreateGoalModalOpen(true)}
+                            />
+                          );
+                        }
+
                         const goalWithUser = {
                           goal: {
                             goal_id: goal.goalId,
@@ -185,8 +184,8 @@ const MainHome: React.FC = () => {
             </div>
           </div>
         </div>
-
       </main>
+
       <CreateGoalModal
         isOpen={isCreateGoalModalOpen}
         onClose={() => setIsCreateGoalModalOpen(false)}

@@ -86,7 +86,7 @@ const BookmarkList: React.FC = () => {
               </div>
               <div className="flex-1 flex flex-col overflow-hidden">
                 {/* 북마크 목록 스크롤 영역 */}
-                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1096px]">
+                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[840px]">
                   <div className="space-y-4 pt-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {/* GoalCard 컴포넌트들 - 북마크된 목표 카드들 */}
                     {goals.map((goal) => {
