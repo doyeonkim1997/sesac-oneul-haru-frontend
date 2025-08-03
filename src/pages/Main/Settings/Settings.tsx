@@ -42,7 +42,9 @@ const Settings: React.FC = () => {
     if (updatedImageUrl) {
       setTempProfileImage(updatedImageUrl);
     }
-  }, [nickName, imageUrl]); // Dependencies from AuthContext
+  }, [nickName, imageUrl, authType]); // authType도 추가하여 소셜 로그인 변경 시에도 업데이트
+
+  // 실시간 동기화 제거 - 사용자 입력을 보호하기 위해
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -101,10 +103,11 @@ const Settings: React.FC = () => {
 
       setSelectedFile(file);
 
+      // 즉시 미리보기 표시
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
-        setTempProfileImage(imageUrl); // 임시 상태로 저장
+        setTempProfileImage(imageUrl); // 즉시 미리보기로 표시
       };
       reader.readAsDataURL(file);
     }
@@ -145,13 +148,17 @@ const Settings: React.FC = () => {
                 <div className="pt-16 space-y-6">
                   {/* 닉네임, 프로필 및 비밀번호 설정 */}
                   <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm">
-                    <div className="flex items-start space-x-8 justify-center">
+                    <div className="flex flex-col items-center space-y-6 w-full max-w-md mx-auto pt-4">
                       {/* 프로필 이미지 영역 */}
-                      <div className="flex flex-col items-center space-y-4 -ml-8">
+                      <div className="flex flex-col items-center space-y-3">
                         <div className="w-24 h-24 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-700 overflow-hidden">
                           {tempProfileImage ? (
                             <img
-                              src={import.meta.env.VITE_BACKEND_ADDRESS + tempProfileImage}
+                              src={
+                                tempProfileImage.startsWith('data:')
+                                  ? tempProfileImage
+                                  : import.meta.env.VITE_BACKEND_ADDRESS + tempProfileImage
+                              }
                               alt="프로필"
                               className="w-full h-full object-cover rounded-full"
                             />
@@ -176,7 +183,7 @@ const Settings: React.FC = () => {
                       </div>
 
                       {/* 닉네임 및 비밀번호 설정 */}
-                      <div className="flex flex-col items-center space-y-8 flex-1 max-w-md">
+                      <div className="flex flex-col items-center space-y-8 w-full">
                         {/* 이메일 표시 */}
                         <div className="w-full">
                           <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3">
@@ -218,20 +225,14 @@ const Settings: React.FC = () => {
                               </p>
                             </div>
                           ) : (
-                            <div className="flex items-center">
+                            <div className="w-full">
                               <input
                                 type="text"
                                 placeholder="닉네임을 입력해 주세요."
                                 value={nickname}
                                 onChange={(e) => setNickname(e.target.value)}
-                                className="flex-1 h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                               />
-                              <button
-                                onClick={handleNicknameUpdate}
-                                className="h-8 px-4 bg-sky-400 hover:bg-sky-500 text-white rounded-r-lg text-sm transition-colors"
-                              >
-                                수정
-                              </button>
                             </div>
                           )}
                         </div>
@@ -306,30 +307,50 @@ const Settings: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* 저장 버튼 */}
-                    <div className="flex justify-center mt-6">
+                    {/* 저장 버튼들 */}
+                    <div className="flex justify-center space-x-4 mt-6">
+                      {/* 프로필 저장 버튼 */}
                       <button
                         onClick={async () => {
                           setIsUploading(true);
                           try {
+                            let hasChanges = false;
+
                             // 프로필 이미지가 선택된 경우에만 업데이트
                             if (selectedFile) {
                               const success = await updateProfileImage(selectedFile);
                               if (success) {
                                 setSelectedFile(null);
+                                // 프로필 이미지 업데이트 후 로컬 상태 즉시 반영
+                                const updatedImageUrl = getImageUrl();
+                                if (updatedImageUrl) {
+                                  setTempProfileImage(updatedImageUrl);
+                                }
+                                hasChanges = true;
+                              } else {
+                                // 실패 시 기존 이미지로 되돌리기
+                                setTempProfileImage(currentImageUrl || '');
+                                setSelectedFile(null);
                               }
                             }
 
-                            // 소셜 로그인 사용자가 아닌 경우에만 닉네임/비밀번호 업데이트
-                            if (!isSocialUser) {
-                              handleNicknameUpdate();
-                              if (currentPassword && newPassword) {
-                                await handlePasswordUpdate();
+                            // 소셜 로그인 사용자가 아닌 경우에만 닉네임 업데이트
+                            if (!isSocialUser && nickname.trim() && nickname !== currentNickName) {
+                              await handleNicknameUpdate();
+                              // 닉네임 업데이트 후 로컬 상태 즉시 반영
+                              const updatedNickName = getNickName();
+                              if (updatedNickName) {
+                                setNickname(updatedNickName);
                               }
+                              hasChanges = true;
+                            }
+
+                            if (!hasChanges) {
+                              alert('변경할 내용이 없습니다.');
                             }
                           } catch (error) {
-                            console.error('저장 중 오류:', error);
-                            alert('저장 중 오류가 발생했습니다.');
+                            console.error('프로필 저장 중 오류:', error);
+                            alert('프로필 저장 중 오류가 발생했습니다.');
                           } finally {
                             setIsUploading(false);
                           }
@@ -341,7 +362,42 @@ const Settings: React.FC = () => {
                             : 'bg-sky-400 hover:bg-sky-500 text-white'
                         }`}
                       >
-                        {isUploading ? '업로드 중...' : '저장'}
+                        {isUploading ? '업로드 중...' : '프로필 저장'}
+                      </button>
+
+                      {/* 비밀번호 변경 버튼 */}
+                      <button
+                        onClick={async () => {
+                          if (isSocialUser) {
+                            alert('소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.');
+                            return;
+                          }
+
+                          if (!currentPassword || !newPassword || !confirmPassword) {
+                            alert('모든 비밀번호 필드를 입력해주세요.');
+                            return;
+                          }
+
+                          if (newPassword !== confirmPassword) {
+                            alert('새 비밀번호가 일치하지 않습니다.');
+                            return;
+                          }
+
+                          try {
+                            await handlePasswordUpdate();
+                          } catch (error) {
+                            console.error('비밀번호 변경 중 오류:', error);
+                            alert('비밀번호 변경 중 오류가 발생했습니다.');
+                          }
+                        }}
+                        disabled={isSocialUser}
+                        className={`w-32 py-2 font-medium rounded-lg transition-colors text-sm ${
+                          isSocialUser
+                            ? 'bg-gray-400 cursor-not-allowed text-gray-500'
+                            : 'bg-green-500 hover:bg-green-600 text-white'
+                        }`}
+                      >
+                        비밀번호 변경
                       </button>
                     </div>
                   </div>
