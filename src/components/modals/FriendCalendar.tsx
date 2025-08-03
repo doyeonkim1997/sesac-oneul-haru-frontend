@@ -59,8 +59,8 @@ const FriendCalendar: React.FC<Props> = ({ friendId }) => {
   if (error) return <div className="text-red-500">에러: {error}</div>;
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm max-w-md">
-      <h3 className="text-center text-lg font-semibold mb-4 dark:text-white">이달 목표 달성 현황</h3>
+    <div className="bg-gray-50 dark:bg-gray-600 p-4 rounded-xl shadow-inner max-w-md">
+      <h3 className="text-center text-sm font-medium mb-4 dark:text-white">이달 목표 달성 현황</h3>
       <div className="grid grid-cols-7 gap-1 text-center text-xs mb-2 text-gray-500 dark:text-gray-400">
         <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
       </div>

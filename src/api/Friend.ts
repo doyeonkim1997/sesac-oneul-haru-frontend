@@ -76,3 +76,8 @@ export const getFriendCalendar = async (
   const res = await axiosInstance.get(`/goals/calender/${friendId}?year=${year}&month=${month}`);
   return res.data;
 };
+
+export const fetchSentFriendRequests = async () => {
+  const res = await axiosInstance.get('/friend/requests/sent');
+  return res.data;
+};
