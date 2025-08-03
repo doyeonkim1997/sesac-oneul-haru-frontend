@@ -7,11 +7,26 @@ import GoalCard from '../../components/ui/GoalCard';
 import Footer from '../../components/ui/Footer';
 import { useApiGoals } from '../../contexts/ApiGoalContext';
 import { useNavigate } from 'react-router-dom';
+import EmptyGoalCard from '../../components/ui/EmptyGoalCard';
+import CreateGoalModal from '../../components/modals/CreateGoalModal';
 
 const MainHome: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'my' | 'friends'>('all');
+  const [isCreateGoalModalOpen, setIsCreateGoalModalOpen] = useState(false);
+
   const { goals: allGoals, myGoals, friendGoals } = useApiGoals();
+  const { createNewGoal } = useApiGoals();
+
+  const handleCreateGoal = async (goalData: { content: string; category: string }) => {
+    try {
+      await createNewGoal(goalData);
+      setIsCreateGoalModalOpen(false);
+    } catch (error) {
+      console.error('❌ 목표 생성 실패:', error);
+      alert('오늘의 목표가 이미 존재합니다!');
+    }
+  };
 
   const navigate = useNavigate();
 
@@ -132,41 +147,51 @@ const MainHome: React.FC = () => {
               <div className="flex-1 flex flex-col overflow-hidden">
                 <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1096px]">
                   <div className="space-y-4 pt-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
-                    {goals.map((goal) => {
-                      const goalWithUser = {
-                        goal: {
-                          goal_id: goal.goalId,
-                          user_id: goal.userId ?? goal.goalId,
-                          title: goal.content,
-                          content: goal.content,
-                          category: goal.category,
-                          is_completed: goal.isCompleted,
-                          is_deleted: false,
-                          cheer_count: goal.cheerCount || 0,
-                          created_at: goal.createdAt,
-                          updated_at: goal.updatedAt,
-                        },
-                        user: {
-                          user_id: goal.userId ?? goal.goalId,
-                          nickname: goal.nickName || '사용자',
-                          email: 'user@example.com',
-                          auth_type: 'EMAIL',
-                          tier: 'BRONZE',
-                          created_at: goal.createdAt,
-                          profileImage: goal.imageUrl
-                            ? import.meta.env.VITE_BACKEND_ADDRESS + goal.imageUrl
-                            : 'https://via.placeholder.com/150',
-                        },
-                      };
-                      return <GoalCard key={goal.goalId} goalWithUser={goalWithUser} />;
-                    })}
+                    { goals.length === 0 ? (
+                      <EmptyGoalCard onClick={() => setIsCreateGoalModalOpen(true)} />
+                    ) : (
+                      goals.map((goal) => {
+                        const goalWithUser = {
+                          goal: {
+                            goal_id: goal.goalId,
+                            user_id: goal.userId ?? goal.goalId,
+                            title: goal.content,
+                            content: goal.content,
+                            category: goal.category,
+                            is_completed: goal.isCompleted,
+                            is_deleted: false,
+                            cheer_count: goal.cheerCount || 0,
+                            created_at: goal.createdAt,
+                            updated_at: goal.updatedAt,
+                          },
+                          user: {
+                            user_id: goal.userId ?? goal.goalId,
+                            nickname: goal.nickName || '사용자',
+                            email: 'user@example.com',
+                            auth_type: 'EMAIL',
+                            tier: 'BRONZE',
+                            created_at: goal.createdAt,
+                            profileImage: goal.imageUrl
+                              ? import.meta.env.VITE_BACKEND_ADDRESS + goal.imageUrl
+                              : 'https://via.placeholder.com/150',
+                          },
+                        };
+                        return <GoalCard key={goal.goalId} goalWithUser={goalWithUser} />;
+                      })
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
       </main>
+      <CreateGoalModal
+        isOpen={isCreateGoalModalOpen}
+        onClose={() => setIsCreateGoalModalOpen(false)}
+        onSubmit={handleCreateGoal}
+      />
       <Footer />
     </div>
   );

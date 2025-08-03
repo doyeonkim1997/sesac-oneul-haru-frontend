@@ -98,7 +98,7 @@ const CreateGoalModal: React.FC<CreateGoalModalProps> = ({
               value={goalContent}
               onChange={(e) => setGoalContent(e.target.value)}
               placeholder="오늘 하루 목표는 무엇인가요?"
-              className="mt-3 w-full h-28 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 resize-none text-xl font-medium text-gray-800 dark:text-white bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400"
+              className="mt-3 w-full h-28 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-3 focus:ring-sky-200 focus:border-sky-400 resize-none text-lg font-medium text-gray-800 dark:text-white bg-white dark:bg-gray-800 placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
         </div>
