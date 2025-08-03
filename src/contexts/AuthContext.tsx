@@ -7,6 +7,7 @@ import {
 
 interface TokenPayload {
   email: string;
+  userId: number; // 추가
 }
 
 type AuthContextType = {
@@ -16,6 +17,7 @@ type AuthContextType = {
   imageUrl: string | null;
   tier: string | null;
   authType: string | null;
+  userId: number | null; // 추가
   setAccessToken: (
     token: string | null,
     info?: { nickName?: string; imageUrl?: string; tier?: string; authType?: string },
@@ -32,18 +34,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [tier, setTier] = useState<string | null>(null);
   const [authType, setAuthType] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
     if (accessToken) {
       try {
         const decoded = jwtDecode<TokenPayload>(accessToken);
+        console.log('로그인 토큰 디코딩 결과:', decoded);
         setEmail(decoded.email);
+        setUserId(decoded.userId); // 추가
       } catch (e) {
         console.error('AccessToken 디코딩 실패:', e);
         setEmail(null);
+        setUserId(null); // 추가
       }
     } else {
       setEmail(null);
+      setUserId(null); // 추가
     }
   }, [accessToken]);
 
@@ -81,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         imageUrl,
         tier,
         authType,
+        userId, // 추가
         setAccessToken: updateAccessToken,
         logout,
       }}

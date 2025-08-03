@@ -25,7 +25,7 @@ const MenuSection: React.FC = () => {
       console.log('✅ MenuSection - 목표 생성 성공');
     } catch (error) {
       console.error('❌ MenuSection - 목표 생성 실패:', error);
-      alert('목표 생성에 실패했습니다.');
+      alert('오늘의 목표가 이미 존재합니다!');
     }
   };
   return (
