@@ -132,7 +132,7 @@ const Signup: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 pt-12 pb-16">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-sky-100 via-white to-sky-200 px-4 pt-12 pb-16">
       <div className="text-center mb-7 px-2">
         <div className="flex items-baseline justify-center mb-3 ">
           <img src={logo} alt="logo" className="w-[43px] h-[43px] object-contain" />
