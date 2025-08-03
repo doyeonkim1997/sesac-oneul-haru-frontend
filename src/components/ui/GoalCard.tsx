@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { GoalWithUser } from '../../data/goals';
 import { CATEGORY_DISPLAY_NAMES, CATEGORY_COLORS } from '../../data/goals';
@@ -35,9 +35,12 @@ const GoalCard: React.FC<GoalCardProps> = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // 북마크 상태 확인 (API 기반)
-  const isBookmarked = bookmarks.some((bookmark) => bookmark.goalId === goal.goal_id);
-
-  // 디버깅용 로그
+  const isBookmarked = useMemo(() => {
+    const bookmarked = bookmarks.some((bookmark) => bookmark.goalId === goal.goal_id);
+    console.log('🔖 GoalCard 내부 isBookmarked 계산:', { goalId: goal.goal_id, bookmarked, bookmarksCount: bookmarks.length });
+    return bookmarked;
+  }, [bookmarks, goal.goal_id]); // bookmarks와 goal.goal_id가 변경될 때만 재계산
+  // 디버깅용
   console.log('🔖 북마크 상태 확인:', {
     goalId: goal.goal_id,
     bookmarks: bookmarks.map((b) => b.goalId),

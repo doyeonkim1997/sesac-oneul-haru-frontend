@@ -94,41 +94,39 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
       const activeFriendGoals = friendGoalsData.filter((goal) => goal.isDeleted !== 1);
       console.log('📊 활성 친구 목표 개수 (삭제 제외):', activeFriendGoals.length);
 
-const friendGoalsWithUserId = activeFriendGoals.map((goal) => ({
-  ...goal,
-  userId: goal.userId  ?? 0, // 이미 포함되어 있으므로 복사만 함
-}));
-setFriendGoals(friendGoalsWithUserId); // ✅ 방법 2 (명시적 변환)
-    } catch (error) {
-      console.error('❌ 친구 목표 로드 실패:', error);
-      setFriendGoals([]); // 실패시 빈 배열
-    } finally {
-      setIsLoadingFriendGoals(false);
-    }
-  };
+      const friendGoalsWithUserId = activeFriendGoals.map((goal) => ({
+        ...goal,
+        userId: goal.userId  ?? 0, // 이미 포함되어 있으므로 복사만 함
+      }));
+      setFriendGoals(friendGoalsWithUserId); // ✅ 방법 2 (명시적 변환)
+          } catch (error) {
+            console.error('❌ 친구 목표 로드 실패:', error);
+            setFriendGoals([]); // 실패시 빈 배열
+          } finally {
+            setIsLoadingFriendGoals(false);
+          }
+        };
 
   // 목표 목록 로드 (전체)
-const loadGoals = async () => {
-  try {
-    setIsLoadingGoals(true);
-    const goalData = await getAllGoals();
-    console.log('✅ API 목표 로드 성공:', goalData);
+  const loadGoals = async () => {
+    try {
+      setIsLoadingGoals(true);
+      // getAllGoals()는 userId가 포함된 모든 목표를 반환해야 합니다.
+      const goalData = await getAllGoals();
+      console.log('✅ API 목표 로드 성공:', goalData);
 
-    const activeGoals = goalData
-      .filter(goal => goal.isDeleted !== 1)
-      .map(goal => ({
-        ...goal,
-        userId: userId!, // 현재 로그인한 사용자 ID 직접 추가
-      })) as ApiGoal[];
+      // Soft delete된 목표들 필터링
+      const activeGoals = goalData.filter(goal => goal.isDeleted !== 1) as ApiGoal[];
+      // goalData에 이미 userId가 포함되어 있어야 합니다. (백엔드 응답에 따라)
 
-    console.log('📊 활성 목표 (userId 추가됨):', activeGoals);
-    setGoals(activeGoals);
-  } catch (error) {
-    console.error('❌ 목표 로드 실패:', error);
-  } finally {
-    setIsLoadingGoals(false);
-  }
-};
+      console.log('📊 활성 목표 (원래 userId 유지):', activeGoals);
+      setGoals(activeGoals);
+    } catch (error) {
+      console.error('❌ 목표 로드 실패:', error);
+    } finally {
+      setIsLoadingGoals(false);
+    }
+  };
 
 
   // 북마크 목록 로드
@@ -306,62 +304,84 @@ const loadGoals = async () => {
 
   // 북마크 토글 (Optimistic Update 적용)
   const toggleBookmarkStatus = async (goalId: number) => {
-    console.log('🔖 북마크 토글 시작:', goalId);
-    // 1. 즉시 UI 업데이트 (Optimistic)
-    const updateBookmarkInState = (goalsList: ApiGoal[]) => {
-      return goalsList.map((goal) =>
-        goal.goalId === goalId ? { ...goal, isBookmarked: !goal.isBookmarked } : goal,
-      );
-    };
+    console.log('🔖 북마크 토글 시작 (Goal ID):', goalId);
 
-    // 모든 state 즉시 업데이트
+    const initialBookmarks = bookmarks;
+    const isCurrentlyBookmarked = initialBookmarks.some((bookmark) => bookmark.goalId === goalId);
+    console.log('🔖 현재 북마크 상태 확인 (initialBookmarks 기준):', {
+      goalId,
+      isCurrentlyBookmarked,
+      initialBookmarksCount: initialBookmarks.length,
+      initialBookmarkedIds: initialBookmarks.map(b => b.goalId)
+    });
+
     const prevGoals = goals;
     const prevMyGoals = myGoals;
     const prevFriendGoals = friendGoals;
-    const prevBookmarks = bookmarks;
+    const prevBookmarks = initialBookmarks;
 
-    setGoals(updateBookmarkInState(goals));
-    setMyGoals(updateBookmarkInState(myGoals));
-    setFriendGoals(updateBookmarkInState(friendGoals));
+    // UI 즉시 업데이트 (Optimistic)
+    const updateGoalInCardState = (goalsList: ApiGoal[]) => {
+      return goalsList.map((goal) =>
+        goal.goalId === goalId ? { ...goal, isBookmarked: !isCurrentlyBookmarked } : goal,
+      );
+    };
 
-    // 북마크 목록도 즉시 업데이트
-    const isCurrentlyBookmarked = bookmarks.some((bookmark) => bookmark.goalId === goalId);
-    console.log('🔖 현재 북마크 상태:', {
-      goalId,
-      isCurrentlyBookmarked,
-      bookmarksCount: bookmarks.length,
-    });
+    // goals, myGoals, friendGoals 모두 업데이트 시도 (해당 goalId 있다면 업데이트)
+    setGoals(updateGoalInCardState(goals));
+    setMyGoals(updateGoalInCardState(myGoals));
+    setFriendGoals(updateGoalInCardState(friendGoals));
+
+    let newBookmarksState: BookmarkResponse[];
 
     if (isCurrentlyBookmarked) {
       // 북마크 제거
-      console.log('🔖 북마크 제거 중...');
-      setBookmarks(bookmarks.filter((bookmark) => bookmark.goalId !== goalId));
+      console.log('🔖 북마크 제거 로직 실행 (Goal ID):', goalId);
+      newBookmarksState = initialBookmarks.filter((bookmark) => bookmark.goalId !== goalId);
     } else {
-      // 북마크 추가 (임시 데이터)
-      console.log('🔖 북마크 추가 중...');
-      const goal = goals.find((g) => g.goalId === goalId);
-      if (goal) {
+      // 북마크 추가
+      console.log('🔖 북마크 추가 로직 실행 (Goal ID):', goalId);
+
+      // goals와 friendGoals 모두에서 목표 찾기
+      let targetGoal: ApiGoal | undefined;
+      targetGoal = goals.find((g) => g.goalId === goalId); // 먼저 goals에서 찾기
+      if (!targetGoal) {
+        targetGoal = friendGoals.find((g) => g.goalId === goalId); // 없으면 friendGoals에서
+      }
+      console.log('🔖 북마크를 추가하려는 목표 탐색 결과 (targetGoal):', targetGoal);
+
+      if (targetGoal) {
         const newBookmark: BookmarkResponse = {
-          bookmarkId: Date.now(), // 임시 ID (API 응답으로 교체될 예정)
-          userId: 0, // 임시 값
+          bookmarkId: Date.now(), // 임시 ID
+          userId: targetGoal.userId, // 찾은 목표의 실제 userId 사용
           goalId: goalId,
-          goal: {
-            content: goal.content,
-            category: goal.category,
-            isCompleted: goal.isCompleted,
+          goal: { // 북마크 내부에 저장될 목표 정보 (targetGoal에서 추출)
+            content: targetGoal.content,
+            category: targetGoal.category,
+            isCompleted: targetGoal.isCompleted,
           },
         };
-        setBookmarks([...bookmarks, newBookmark]);
+        newBookmarksState = [...initialBookmarks, newBookmark];
+        console.log('🔖 새로 생성된 북마크 객체:', newBookmark);
+      } else {
+        console.warn('⚠️ 북마크를 추가하려는 목표를 내 목표/친구 목표 배열에서 찾을 수 없습니다! Goal ID:', goalId);
+        newBookmarksState = initialBookmarks; // 목표 못 찾으면 북마크 상태 변경 없음
       }
     }
 
+    // 최종적으로 북마크 상태 업데이트
+    setBookmarks(newBookmarksState);
+    console.log('🔖 setBookmarks 호출 완료. 새로운 bookmarks 상태 길이 (다음 렌더링 반영):', newBookmarksState.length);
+    console.log('🔖 새로운 bookmarks 상태 ID들 (다음 렌더링 반영):', newBookmarksState.map(b => b.goalId));
+
+
     try {
-      // 2. API 호출
       await apiToggleBookmark(goalId);
-      console.log('✅ 북마크 토글 API 성공');
+      console.log('✅ 북마크 토글 API 성공 (Goal ID):', goalId);
+      await loadBookmarks();
     } catch (error) {
-      console.error('❌ 북마크 토글 API 실패, 상태 되돌리기:', error);
-      // 3. 실패시 원래 상태로 복원
+      console.error('❌ 북마크 토글 API 실패, 상태 되돌리기 (Goal ID):', goalId, error);
+      // 에러 발생 시 원래 상태로 복원
       setGoals(prevGoals);
       setMyGoals(prevMyGoals);
       setFriendGoals(prevFriendGoals);
@@ -424,32 +444,31 @@ const loadGoals = async () => {
 
   // 초기 데이터 로드
   // 내 목표 계산 (현재 로그인한 사용자의 목표만)
-useEffect(() => {
-  console.log('🔍 내 목표 필터링 시작, goals 길이:', goals.length);
-  console.log('현재 userId:', userId, typeof userId);
-  if (!userId || goals.length === 0) return;
+  useEffect(() => {
+    console.log('🔍 내 목표 필터링 시작, goals 길이:', goals.length);
+    console.log('현재 userId:', userId, typeof userId);
+    if (!userId || goals.length === 0) return;
 
-const myGoalsFiltered = goals.filter((goal) => goal.userId === Number(userId));
-  console.log('🔍 필터링된 내 목표:', myGoalsFiltered);
+  const myGoalsFiltered = goals.filter((goal) => goal.userId === Number(userId));
+    console.log('🔍 필터링된 내 목표:', myGoalsFiltered);
 
-  setMyGoals(myGoalsFiltered);
-  setMyGoalIds(new Set(myGoalsFiltered.map((goal) => goal.goalId)));
-}, [goals, userId]);
+    setMyGoals(myGoalsFiltered);
+    setMyGoalIds(new Set(myGoalsFiltered.map((goal) => goal.goalId)));
+  }, [goals, userId]);
 
 
   // 컴포넌트 마운트 시 자동으로 데이터 로드
-useEffect(() => {
-  if (!userId) {
-    console.log('⛔️ userId 없음 - loadGoals 실행 안 함');
-    return;
-  }
+  useEffect(() => {
+    if (!userId) {
+      console.log('⛔️ userId 없음 - loadGoals 실행 안 함');
+      return;
+    }
 
-  console.log('✅ userId 준비됨, loadGoals 실행:', userId);
-  loadGoals();
-  loadFriendGoals();
-  loadBookmarks();
-}, [userId]); // userId가 설정될 때만 실행
-
+    console.log('✅ userId 준비됨, loadGoals 실행:', userId);
+    loadGoals();
+    loadFriendGoals();
+    loadBookmarks();
+  }, [userId]); // userId가 설정될 때만 실행
 
   return (
     <ApiGoalContext.Provider
