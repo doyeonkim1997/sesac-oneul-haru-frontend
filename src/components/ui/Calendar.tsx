@@ -297,7 +297,7 @@ const CalendarSection: React.FC = () => {
                   isCompleted
                     ? 'bg-sky-400 text-white font-bold'
                     : isTodayDate
-                      ? 'bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white font-semibold'
+                      ? 'bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-white font-semibold'
                       : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >

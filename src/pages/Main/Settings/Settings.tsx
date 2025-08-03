@@ -393,8 +393,8 @@ const Settings: React.FC = () => {
                         disabled={isSocialUser}
                         className={`w-32 py-2 font-medium rounded-lg transition-colors text-sm ${
                           isSocialUser
-                            ? 'bg-gray-400 cursor-not-allowed text-gray-500'
-                            : 'bg-green-500 hover:bg-green-600 text-white'
+                            ? 'bg-gray-300 cursor-not-allowed text-gray-500'
+                            : 'bg-sky-400 hover:bg-sky-500 text-white'
                         }`}
                       >
                         비밀번호 변경
