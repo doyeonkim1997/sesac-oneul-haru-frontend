@@ -10,10 +10,11 @@ import { toggleBookmark as apiToggleBookmark } from '../api/toggleBookmark';
 import { increaseCheer, decreaseCheer, type CheerResponse } from '../api/toggleCheer';
 import { getNickName, getImageUrl } from '../api/axiosInstance';
 import { useAuth } from './AuthContext';
+import { getFriendList } from '../api/getFriendList';
 
 // API 기반 목표 타입 (실제 백엔드 응답과 동일)
 export interface ApiGoal extends GoalApiResponse {
-  // GoalApiResponse에 모든 필드가 포함되어 있음
+  userId: number; // 추가
 }
 
 interface ApiGoalContextType {
@@ -54,6 +55,7 @@ interface ApiGoalProviderProps {
 
 export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
   const { userId } = useAuth(); // 현재 로그인한 사용자 ID
+  console.log('👤 현재 로그인 userId:', userId);
   const [goals, setGoals] = useState<ApiGoal[]>([]); // 모든 목표
   const [friendGoals, setFriendGoals] = useState<ApiGoal[]>([]); // 친구 목표
   const [myGoals, setMyGoals] = useState<ApiGoal[]>([]); // 내 목표
@@ -70,7 +72,7 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
       setIsLoadingFriendGoals(true);
 
       // 1. 친구 목록 가져오기
-      const friends = await getFriendList();
+      const friends = await getFriendList ();
       console.log('👥 친구 목록:', friends);
 
       if (friends.length === 0) {
@@ -92,7 +94,11 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
       const activeFriendGoals = friendGoalsData.filter((goal) => goal.isDeleted !== 1);
       console.log('📊 활성 친구 목표 개수 (삭제 제외):', activeFriendGoals.length);
 
-      setFriendGoals(activeFriendGoals);
+const friendGoalsWithUserId = activeFriendGoals.map((goal) => ({
+  ...goal,
+  userId: goal.userId  ?? 0, // 이미 포함되어 있으므로 복사만 함
+}));
+setFriendGoals(friendGoalsWithUserId); // ✅ 방법 2 (명시적 변환)
     } catch (error) {
       console.error('❌ 친구 목표 로드 실패:', error);
       setFriendGoals([]); // 실패시 빈 배열
@@ -102,26 +108,28 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
   };
 
   // 목표 목록 로드 (전체)
-  const loadGoals = async () => {
-    try {
-      console.log('🔄 API 목표 로드 시작...');
-      console.log('현재 로그인한 사용자 ID:', userId);
-      setIsLoadingGoals(true);
-      const goalData = await getAllGoals();
-      console.log('✅ API 목표 로드 성공:', goalData);
-      console.log('📊 목표 개수:', goalData?.length || 0);
+const loadGoals = async () => {
+  try {
+    setIsLoadingGoals(true);
+    const goalData = await getAllGoals();
+    console.log('✅ API 목표 로드 성공:', goalData);
 
-      // Soft delete된 목표들 필터링 (isDeleted가 1인 목표 제외)
-      const activeGoals = goalData.filter((goal) => goal.isDeleted !== 1);
-      console.log('📊 활성 목표 개수 (삭제 제외):', activeGoals.length);
+    const activeGoals = goalData
+      .filter(goal => goal.isDeleted !== 1)
+      .map(goal => ({
+        ...goal,
+        userId: userId!, // 현재 로그인한 사용자 ID 직접 추가
+      })) as ApiGoal[];
 
-      setGoals(activeGoals);
-    } catch (error) {
-      console.error('❌ 목표 로드 실패:', error);
-    } finally {
-      setIsLoadingGoals(false);
-    }
-  };
+    console.log('📊 활성 목표 (userId 추가됨):', activeGoals);
+    setGoals(activeGoals);
+  } catch (error) {
+    console.error('❌ 목표 로드 실패:', error);
+  } finally {
+    setIsLoadingGoals(false);
+  }
+};
+
 
   // 북마크 목록 로드
   const loadBookmarks = async () => {
@@ -146,7 +154,8 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
 
     // 임시 목표 객체 생성 (API 응답으로 교체될 예정)
     const tempGoal: ApiGoal = {
-      goalId: Date.now(), // 임시 ID
+      goalId: Date.now(),
+      userId: userId!, // 추가
       nickName: getNickName() || '사용자',
       imageUrl: getImageUrl() || 'https://via.placeholder.com/150',
       isBookmarked: false,
@@ -415,41 +424,32 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
 
   // 초기 데이터 로드
   // 내 목표 계산 (현재 로그인한 사용자의 목표만)
-  useEffect(() => {
-    if (goals.length > 0 && userId) {
-      // 현재 로그인한 사용자의 목표만 필터링
-      const myGoalsFiltered = goals.filter((goal) => {
-        // goal에 userId 필드가 있다면 그것으로 필터링
-        if (goal.userId !== undefined) {
-          const isMyGoal = goal.userId === userId;
-          console.log(
-            `목표 ${goal.goalId}: userId=${goal.userId}, 현재사용자=${userId}, 내목표=${isMyGoal}`,
-          );
-          return isMyGoal;
-        }
-        // userId 필드가 없다면 백엔드에서 이미 필터링된 것으로 간주
-        console.log(`목표 ${goal.goalId}: userId 필드 없음, 내 목표로 간주`);
-        return true;
-      });
+useEffect(() => {
+  console.log('🔍 내 목표 필터링 시작, goals 길이:', goals.length);
+  console.log('현재 userId:', userId, typeof userId);
+  if (!userId || goals.length === 0) return;
 
-      setMyGoals(myGoalsFiltered);
-      setMyGoalIds(new Set(myGoalsFiltered.map((goal) => goal.goalId)));
-      console.log('📝 내 목표 (현재 로그인한 사용자):', myGoalsFiltered.length, '개');
-      console.log('📝 전체 목표:', goals.length, '개');
-      console.log('📝 사용자 ID:', userId);
-    } else if (goals.length > 0 && !userId) {
-      console.warn('⚠️ 사용자 ID가 없어서 모든 목표를 내 목표로 설정');
-      setMyGoals(goals);
-      setMyGoalIds(new Set(goals.map((goal) => goal.goalId)));
-    }
-  }, [goals, userId]);
+const myGoalsFiltered = goals.filter((goal) => goal.userId === Number(userId));
+  console.log('🔍 필터링된 내 목표:', myGoalsFiltered);
+
+  setMyGoals(myGoalsFiltered);
+  setMyGoalIds(new Set(myGoalsFiltered.map((goal) => goal.goalId)));
+}, [goals, userId]);
+
 
   // 컴포넌트 마운트 시 자동으로 데이터 로드
-  useEffect(() => {
-    loadGoals();
-    loadFriendGoals();
-    loadBookmarks();
-  }, []);
+useEffect(() => {
+  if (!userId) {
+    console.log('⛔️ userId 없음 - loadGoals 실행 안 함');
+    return;
+  }
+
+  console.log('✅ userId 준비됨, loadGoals 실행:', userId);
+  loadGoals();
+  loadFriendGoals();
+  loadBookmarks();
+}, [userId]); // userId가 설정될 때만 실행
+
 
   return (
     <ApiGoalContext.Provider

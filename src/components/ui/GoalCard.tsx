@@ -46,14 +46,17 @@ const GoalCard: React.FC<GoalCardProps> = ({
 
   // 오늘 작성된 목표인지 확인 (자정 처리)
   const isTodayGoal = () => {
-    const today = new Date().toISOString().split('T')[0];
-    // API에서 ISO 형식으로 오므로 'T' 기준으로 분리 (예: "2025-08-02T05:06:59.660Z" → "2025-08-02")
-    const goalDate = goal.created_at.split('T')[0];
-    return goalDate === today;
+    const toKSTDateString = (date: Date) =>
+      new Date(date.getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
+  
+    const goalDate = new Date(goal.created_at);
+    const now = new Date();
+  
+    return toKSTDateString(goalDate) === toKSTDateString(now);
   };
 
   const isExpired = !isTodayGoal();
-  const canToggleCompletion = isTodayGoal(); // 오늘 목표만 완료 토글 가능
+  const canToggleCompletion = isTodayGoal();
 
   // 드롭다운 메뉴 외부 클릭 시 닫기
   React.useEffect(() => {

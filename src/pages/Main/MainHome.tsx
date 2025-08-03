@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import Header from '../../components/ui/Header';
 import CalendarSection from '../../components/ui/Calendar';
 import MenuSection from '../../components/ui/MenuSection';
@@ -6,7 +6,6 @@ import ProfileSection from '../../components/ui/ProfileSection';
 import GoalCard from '../../components/ui/GoalCard';
 import Footer from '../../components/ui/Footer';
 import { useApiGoals } from '../../contexts/ApiGoalContext';
-import axiosInstance, { setAccessToken } from '../../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 const MainHome: React.FC = () => {
@@ -16,62 +15,50 @@ const MainHome: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // 필터에 따른 목표 데이터 (전체탭에서 오늘의 내 목표 1개를 최상단에 고정)
+  // 필터에 따른 목표 데이터 (전체탭에서 내 오늘 목표 하나만 최상단 고정)
   const goals = useMemo(() => {
     let filteredGoals;
+
     switch (activeFilter) {
-      case 'all':
-        // 전체: 오늘의 내 목표 1개를 최상단에 고정, 나머지는 최신순 정렬
-        const today = new Date().toDateString(); // 오늘 날짜 (시간 제외)
+      case 'all': {
+        const today = new Date().toDateString();
 
-        // 오늘 작성된 내 목표 찾기
-        const todayMyGoal = myGoals.find((goal) => {
-          const goalDate = new Date(goal.createdAt).toDateString();
-          return goalDate === today;
-        });
-
-        // 오늘 목표를 제외한 나머지 내 목표들
-        const otherMyGoals = myGoals
-          .filter((goal) => {
-            const goalDate = new Date(goal.createdAt).toDateString();
-            return goalDate !== today;
-          })
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-        // 친구 목표들 (최신순 정렬)
-        const sortedFriendGoals = [...friendGoals].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        const todayMyGoal = myGoals.find(
+          (goal) => new Date(goal.createdAt).toDateString() === today
         );
 
-        // 오늘 목표가 있으면 최상단에 고정, 없으면 일반 정렬
-        if (todayMyGoal) {
-          filteredGoals = [todayMyGoal, ...otherMyGoals, ...sortedFriendGoals];
-        } else {
-          filteredGoals = [...otherMyGoals, ...sortedFriendGoals];
-        }
+        const otherGoals = [
+          ...myGoals.filter((goal) => new Date(goal.createdAt).toDateString() !== today),
+          ...friendGoals,
+        ];
+
+        const sortedOtherGoals = otherGoals.sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+
+        filteredGoals = todayMyGoal ? [todayMyGoal, ...sortedOtherGoals] : sortedOtherGoals;
+
         break;
+      }
       case 'my':
-        // 내 목표만 (최신순 정렬)
         filteredGoals = [...myGoals].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         break;
       case 'friends':
-        // 친구 목표만 (최신순 정렬)
         filteredGoals = [...friendGoals].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         break;
       default:
         filteredGoals = myGoals;
     }
 
-    // 검색어 필터링
     if (searchTerm.trim()) {
       filteredGoals = filteredGoals.filter(
         (goal) =>
           goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          goal.nickName.toLowerCase().includes(searchTerm.toLowerCase()),
+          goal.nickName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -87,13 +74,10 @@ const MainHome: React.FC = () => {
             <aside className="col-span-3 flex flex-col">
               <div className="flex flex-col h-full">
                 <div className="pt-16"></div>
-                {/* ProfileSection 컴포넌트 - 프로필 이미지, 닉네임, 팔로워 정보 */}
                 <ProfileSection />
                 <div className="mt-6"></div>
-                {/* MenuSection 컴포넌트 - 내 목표 관리, 친구 관리, 설정 메뉴 */}
                 <MenuSection />
                 <div className="mt-2"></div>
-                {/* CalendarSection 컴포넌트 - 월간 캘린더 */}
                 <CalendarSection />
               </div>
             </aside>
@@ -146,15 +130,13 @@ const MainHome: React.FC = () => {
                 <div className="border-b-2 border-gray-300 dark:border-gray-600 mx-6"></div>
               </div>
               <div className="flex-1 flex flex-col overflow-hidden">
-                {/* 목표 목록 스크롤 영역 */}
                 <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1096px]">
                   <div className="space-y-4 pt-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
-                    {/* GoalCard 컴포넌트들 - 개별 목표 카드들 (프로필, 내용, 태그, 완료 상태 등) */}
                     {goals.map((goal) => {
                       const goalWithUser = {
                         goal: {
-                          goal_id: goal.goalId, // ApiGoal의 goalId를 그대로 사용
-                          user_id: goal.goalId, // 임시로 goalId 사용 (나중에 userId 필드 추가 시 수정)
+                          goal_id: goal.goalId,
+                          user_id: goal.userId ?? goal.goalId,
                           title: goal.content,
                           content: goal.content,
                           category: goal.category,
@@ -165,7 +147,7 @@ const MainHome: React.FC = () => {
                           updated_at: goal.updatedAt,
                         },
                         user: {
-                          user_id: goal.goalId, // 임시로 goalId 사용
+                          user_id: goal.userId ?? goal.goalId,
                           nickname: goal.nickName || '사용자',
                           email: 'user@example.com',
                           auth_type: 'EMAIL',
