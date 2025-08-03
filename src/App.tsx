@@ -3,7 +3,6 @@ import { DarkModeProvider } from './contexts/DarkModeContext';
 import { GoalProvider } from './contexts/GoalContext';
 import { ApiGoalProvider } from './contexts/ApiGoalContext';
 import { UserProvider } from './contexts/UserContext';
-import { ToastProvider, useToast } from './contexts/ToastContext';
 import ToastNotification from './components/ui/ToastNotification';
 import { useAuth, AuthProvider } from './contexts/AuthContext';
 
@@ -20,7 +19,6 @@ import PrivateRoute from './components/common/PrivateRoute';
 import AuthLoader from './components/common/AuthLoader';
 
 function AppContent() {
-  const { isVisible, hideToast, currentMessage, currentType } = useToast();
   const { accessToken } = useAuth();
 
   // 로그인 필요한 경로들
@@ -52,12 +50,7 @@ function AppContent() {
         </Routes>
       </AuthLoader>
 
-      <ToastNotification
-        isVisible={isVisible}
-        onClose={hideToast}
-        message={currentMessage}
-        type={currentType}
-      />
+      <ToastNotification />
     </BrowserRouter>
   );
 }
@@ -67,13 +60,11 @@ function App() {
     <UserProvider>
       <DarkModeProvider>
         <GoalProvider>
-          <ToastProvider>
-            <AuthProvider>
-              <ApiGoalProvider>
-                <AppContent />
-              </ApiGoalProvider>
-            </AuthProvider>
-          </ToastProvider>
+          <AuthProvider>
+            <ApiGoalProvider>
+              <AppContent />
+            </ApiGoalProvider>
+          </AuthProvider>
         </GoalProvider>
       </DarkModeProvider>
     </UserProvider>
