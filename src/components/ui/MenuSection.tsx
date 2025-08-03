@@ -33,7 +33,7 @@ const MenuSection: React.FC = () => {
     <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mb-4">
       <nav className="space-y-1">
         <div>
-          <div className="flex items-center justify-between w-full text-left space-x-3 text-sky-400 px-3 py-3 rounded-xl font-extrabold border-b-2 border-sky-400">
+          <div className="flex items-center justify-between w-full text-left space-x-3 text-sky-400 px-3 py-3 font-extrabold border-b-2 border-sky-400">
             <div className="flex items-center space-x-3">
               <span className="material-icons text-lg">list_alt</span>
               <span>내 목표 관리</span>
@@ -62,7 +62,7 @@ const MenuSection: React.FC = () => {
         </div>
 
         <div>
-          <div className="flex items-center justify-between w-full text-left space-x-3 text-sky-400 px-3 py-3 rounded-xl font-extrabold border-b-2 border-sky-400">
+          <div className="flex items-center justify-between w-full text-left space-x-3 text-sky-400 px-3 py-3 font-extrabold border-b-2 border-sky-400">
             <div className="flex items-center space-x-3">
               <span className="material-icons text-lg">people</span>
               <span>친구 관리</span>
@@ -112,7 +112,7 @@ const MenuSection: React.FC = () => {
         </div>
 
         <div>
-          <div className="flex items-center justify-between w-full text-left space-x-3 text-sky-400 px-3 py-3 rounded-xl font-extrabold border-b-2 border-sky-400">
+          <div className="flex items-center justify-between w-full text-left space-x-3 text-sky-400 px-3 py-3 font-extrabold border-b-2 border-sky-400">
             <div className="flex items-center space-x-3">
               <span className="material-icons text-lg">settings</span>
               <span>설정</span>
