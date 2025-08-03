@@ -71,9 +71,10 @@ const GoalCard: React.FC<GoalCardProps> = ({
       document.removeEventListener('click', handleClickOutside);
     };
   }, [isDropdownOpen]);
+
   return (
     <div
-      className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-gray-600 transition-transform duration-200 cursor-pointer transform hover:scale-[1.01] ${
+      className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 hover:bg-sky-50 dark:hover:bg-gray-700 hover:shadow-lg hover:border-sky-200 dark:hover:border-gray-600 transition-transform duration-200 cursor-pointer transform hover:scale-[1.01] ${
         isExpired && !disableExpiredEffect ? 'opacity-60 blur-[0.5px]' : ''
       }`}
     >

@@ -28,6 +28,7 @@ const MenuSection: React.FC = () => {
       alert('오늘의 목표가 이미 존재합니다!');
     }
   };
+  
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mb-4">
       <nav className="space-y-1">
