@@ -91,28 +91,26 @@ const FriendList: React.FC = () => {
             </aside>
 
             <div className="col-span-9 flex flex-col overflow-hidden">
-              <div className="overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mt-16 h-[803px]">
-                <div
-                  className="grid grid-cols-2 h-[100%] overflow-y-auto
-                    [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent
-                    [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full"
-                >
-                  {users.map(user => (
-                    <UserItem
-                      key={user.userId}
-                      user={user}
-                      onDelete={handleDeleteUser}
-                      onNickNameClick={handleNicknameClick}
-                    />
-                  ))}
-                </div>
-
-                {isModalOpen && selectedUser && (
-                  <FriendProfileModal
-                    user={selectedUser}
-                    onClose={closeModal}
-                    onDelete={handleDeleteUser}
-                  />
+              <div className="overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mt-16 h-[840px]">
+                {users.length === 0 ? (
+                  <div className="text-center text-gray-600 text-lg whitespace-pre-line p-6">
+                    {`아직 친구가 없어요.\n친구 찾기 기능을 이용해 새로운 친구를 만나 보세요!`}
+                  </div>
+                ) : (
+                  <div
+                    className="grid grid-cols-2 gap-x-4 gap-y-4 overflow-y-auto
+                      [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent
+                      [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full"
+                  >
+                    {users.map(user => (
+                      <UserItem
+                        key={user.userId}
+                        user={user}
+                        onDelete={handleDeleteUser}
+                        onNickNameClick={handleNicknameClick}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
