@@ -97,20 +97,29 @@ const FriendList: React.FC = () => {
                     {`아직 친구가 없어요.\n친구 찾기 기능을 이용해 새로운 친구를 만나 보세요!`}
                   </div>
                 ) : (
-                  <div
-                    className="grid grid-cols-2 gap-x-4 gap-y-4 overflow-y-auto
-                      [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent
-                      [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full"
-                  >
-                    {users.map(user => (
-                      <UserItem
-                        key={user.userId}
-                        user={user}
+                  <>
+                    <div
+                      className="grid grid-cols-2 gap-x-4 gap-y-4 overflow-y-auto
+                        [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent
+                        [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full"
+                    >
+                      {users.map(user => (
+                        <UserItem
+                          key={user.userId}
+                          user={user}
+                          onDelete={handleDeleteUser}
+                          onNickNameClick={handleNicknameClick}
+                        />
+                      ))}
+                    </div>
+                    {isModalOpen && selectedUser && (
+                      <FriendProfileModal
+                        user={selectedUser}
+                        onClose={closeModal}
                         onDelete={handleDeleteUser}
-                        onNickNameClick={handleNicknameClick}
                       />
-                    ))}
-                  </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
