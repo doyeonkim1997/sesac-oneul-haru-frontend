@@ -47,7 +47,7 @@ const UserItem: React.FC<{ user: User; onDelete: (requestId: number) => void; on
 
         <button
           onClick={() => onDelete(user.requestId)}
-          className="ml-3 px-3 py-1 text-sm bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors"
+          className="ml-3 -mt-0.5 px-3 py-1 text-sm bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors inline-flex items-center"
         >
           삭제
         </button>

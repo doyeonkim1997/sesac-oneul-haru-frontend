@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchFriends, sendFriendRequest } from '../../api/Friend';
+import { fetchFriends, fetchSentFriendRequests, sendFriendRequest } from '../../api/Friend';
 import { type User } from '../friends/UserItem';
 import { getUsersByEmail } from '../../api/getUsersByEmail';
 
@@ -18,21 +18,23 @@ const FriendSearchModal = ({
 }: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<User[]>([]);
-  // const [requestedUserIds, setRequestedUserIds] = useState<number[]>([]);
   const [friendIds, setFriendIds] = useState<number[]>([]);
 
   useEffect(() => {
-    const loadFriendIds = async () => {
+    const loadFriendIdsAndRequests = async () => {
       try {
         const friends = await fetchFriends();
-        const ids = friends.map(friend => friend.userId);
-        setFriendIds(ids);
+        setFriendIds(friends.map(f => f.userId));
+
+        const sentRequests = await fetchSentFriendRequests();
+        const sentUserIds = sentRequests.map((req: any) => req.receiverId);
+        setRequestedUserIds(sentUserIds);
       } catch (err) {
-        console.error('친구 목록 불러오기 실패:', err);
+        console.error('친구 목록 또는 요청 목록 불러오기 실패:', err);
       }
     };
 
-    loadFriendIds();
+    loadFriendIdsAndRequests();
   }, []);
 
   const handleSearch = async () => {
@@ -73,7 +75,7 @@ const FriendSearchModal = ({
       alert(`${user.nickName}님에게 친구 요청을 보냈습니다.`);
       setRequestedUserIds(prev => [...prev, user.userId]);
     } catch (error) {
-      alert('이미 친구 요청을 보냈습니다'); // 여기를 수정하는 방법도
+      alert('친구 요청 중인 사용자입니다');
       console.error(error);
     }
   };

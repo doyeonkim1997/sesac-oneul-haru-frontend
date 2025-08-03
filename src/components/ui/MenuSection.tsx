@@ -99,14 +99,14 @@ const MenuSection: React.FC = () => {
               <span>친구 찾기</span>
             </a>
 
-{isSearchOpen && (
-  <FriendSearchModal
-    onClose={() => setIsSearchOpen(false)}
-    isStandalone={true}
-    requestedUserIds={requestedUserIds}
-    setRequestedUserIds={setRequestedUserIds}
-  />
-)}
+            {isSearchOpen && (
+              <FriendSearchModal
+                onClose={() => setIsSearchOpen(false)}
+                isStandalone={true}
+                requestedUserIds={requestedUserIds}
+                setRequestedUserIds={setRequestedUserIds}
+              />
+            )}
           </div>
         </div>
 

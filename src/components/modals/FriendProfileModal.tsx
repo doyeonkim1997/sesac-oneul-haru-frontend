@@ -11,7 +11,7 @@ interface FriendProfileModalProps {
 const FriendProfileModal: React.FC<FriendProfileModalProps> = ({ user, onClose, onDelete }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 ">
-      <div className="bg-white p-6 pr-10 rounded-xl w-full max-w-sm overflow-y-auto shadow-lg relative flex flex-col gap-1 shadow-lg ">
+      <div className="bg-white px-6 pt-6 pb-4 rounded-xl w-full max-w-sm overflow-y-auto shadow-lg relative flex flex-col gap-4">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-black text-2xl w-8 h-8 flex items-center justify-center"
@@ -45,8 +45,11 @@ const FriendProfileModal: React.FC<FriendProfileModalProps> = ({ user, onClose, 
           </div>
         </div>
 
-        <div className="flex justify-center mt-0">
-          <FriendCalendar friendId={user.userId} />
+        {/* 캘린더 */}
+        <div className="flex justify-center mt-4">
+          <div className="w-fit">
+            <FriendCalendar friendId={user.userId} />
+          </div>
         </div>
       </div>
     </div>
