@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import FriendModal from '../modals/FriendModal';
 import HeartModal from '../modals/HeartModal';
-import axiosInstance, { setAccessToken } from '../../api/axiosInstance';
+import axiosInstance from '../../api/axiosInstance';
 import { useDarkMode } from '../../contexts/DarkModeContext';
+import { useAuth } from '../../contexts/AuthContext';
 const MAX_CHEER_COUNT: number = 15;
 
 const getHeartColor = (count: number): string => {
@@ -31,6 +32,7 @@ const Header = () => {
 
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { logout } = useAuth();
   // 테스트용 (실제론 props나 context에서)
   const [cheerCount, setCheerCount] = useState(0);
 
@@ -111,7 +113,7 @@ const Header = () => {
                 } catch (error) {
                   console.error('로그아웃 실패:', error);
                 } finally {
-                  setAccessToken(null); // 프론트에서도
+                  logout(); // AuthContext의 logout 함수 사용
                   // 로그아웃 시 다크모드가 활성화되어 있으면 라이트모드로 리셋
                   if (isDarkMode) {
                     toggleDarkMode();

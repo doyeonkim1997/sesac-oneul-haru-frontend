@@ -50,7 +50,7 @@ function AppContent() {
         </Routes>
       </AuthLoader>
 
-      <ToastNotification />
+      {accessToken && <ToastNotification />}
     </BrowserRouter>
   );
 }
