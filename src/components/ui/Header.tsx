@@ -33,6 +33,8 @@ const Header = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   // 테스트용 (실제론 props나 context에서)
   const [cheerCount, setCheerCount] = useState(0);
+
+  // 백엔드 연결
   const [todayCheerCount, setTodayCheerCount] = useState(0);
   const [totalCheerCount, setTotalCheerCount] = useState(0);
   useEffect(() => {
@@ -40,11 +42,9 @@ const Header = () => {
       try {
         const todayResponse = await axiosInstance.get('/cheer/today');
         setTodayCheerCount(todayResponse.data.todayCheerCount || 0);
-        console.log('오늘', todayResponse); // 디버깅
-
+        console.log('총합', todayResponse); // 디버깅
         const totalResponse = await axiosInstance.get('/cheer/total');
         setTotalCheerCount(totalResponse.data.totalCheerCount || 0);
-        console.log('총합', totalResponse); // 디버깅
       } catch (error) {
         console.error('응원 수를 가져오는데 실패했습니다.', error);
       }
@@ -93,7 +93,8 @@ const Header = () => {
                 {cheerCount === 0 ? 'favorite_border' : 'favorite'}
               </span>
             </button>
-            {showHeartModal && (
+            {/* 헤더 수정 */}
+             {showHeartModal && (
               <HeartModal
                 onClose={() => setShowHeartModal(false)}
                 todayCount={todayCheerCount}

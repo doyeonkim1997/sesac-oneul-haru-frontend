@@ -1,3 +1,4 @@
+// 수정
 const HeartModal = ({ onClose, todayCount, totalCount }: { onClose: () => void; todayCount: number; totalCount: number; }) => {
   return (
     <div className="fixed inset-0 z-50 bg-black/10 flex items-center justify-center p-4">
