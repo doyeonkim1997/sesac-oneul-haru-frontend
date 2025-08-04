@@ -5,6 +5,7 @@ import FriendRequestModal from '../modals/FriendRequestModal';
 import FriendSearchModal from '../modals/FriendSearchModal';
 import DarkModeToggle from './DarkModeToggle';
 import { useApiGoals } from '../../contexts/ApiGoalContext';
+import Toast from './Toast';
 
 const MenuSection: React.FC = () => {
   const [isCreateGoalModalOpen, setIsCreateGoalModalOpen] = useState(false);
@@ -13,6 +14,11 @@ const MenuSection: React.FC = () => {
   const { createNewGoal } = useApiGoals();
 
   const [requestedUserIds, setRequestedUserIds] = useState<number[]>([]);
+
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+  };
 
   const handleCreateGoal = async (goalData: {
     title: string;
@@ -25,7 +31,7 @@ const MenuSection: React.FC = () => {
       console.log('✅ MenuSection - 목표 생성 성공');
     } catch (error) {
       console.error('❌ MenuSection - 목표 생성 실패:', error);
-      alert('오늘의 목표가 이미 존재합니다!');
+      showToast('오늘의 목표가 이미 존재합니다!', 'error');
     }
   };
   
@@ -141,6 +147,13 @@ const MenuSection: React.FC = () => {
         onClose={() => setIsCreateGoalModalOpen(false)}
         onSubmit={handleCreateGoal}
       />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

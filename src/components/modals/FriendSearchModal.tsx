@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchFriends, fetchSentFriendRequests, sendFriendRequest } from '../../api/Friend';
 import { type User } from '../friends/UserItem';
 import { getUsersByEmail } from '../../api/getUsersByEmail';
+import Toast from '../ui/Toast';
 
 type Props = {
   onClose: () => void;
@@ -19,6 +20,11 @@ const FriendSearchModal = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<User[]>([]);
   const [friendIds, setFriendIds] = useState<number[]>([]);
+
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+  };
 
   useEffect(() => {
     const loadFriendIdsAndRequests = async () => {
@@ -67,15 +73,11 @@ const FriendSearchModal = ({
   };
 
   const handleSelect = async (user: User) => {
-    const confirm = window.confirm(`${user.nickName}님에게 친구 요청을 보낼까요?`);
-    if (!confirm) return;
-
     try {
       await sendFriendRequest(user.userId);
-      alert(`${user.nickName}님에게 친구 요청을 보냈습니다.`);
       setRequestedUserIds(prev => [...prev, user.userId]);
     } catch (error) {
-      alert('친구 요청 중인 사용자입니다');
+      showToast('이미 친구 요청 중인 사용자입니다.', 'error');
       console.error(error);
     }
   };
@@ -161,6 +163,13 @@ const FriendSearchModal = ({
         searchTerm.trim() !== '' && (
           <div className="text-center text-gray-500">검색 결과가 없습니다.</div>
         )
+      )}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </>
   );

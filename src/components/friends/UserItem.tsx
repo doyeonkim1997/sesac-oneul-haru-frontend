@@ -40,14 +40,14 @@ const UserItem: React.FC<{ user: User; onDelete: (requestId: number) => void; on
         <div className="flex items-center text-gray-800 font-semibold text-lg">
           <button
             onClick={() => onNickNameClick?.(user)}
-            className="hover:underline hover:text-sky-500"
+            className="hover:underline hover:text-sky-400"
           >
             {user.nickName}
           </button>
 
           <button
             onClick={() => onDelete(user.requestId)}
-            className="ml-3 -mt-0.5 px-3 py-1 text-sm bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors inline-flex items-center"
+            className="ml-3 px-3 py-1 text-sm bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors inline-flex items-center"
           >
             삭제
           </button>

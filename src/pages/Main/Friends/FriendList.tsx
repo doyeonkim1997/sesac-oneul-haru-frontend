@@ -8,6 +8,7 @@ import UserItem, { type User } from '../../../components/friends/UserItem';
 import FriendProfileModal from '../../../components/modals/FriendProfileModal';
 import { useAuth } from '../../../contexts/AuthContext';
 import { deleteFriend, fetchFriends, getFriendProfile } from '../../../api/Friend'; // 👈 getFriendProfile 추가
+import Toast from '../../../components/ui/Toast';
 
 const FriendList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -18,6 +19,13 @@ const FriendList: React.FC = () => {
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'error') => {
+      console.log('토스트 호출:', message);
+
+    setToast({ message, type });
+  };
 
   useEffect(() => {
     async function loadFriends() {
@@ -61,11 +69,11 @@ const FriendList: React.FC = () => {
 
     try {
       await deleteFriend(requestId); // API 호출
-      alert('친구가 삭제되었습니다.');
+      showToast('친구가 삭제되었습니다.', 'success');
       setUsers(prev => prev.filter(user => user.requestId !== requestId));
       closeModal(); // 모달 닫기
     } catch (err) {
-      alert('친구 삭제에 실패했습니다. 다시 시도해주세요.');
+      showToast('친구 삭제에 실패했습니다. 다시 시도해주세요.', 'error');
       console.error(err);
     }
   };
@@ -120,6 +128,13 @@ const FriendList: React.FC = () => {
                       />
                     )}
                   </>
+                )}
+                {toast && (
+                  <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                  />
                 )}
               </div>
             </div>
