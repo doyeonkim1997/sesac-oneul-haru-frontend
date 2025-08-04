@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-
 const ToastNotification: React.FC = () => {
   const [sseMessage, setSseMessage] = useState<string>('');
   const [showSseToast, setShowSseToast] = useState(false);
   const { accessToken } = useAuth();
-
   // SSE 연결
   useEffect(() => {
     if (!accessToken) return;
-
     let isConnected = false;
     let reconnectTimeout: ReturnType<typeof setTimeout>;
-
     const connectSSE = async () => {
       try {
         console.log('SSE 연결 시도 중...');
@@ -22,36 +18,28 @@ const ToastNotification: React.FC = () => {
             Accept: 'text/event-stream',
           },
         });
-
         if (!response.ok) {
           throw new Error(`SSE 연결 실패: ${response.status}`);
         }
-
         isConnected = true;
         console.log('SSE 연결 성공!');
-
         const reader = response.body?.getReader();
         if (!reader) return;
-
         const decoder = new TextDecoder();
-
         while (true) {
           const { done, value } = await reader.read();
           if (done) {
             console.log('SSE 스트림 종료');
             break;
           }
-
           const chunk = decoder.decode(value);
           const lines = chunk.split('\n');
-
           for (const line of lines) {
             if (line.startsWith('data: ')) {
               const message = line.slice(6); // 'data: ' 제거
               console.log('SSE 메시지 수신:', message);
               setSseMessage(message);
               setShowSseToast(true);
-
               // 5초 후 자동으로 숨기기
               setTimeout(() => {
                 setShowSseToast(false);
@@ -62,7 +50,6 @@ const ToastNotification: React.FC = () => {
       } catch (error) {
         console.error('SSE 연결 오류:', error);
         isConnected = false;
-
         // 3초 후 재연결 시도
         if (reconnectTimeout) clearTimeout(reconnectTimeout);
         reconnectTimeout = setTimeout(() => {
@@ -71,20 +58,16 @@ const ToastNotification: React.FC = () => {
         }, 3000);
       }
     };
-
     connectSSE();
-
     // 컴포넌트 언마운트 시 정리
     return () => {
       isConnected = false;
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
     };
   }, [accessToken]);
-
   const handleSseClose = () => {
     setShowSseToast(false);
   };
-
   return (
     <>
       {/* SSE로 받은 토스트 */}
@@ -128,5 +111,4 @@ const ToastNotification: React.FC = () => {
     </>
   );
 };
-
 export default ToastNotification;
