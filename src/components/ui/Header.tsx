@@ -42,6 +42,7 @@ const Header = () => {
       try {
         const todayResponse = await axiosInstance.get('/cheer/today');
         setTodayCheerCount(todayResponse.data.todayCheerCount || 0);
+        setCheerCount(todayResponse.data.todayCheerCount || 0);
         console.log('총합', todayResponse); // 디버깅
         const totalResponse = await axiosInstance.get('/cheer/total');
         setTotalCheerCount(totalResponse.data.totalCheerCount || 0);
@@ -70,10 +71,10 @@ const Header = () => {
           </div>
 
           <div className="flex items-center space-x-6 text-gray-900 dark:text-white">
-            {/* 임시 버튼 */}
+            {/* 임시 버튼
             <button onClick={() => setCheerCount((prev) => Math.min(prev + 1, 100))}>
               임시 버튼 (+1)
-            </button>
+            </button> */}
 
             <button className="hover:text-sky-400" onClick={() => setShowFriendModal(true)}>
               <span className="material-icons !text-[28px] translate-y-[3px]">people</span>
@@ -94,7 +95,7 @@ const Header = () => {
               </span>
             </button>
             {/* 헤더 수정 */}
-             {showHeartModal && (
+            {showHeartModal && (
               <HeartModal
                 onClose={() => setShowHeartModal(false)}
                 todayCount={todayCheerCount}
