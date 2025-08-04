@@ -29,7 +29,7 @@ const Terms: React.FC = () => {
             <div className="col-span-9 flex flex-col overflow-hidden">
               <div className="flex-1 overflow-y-auto">
                 <div className="pt-16 space-y-6">
-                  <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md max-h-[840px] overflow-y-auto">
+                  <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm max-h-[878px] overflow-y-auto">
                     <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
                       이용약관 및 정책
                     </h1>

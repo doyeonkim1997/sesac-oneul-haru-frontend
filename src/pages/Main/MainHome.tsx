@@ -135,7 +135,7 @@ const MainHome: React.FC = () => {
               </div>
 
               <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[840px]">
+                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[877px]">
                   <div className="space-y-4 pt-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {goals.length === 0 ? (
                       <EmptyGoalCard onClick={() => setIsCreateGoalModalOpen(true)} />

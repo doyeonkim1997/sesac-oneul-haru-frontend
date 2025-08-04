@@ -133,7 +133,7 @@ const GoalList: React.FC = () => {
                 </div>
 
                 {/* 목표 목록 스크롤 영역 */}
-                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[1035px]">
+                <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-[550px] max-h-[877px]">
                   <div className="space-y-4 pt-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {/* GoalCard 컴포넌트들 - 개별 목표 카드들 */}
                     {goals.map((goal) => {
