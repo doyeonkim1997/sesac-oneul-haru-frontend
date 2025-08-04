@@ -1,6 +1,6 @@
 import logo from '../../assets/logo.svg';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import FriendModal from '../modals/FriendModal';
 import HeartModal from '../modals/HeartModal';
 import axiosInstance, { setAccessToken } from '../../api/axiosInstance';
@@ -35,6 +35,24 @@ const Header = () => {
 
   // 테스트용 (실제론 props나 context에서)
   const [cheerCount, setCheerCount] = useState(0);
+
+  // 백엔드 연결
+  const [todayCheerCount, setTodayCheerCount] = useState(0);
+  const [totalCheerCount, setTotalCheerCount] = useState(0);
+  useEffect(() => {
+    const fetchCheerCounts = async () => {
+      try {
+        const todayResponse = await axiosInstance.get('/cheer/today');
+        setTodayCheerCount(todayResponse.data.todayCheerCount || 0);
+        console.log('총합', todayResponse); // 디버깅
+        const totalResponse = await axiosInstance.get('/cheer/total');
+        setTotalCheerCount(totalResponse.data.totalCheerCount || 0);
+      } catch (error) {
+        console.error('응원 수를 가져오는데 실패했습니다.', error);
+      }
+    };
+    fetchCheerCounts();
+  }, []);
 
   return (
     <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
@@ -77,7 +95,14 @@ const Header = () => {
                 {cheerCount === 0 ? 'favorite_border' : 'favorite'}
               </span>
             </button>
-            {showHeartModal && <HeartModal onClose={() => setShowHeartModal(false)} />}
+            {/* 하트변경 내용 추가 */}
+             {showHeartModal && (
+              <HeartModal
+                onClose={() => setShowHeartModal(false)}
+                todayCount={todayCheerCount}
+                totalCount={totalCheerCount}
+              />
+            )}
 
             <button
               className="hover:text-sky-400"
