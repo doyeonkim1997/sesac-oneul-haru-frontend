@@ -11,6 +11,7 @@ import { updateUserProfile } from '../api/updateUserProfile';
 import { updateUserPassword } from '../api/updateUserPassword';
 import { withdrawUser as apiWithdrawUser } from '../api/withdrawUser';
 import { uploadImage } from '../api/uploadImage';
+import Toast from '../components/ui/Toast';
 
 interface User {
   user_id: number;
@@ -43,7 +44,7 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const { accessToken, email, nickName, imageUrl, authType } = useAuth();
+  const { accessToken, email, nickName, imageUrl, authType, userId } = useAuth();
   const [user, setUser] = useState<User>({
     user_id: 0,
     nickname: '',
@@ -51,6 +52,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     profileImage: '',
     auth_type: 'EMAIL',
   });
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+  };
 
   useEffect(() => {
     if (accessToken && email) {
@@ -79,7 +84,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       });
 
       setUser({
-        user_id: 0, // TODO: 백엔드에서 userId를 제공하는 경우 사용
+        user_id: userId || 0,
         nickname: currentNickName || '사용자',
         email: email,
         profileImage: currentImageUrl || '',
@@ -94,7 +99,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         auth_type: 'EMAIL',
       });
     }
-  }, [accessToken, email, nickName, imageUrl, authType]);
+  }, [accessToken, email, nickName, imageUrl, authType, userId]);
 
   const updateNickname = async (newNickname: string): Promise<boolean> => {
     if (user.auth_type !== 'EMAIL') {
@@ -109,11 +114,11 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       await updateUserProfile({ nickName: newNickname.trim() });
       setUser((prev) => ({ ...prev, nickname: newNickname.trim() }));
       setNickName(newNickname.trim()); // axiosInstance 글로벌 상태 업데이트
-      alert('닉네임이 성공적으로 변경되었습니다.');
+      showToast('닉네임이 성공적으로 변경되었습니다.', 'success');
       return true;
     } catch (error: any) {
       console.error('닉네임 업데이트 실패:', error);
-      alert(error.response?.data?.message || '닉네임 변경 중 오류가 발생했습니다.');
+      showToast('닉네임 변경 중 오류가 발생했습니다.', 'error');
       return false;
     }
   };
@@ -124,24 +129,31 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       return false;
     }
     if (!currentPassword || !newPassword) {
-      alert('모든 필드를 입력해주세요.');
+      showToast('모든 필드를 입력해주세요.', 'error');
       return false;
     }
-    if (newPassword.length < 6) {
-      alert('새 비밀번호는 6자 이상이어야 합니다.');
+
+    if (newPassword.length < 8 || newPassword.length > 20) {
+      showToast('비밀번호는 8자 이상 20자 이하여야 합니다.', 'error');
       return false;
     }
+
+    if (!/[a-zA-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      showToast('비밀번호는 영문과 숫자를 각각 1자 이상 포함해야 합니다.', 'error');
+      return false;
+    }
+
     try {
       await updateUserPassword({
         currentPassword,
         newPassword,
         confirmPassword: newPassword,
       });
-      alert('비밀번호가 성공적으로 변경되었습니다.');
+      showToast('비밀번호가 성공적으로 변경되었습니다.', 'success');
       return true;
     } catch (error: any) {
       console.error('비밀번호 업데이트 실패:', error);
-      alert(error.response?.data?.message || '비밀번호 변경 중 오류가 발생했습니다.');
+      showToast('비밀번호를 잘못 입력하셨습니다', 'error');
       return false;
     }
   };
@@ -153,7 +165,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
       setUser((prev) => ({ ...prev, profileImage: fullImageUrl }));
       setImageUrl(result.imageUrl); // axiosInstance 글로벌 상태 업데이트 (백엔드 주소 제외)
-      alert('프로필 이미지가 성공적으로 변경되었습니다.');
+      showToast('프로필 이미지가 성공적으로 변경되었습니다.', 'success');
       return true;
     } catch (error: any) {
       console.error('프로필 이미지 업데이트 실패:', error);
@@ -216,6 +228,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       }}
     >
       {children}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </UserContext.Provider>
   );
 };

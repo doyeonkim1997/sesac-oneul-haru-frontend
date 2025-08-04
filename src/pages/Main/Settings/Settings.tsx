@@ -7,10 +7,16 @@ import Footer from '../../../components/ui/Footer';
 import { useUser } from '../../../contexts/UserContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getImageUrl, getNickName, getAuthType } from '../../../api/axiosInstance';
+import Toast from '../../../components/ui/Toast';
 
 const Settings: React.FC = () => {
   const { user, updateNickname, updatePassword, updateProfileImage, withdrawUser } = useUser();
   const { nickName, imageUrl, email, authType } = useAuth(); // AuthContext의 state
+
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+  };
 
   // axiosInstance에서 직접 authType 가져오기 (더 정확함)
   const directAuthType = getAuthType();
@@ -74,7 +80,7 @@ const Settings: React.FC = () => {
       return;
     }
     if (newPassword !== confirmPassword) {
-      alert('새 비밀번호가 일치하지 않습니다.');
+      showToast('새 비밀번호가 일치하지 않습니다.', 'error');
       return;
     }
     const success = await updatePassword(currentPassword, newPassword);
@@ -91,13 +97,13 @@ const Settings: React.FC = () => {
     if (file) {
       // 파일 크기 검증 (5MB 이하)
       if (file.size > 5 * 1024 * 1024) {
-        alert('파일 크기는 5MB 이하여야 합니다.');
+        showToast('파일 크기는 5MB 이하여야 합니다.', 'error');
         return;
       }
 
       // 파일 타입 검증
       if (!file.type.startsWith('image/')) {
-        alert('이미지 파일만 업로드 가능합니다.');
+        showToast('이미지 파일만 업로드 가능합니다.', 'error');
         return;
       }
 
@@ -346,11 +352,11 @@ const Settings: React.FC = () => {
                             }
 
                             if (!hasChanges) {
-                              alert('변경할 내용이 없습니다.');
+                              showToast('변경할 내용이 없습니다.', 'error');
                             }
                           } catch (error) {
                             console.error('프로필 저장 중 오류:', error);
-                            alert('프로필 저장 중 오류가 발생했습니다.');
+                            showToast('프로필 저장 중 오류가 발생했습니다.', 'error');
                           } finally {
                             setIsUploading(false);
                           }
@@ -374,12 +380,12 @@ const Settings: React.FC = () => {
                           }
 
                           if (!currentPassword || !newPassword || !confirmPassword) {
-                            alert('모든 비밀번호 필드를 입력해주세요.');
+                            showToast('모든 비밀번호 필드를 입력해주세요.', 'error');
                             return;
                           }
 
                           if (newPassword !== confirmPassword) {
-                            alert('새 비밀번호가 일치하지 않습니다.');
+                            showToast('새 비밀번호가 일치하지 않습니다.', 'error');
                             return;
                           }
 
@@ -459,6 +465,13 @@ const Settings: React.FC = () => {
             </div>
           </div>
         </div>
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
       </main>
       <Footer />
     </div>

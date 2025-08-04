@@ -41,7 +41,6 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
   const handleAccept = async (requestId: number) => {
     try {
       await acceptFriendRequest(requestId);
-      alert('친구 요청을 수락했습니다.');
       setRequests((prev) => prev.filter((req) => req.requestId !== requestId));
     } catch (err) {
       alert('친구 요청 수락에 실패했습니다. 다시 시도해주세요.');
@@ -52,7 +51,6 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
   const handleReject = async (requestId: number) => {
     try {
       await rejectFriendRequest(requestId);
-      alert('친구 요청을 거절했습니다.');
       setRequests((prev) => prev.filter((req) => req.requestId !== requestId));
     } catch (err) {
       alert('친구 요청 거절에 실패했습니다. 다시 시도해주세요.');

@@ -97,8 +97,13 @@ const Signup: React.FC = () => {
       return;
     }
 
-    if (password.length < 8) {
-      alert('비밀번호는 8자 이상이어야 합니다.');
+    if (password.length < 8 || password.length > 20) {
+      alert('비밀번호는 8자 이상 20자 이하여야 합니다.');
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+      alert('비밀번호는 영문과 숫자를 각각 1자 이상 포함해야 합니다.');
       return;
     }
 
@@ -229,7 +234,7 @@ const Signup: React.FC = () => {
                 className="flex-grow appearance-none border border-gray-300 rounded-lg w-full py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:border-sky-400 h-10 bg-gray-50"
                 id="password"
                 type="password"
-                placeholder="8자 이상, 특수문자 포함"
+                placeholder="영문/숫자 1개 이상 포함 8-20자"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
