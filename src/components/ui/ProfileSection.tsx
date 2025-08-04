@@ -11,6 +11,7 @@ const ProfileSection: React.FC = () => {
   const [imageUrl, setImageUrl] = useState(getImageUrl());
   const [nickName, setNickName] = useState(getNickName());
   const [userTier, setUserTier] = useState(getTier());
+  const [forceUpdate, setForceUpdate] = useState(0); // 강제 리렌더링용
 
   // 사용자 프로필 정보 가져오기
   const fetchUserProfile = async () => {
@@ -67,12 +68,35 @@ const ProfileSection: React.FC = () => {
 
   // 초기 로드 시 프로필 정보 가져오기
   useEffect(() => {
-    fetchUserProfile();
+    if (user?.user_id) {
+      fetchUserProfile();
+      // 초기 로드 시에도 등급 업데이트 시도
+      updateTier()
+        .then(() => {
+          fetchUserProfile(); // 등급 업데이트 후 프로필 새로고침
+        })
+        .catch(console.error);
+    }
   }, [user?.user_id]);
 
   // 실시간 상태 동기화 (닉네임, 이미지, 티어 변경 감지)
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
+      // DB 변경사항 감지를 위해 주기적으로 등급 업데이트 시도
+      try {
+        await updateTier();
+        console.log('🔄 ProfileSection - 주기적 등급 업데이트 완료');
+
+        // 등급 업데이트 후 프로필 정보 새로고침
+        await fetchUserProfile();
+
+        // 강제 리렌더링 트리거
+        setForceUpdate((prev) => prev + 1);
+      } catch (error) {
+        console.log('🔄 ProfileSection - 등급 업데이트 실패 (정상)');
+      }
+
+      // UserContext에서 최신 정보 가져오기
       const updatedImageUrl = getImageUrl();
       const updatedNickName = getNickName();
       const updatedTier = getTier();
@@ -85,11 +109,12 @@ const ProfileSection: React.FC = () => {
       }
       if (updatedTier && updatedTier !== userTier) {
         setUserTier(updatedTier);
+        console.log('🔍 ProfileSection - 티어 업데이트 감지:', { old: userTier, new: updatedTier });
       }
-    }, 3000); // 3초마다 체크 (더 빠른 반응)
+    }, 2000); // 2초마다 체크 (적절한 간격)
 
     return () => clearInterval(interval);
-  }, [imageUrl, nickName, userTier]);
+  }, []); // 의존성 배열 제거 - 무한 루프 방지
 
   // 목표 완료 시 티어 업데이트를 위한 추가 폴링 (제거 - 이미 목표 완료 시 즉시 업데이트됨)
   // useEffect(() => {
