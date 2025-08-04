@@ -42,7 +42,7 @@ const TierMedal: React.FC<TierMedalProps> = ({ tier, size = 'md', className = ''
       default:
         return {
           color:
-            'bg-gradient-to-r from-amber-100 to-amber-200 border border-amber-300 text-amber-800 shadow-sm',
+            'bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 text-amber-700 shadow-sm',
           icon: '/bronze-medal.png',
           label: 'BRONZE',
           useImage: true,
@@ -54,18 +54,18 @@ const TierMedal: React.FC<TierMedalProps> = ({ tier, size = 'md', className = ''
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 rounded-full font-bold ${config.color} ${sizeClasses[size]} ${className} transition-all duration-200 hover:scale-105`}
+      className={`inline-flex items-center gap-1.5 rounded-full font-bold ${config.color} ${sizeClasses[size]} ${className} transition-all duration-200 hover:scale-105 max-w-full`}
     >
       {config.useImage ? (
         <img
           src={config.icon}
           alt={config.label}
-          className="w-5 h-5 object-contain drop-shadow-sm"
+          className="w-4 h-4 sm:w-5 sm:h-5 object-contain drop-shadow-sm flex-shrink-0"
         />
       ) : (
-        <span className="text-sm drop-shadow-sm">{config.icon}</span>
+        <span className="text-sm drop-shadow-sm flex-shrink-0">{config.icon}</span>
       )}
-      <span className="drop-shadow-sm">{config.label}</span>
+      <span className="drop-shadow-sm truncate">{config.label}</span>
     </div>
   );
 };
