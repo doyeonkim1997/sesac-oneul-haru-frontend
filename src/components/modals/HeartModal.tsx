@@ -1,3 +1,4 @@
+// 수정
 const HeartModal = ({ onClose, todayCount, totalCount }: { onClose: () => void; todayCount: number; totalCount: number; }) => {
   return (
     <div className="fixed inset-0 z-50 bg-black/10 flex items-center justify-center p-4">
@@ -9,11 +10,11 @@ const HeartModal = ({ onClose, todayCount, totalCount }: { onClose: () => void; 
           </button>
         </div>
         <div className="text-gray-700 dark:text-gray-200 space-y-2">
-          <p>:하트2: 오늘 받은 응원: <strong>{todayCount}개</strong></p>
-          <p>:하트2: 누적 응원: <strong>{totalCount}개</strong></p>
+          <p>오늘 받은 응원: <strong>{todayCount}개</strong></p>
+          <p>전체 누적 응원: <strong>{totalCount}개</strong></p>
         </div>
       </div>
     </div>
   );
 };
-export default HeartModal;
+export default HeartModal;  
