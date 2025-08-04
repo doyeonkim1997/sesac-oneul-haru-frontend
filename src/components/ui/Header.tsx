@@ -31,7 +31,7 @@ const Header = () => {
   const [isHeartHovered, setIsHeartHovered] = useState(false);
 
   const navigate = useNavigate();
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { isDarkMode, resetDarkMode } = useDarkMode();
   const { logout } = useAuth();
   // 테스트용 (실제론 props나 context에서)
   const [cheerCount, setCheerCount] = useState(0);
@@ -114,10 +114,8 @@ const Header = () => {
                   console.error('로그아웃 실패:', error);
                 } finally {
                   logout(); // AuthContext의 logout 함수 사용
-                  // 로그아웃 시 다크모드가 활성화되어 있으면 라이트모드로 리셋
-                  if (isDarkMode) {
-                    toggleDarkMode();
-                  }
+                  // 로그아웃 시 다크모드 해제
+                  resetDarkMode();
                   navigate('/login', { replace: true });
                 }
               }}
