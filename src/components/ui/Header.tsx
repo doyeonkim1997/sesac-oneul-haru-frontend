@@ -4,6 +4,7 @@ import { useState } from 'react';
 import FriendModal from '../modals/FriendModal';
 import HeartModal from '../modals/HeartModal';
 import axiosInstance, { setAccessToken } from '../../api/axiosInstance';
+import { useDarkMode } from '../../contexts/DarkModeContext';
 
 const MAX_CHEER_COUNT: number = 15;
 
@@ -30,6 +31,7 @@ const Header = () => {
   const [isHeartHovered, setIsHeartHovered] = useState(false);
 
   const navigate = useNavigate();
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   // 테스트용 (실제론 props나 context에서)
   const [cheerCount, setCheerCount] = useState(0);
@@ -53,7 +55,7 @@ const Header = () => {
 
           <div className="flex items-center space-x-6 text-gray-900 dark:text-white">
             {/* 임시 버튼 */}
-            <button onClick={() => setCheerCount(prev => Math.min(prev + 1, 100))}>
+            <button onClick={() => setCheerCount((prev) => Math.min(prev + 1, 100))}>
               임시 버튼 (+1)
             </button>
 
@@ -86,6 +88,12 @@ const Header = () => {
                   console.error('로그아웃 실패:', error);
                 } finally {
                   setAccessToken(null); // 프론트에서도
+
+                  // 로그아웃 시 다크모드가 활성화되어 있으면 라이트모드로 리셋
+                  if (isDarkMode) {
+                    toggleDarkMode();
+                  }
+
                   navigate('/login', { replace: true });
                 }
               }}

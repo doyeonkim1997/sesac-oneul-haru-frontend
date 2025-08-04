@@ -20,16 +20,9 @@ interface DarkModeProviderProps {
 }
 
 export const DarkModeProvider: React.FC<DarkModeProviderProps> = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // localStorage에서 저장된 다크모드 설정 불러오기
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
-  });
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    // 다크모드 상태를 localStorage에 저장
-    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
-
     // HTML 요소에 다크모드 클래스 추가/제거
     const html = document.documentElement;
     const body = document.body;
