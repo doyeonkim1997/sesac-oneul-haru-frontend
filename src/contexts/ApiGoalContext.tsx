@@ -227,6 +227,9 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
       await loadGoals();
       await loadFriendGoals();
       console.log('✅ 목록 새로고침 완료');
+
+      // 캘린더 새로고침 트리거
+      refreshCalendar();
     } catch (error) {
       console.error('❌ 목표 생성 API 실패, 상태 되돌리기:', error);
       // 실패시 임시 목표 제거
@@ -268,6 +271,9 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
       // 2. API 호출
       await updateGoal(goalId, goalData);
       console.log('✅ 목표 수정 API 성공');
+
+      // 3. 캘린더 새로고침 트리거
+      refreshCalendar();
     } catch (error) {
       console.error('❌ 목표 수정 API 실패, 상태 되돌리기:', error);
       // 3. 실패시 원래 상태로 복원
@@ -297,9 +303,12 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
       // 2. API 호출 (백엔드에서 isDeleted = true로 설정)
       await deleteGoal(goalId);
       console.log('✅ 목표 Soft Delete API 성공');
+
+      // 3. 캘린더 새로고침 트리거
+      refreshCalendar();
     } catch (error) {
       console.error('❌ 목표 Soft Delete API 실패, 상태 되돌리기:', error);
-      // 3. 실패시 원래 상태로 복원
+      // 4. 실패시 원래 상태로 복원
       setGoals(prevGoals);
       setMyGoals(prevMyGoals);
       setFriendGoals(prevFriendGoals);

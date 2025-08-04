@@ -40,11 +40,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (accessToken) {
       try {
         const decoded = jwtDecode<TokenPayload>(accessToken);
-        console.log('로그인 토큰 디코딩 결과:', decoded);
+        console.log('🔍 AuthContext - JWT 토큰 디코딩 결과:', {
+          fullDecoded: decoded,
+          email: decoded.email,
+          userId: decoded.userId,
+          tokenLength: accessToken.length,
+        });
         setEmail(decoded.email);
         setUserId(decoded.userId); // 추가
       } catch (e) {
-        console.error('AccessToken 디코딩 실패:', e);
+        console.error('🔍 AuthContext - AccessToken 디코딩 실패:', e);
         setEmail(null);
         setUserId(null); // 추가
       }

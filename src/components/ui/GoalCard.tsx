@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import type { GoalWithUser } from '../../data/goals';
 import { CATEGORY_DISPLAY_NAMES, CATEGORY_COLORS } from '../../data/goals';
 import { useApiGoals } from '../../contexts/ApiGoalContext';
+import { useUser } from '../../contexts/UserContext';
+import { getUserProfile } from '../../api/getUserProfile';
 import CreateGoalModal from '../modals/CreateGoalModal';
 
 interface GoalCardProps {
@@ -19,6 +21,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
   disableExpiredEffect = false,
 }) => {
   const { goal, user } = goalWithUser;
+  const { user: currentUser } = useUser();
   const {
     toggleGoalCompletion,
     toggleBookmarkStatus,
@@ -31,6 +34,49 @@ const GoalCard: React.FC<GoalCardProps> = ({
 
   // 내 목표인지 여부
   const isMyGoal = myGoalIds.has(goal.goal_id);
+  const isCurrentUserGoal = user.user_id === currentUser?.user_id;
+
+  // 디버깅: 현재 사용자 목표인지 확인
+  console.log('🔍 GoalCard - 사용자 ID 비교:', {
+    goalUserId: user.user_id,
+    currentUserId: currentUser?.user_id,
+    isCurrentUserGoal,
+    isMyGoal,
+    goalId: goal.goal_id,
+    myGoalIds: Array.from(myGoalIds),
+  });
+
+  // 실시간 프로필 정보 상태
+  const [realTimeProfileImage, setRealTimeProfileImage] = useState(user.profileImage);
+  const [realTimeNickname, setRealTimeNickname] = useState(user.nickname);
+
+  // 현재 사용자의 목표인 경우 실시간 프로필 정보 가져오기
+  useEffect(() => {
+    if (isMyGoal && currentUser?.user_id) {
+      const fetchCurrentUserProfile = async () => {
+        try {
+          const profileData = await getUserProfile(currentUser.user_id);
+
+          if (profileData.image?.imageUrl && profileData.image.imageUrl !== realTimeProfileImage) {
+            setRealTimeProfileImage(profileData.image.imageUrl);
+          }
+
+          if (profileData.nickName && profileData.nickName !== realTimeNickname) {
+            setRealTimeNickname(profileData.nickName);
+          }
+        } catch (error) {
+          console.error('🔍 GoalCard - 프로필 조회 실패:', error);
+        }
+      };
+
+      fetchCurrentUserProfile();
+
+      // 3초마다 프로필 정보 업데이트
+      const interval = setInterval(fetchCurrentUserProfile, 3000);
+
+      return () => clearInterval(interval);
+    }
+  }, [isMyGoal, currentUser?.user_id, realTimeProfileImage, realTimeNickname]);
 
   // 드롭다운 메뉴 상태
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -38,11 +84,6 @@ const GoalCard: React.FC<GoalCardProps> = ({
   // 북마크 상태 확인 (API 기반)
   const isBookmarked = useMemo(() => {
     const bookmarked = bookmarks.some((bookmark) => bookmark.goalId === goal.goal_id);
-    console.log('🔖 GoalCard 내부 isBookmarked 계산:', {
-      goalId: goal.goal_id,
-      bookmarked,
-      bookmarksCount: bookmarks.length,
-    });
     return bookmarked;
   }, [bookmarks, goal.goal_id]); // bookmarks와 goal.goal_id가 변경될 때만 재계산
   // 디버깅용
@@ -83,6 +124,17 @@ const GoalCard: React.FC<GoalCardProps> = ({
   // 응원 상태 확인
   const hasCheered = cheeredGoals.has(goal.goal_id);
 
+  // 프로필 이미지 URL 생성
+  const getFullImageUrl = (imageUrl: string) => {
+    if (!imageUrl) return '';
+    if (imageUrl.startsWith('http')) return imageUrl;
+    return import.meta.env.VITE_BACKEND_ADDRESS + imageUrl;
+  };
+
+  // 현재 사용자의 목표인지에 따라 다른 프로필 정보 사용
+  const displayProfileImage = isMyGoal ? realTimeProfileImage : user.profileImage;
+  const displayNickname = isMyGoal ? realTimeNickname : user.nickname;
+
   return (
     <div
       className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 hover:bg-sky-50 dark:hover:bg-gray-700 hover:shadow-lg hover:border-sky-200 dark:hover:border-gray-600 transition-transform duration-200 cursor-pointer transform hover:scale-[1.01] ${
@@ -91,16 +143,20 @@ const GoalCard: React.FC<GoalCardProps> = ({
     >
       <div className="flex items-start space-x-6">
         <img
-          alt={`${user.nickname} 프로필 이미지`}
+          alt={`${displayNickname} 프로필 이미지`}
           className="h-20 w-20 rounded-full object-cover flex-shrink-0"
-          src={user.profileImage || ''}
+          src={getFullImageUrl(displayProfileImage || '')}
+          onError={(e) => {
+            console.error('🔍 GoalCard - 이미지 로드 실패:', displayProfileImage);
+            e.currentTarget.src = '/default-profile.png'; // 기본 이미지로 대체
+          }}
         />
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start">
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-3">
                 <span className="text-xl font-semibold text-gray-900 dark:text-white">
-                  @{user.nickname}
+                  @{displayNickname || '사용자'}
                 </span>
                 <button
                   onClick={(e) => {
