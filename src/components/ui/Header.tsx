@@ -1,11 +1,10 @@
 import logo from '../../assets/logo.svg';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FriendModal from '../modals/FriendModal';
 import HeartModal from '../modals/HeartModal';
 import axiosInstance, { setAccessToken } from '../../api/axiosInstance';
 import { useDarkMode } from '../../contexts/DarkModeContext';
-
 const MAX_CHEER_COUNT: number = 15;
 
 const getHeartColor = (count: number): string => {
@@ -32,9 +31,26 @@ const Header = () => {
 
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
-
   // 테스트용 (실제론 props나 context에서)
   const [cheerCount, setCheerCount] = useState(0);
+  const [todayCheerCount, setTodayCheerCount] = useState(0);
+  const [totalCheerCount, setTotalCheerCount] = useState(0);
+  useEffect(() => {
+    const fetchCheerCounts = async () => {
+      try {
+        const todayResponse = await axiosInstance.get('/cheer/today');
+        setTodayCheerCount(todayResponse.data.todayCheerCount || 0);
+        console.log('오늘', todayResponse); // 디버깅
+
+        const totalResponse = await axiosInstance.get('/cheer/total');
+        setTotalCheerCount(totalResponse.data.totalCheerCount || 0);
+        console.log('총합', totalResponse); // 디버깅
+      } catch (error) {
+        console.error('응원 수를 가져오는데 실패했습니다.', error);
+      }
+    };
+    fetchCheerCounts();
+  }, []);
 
   return (
     <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
@@ -77,7 +93,13 @@ const Header = () => {
                 {cheerCount === 0 ? 'favorite_border' : 'favorite'}
               </span>
             </button>
-            {showHeartModal && <HeartModal onClose={() => setShowHeartModal(false)} />}
+            {showHeartModal && (
+              <HeartModal
+                onClose={() => setShowHeartModal(false)}
+                todayCount={todayCheerCount}
+                totalCount={totalCheerCount}
+              />
+            )}
 
             <button
               className="hover:text-sky-400"
@@ -88,12 +110,10 @@ const Header = () => {
                   console.error('로그아웃 실패:', error);
                 } finally {
                   setAccessToken(null); // 프론트에서도
-
                   // 로그아웃 시 다크모드가 활성화되어 있으면 라이트모드로 리셋
                   if (isDarkMode) {
                     toggleDarkMode();
                   }
-
                   navigate('/login', { replace: true });
                 }
               }}
