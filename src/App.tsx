@@ -57,17 +57,17 @@ function AppContent() {
 
 function App() {
   return (
-    <UserProvider>
-      <DarkModeProvider>
-        <GoalProvider>
-          <AuthProvider>
+    <DarkModeProvider>
+      <AuthProvider>
+        <UserProvider>
+          <GoalProvider>
             <ApiGoalProvider>
               <AppContent />
             </ApiGoalProvider>
-          </AuthProvider>
-        </GoalProvider>
-      </DarkModeProvider>
-    </UserProvider>
+          </GoalProvider>
+        </UserProvider>
+      </AuthProvider>
+    </DarkModeProvider>
   );
 }
 

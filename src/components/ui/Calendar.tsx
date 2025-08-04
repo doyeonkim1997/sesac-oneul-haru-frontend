@@ -321,7 +321,7 @@ const CalendarSection: React.FC = () => {
           </div>
           <div className="flex items-center space-x-1">
             <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
-            <span>목표 있음</span>
+            <span>미완료</span>
           </div>
         </div>
       </div>
