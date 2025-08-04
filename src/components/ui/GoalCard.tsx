@@ -26,6 +26,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
     bookmarks,
     myGoalIds,
     toggleCheerStatus,
+    cheeredGoals,
   } = useApiGoals();
 
   // 내 목표인지 여부
@@ -37,7 +38,11 @@ const GoalCard: React.FC<GoalCardProps> = ({
   // 북마크 상태 확인 (API 기반)
   const isBookmarked = useMemo(() => {
     const bookmarked = bookmarks.some((bookmark) => bookmark.goalId === goal.goal_id);
-    console.log('🔖 GoalCard 내부 isBookmarked 계산:', { goalId: goal.goal_id, bookmarked, bookmarksCount: bookmarks.length });
+    console.log('🔖 GoalCard 내부 isBookmarked 계산:', {
+      goalId: goal.goal_id,
+      bookmarked,
+      bookmarksCount: bookmarks.length,
+    });
     return bookmarked;
   }, [bookmarks, goal.goal_id]); // bookmarks와 goal.goal_id가 변경될 때만 재계산
   // 디버깅용
@@ -51,10 +56,10 @@ const GoalCard: React.FC<GoalCardProps> = ({
   const isTodayGoal = () => {
     const toKSTDateString = (date: Date) =>
       new Date(date.getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
-  
+
     const goalDate = new Date(goal.created_at);
     const now = new Date();
-  
+
     return toKSTDateString(goalDate) === toKSTDateString(now);
   };
 
@@ -74,6 +79,9 @@ const GoalCard: React.FC<GoalCardProps> = ({
       document.removeEventListener('click', handleClickOutside);
     };
   }, [isDropdownOpen]);
+
+  // 응원 상태 확인
+  const hasCheered = cheeredGoals.has(goal.goal_id);
 
   return (
     <div
@@ -235,12 +243,20 @@ const GoalCard: React.FC<GoalCardProps> = ({
               }
             }}
             disabled={isMyGoal}
-            title={isMyGoal ? '자신의 목표는 응원할 수 없습니다' : '응원하기'}
+            title={
+              isMyGoal ? '자신의 목표는 응원할 수 없습니다' : hasCheered ? '응원 취소' : '응원하기'
+            }
             className={`flex items-center space-x-1 ${
-              isMyGoal ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:text-red-500'
+              isMyGoal
+                ? 'text-gray-300 cursor-not-allowed'
+                : hasCheered
+                  ? 'text-red-500 hover:text-red-600'
+                  : 'text-gray-400 hover:text-red-500'
             }`}
           >
-            <span className="material-icons !text-3xl">favorite_border</span>
+            <span className="material-icons !text-3xl">
+              {hasCheered ? 'favorite' : 'favorite_border'}
+            </span>
             {goal.cheer_count > 0 && (
               <span className="text-sm font-medium">{goal.cheer_count}</span>
             )}

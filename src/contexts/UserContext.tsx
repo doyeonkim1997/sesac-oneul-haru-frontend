@@ -30,15 +30,13 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-function useUser() {
+export const useUser = () => {
   const context = useContext(UserContext);
   if (context === undefined) {
     throw new Error('useUser must be used within a UserProvider');
   }
   return context;
-}
-
-export { useUser };
+};
 
 interface UserProviderProps {
   children: React.ReactNode;
