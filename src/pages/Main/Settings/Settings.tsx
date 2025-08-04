@@ -237,7 +237,7 @@ const Settings: React.FC = () => {
                                 placeholder="닉네임을 입력해 주세요."
                                 value={nickname}
                                 onChange={(e) => setNickname(e.target.value)}
-                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-3 focus:ring-sky-200 focus:border-sky-400 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                               />
                             </div>
                           )}
@@ -290,21 +290,21 @@ const Settings: React.FC = () => {
                                   placeholder="기존 비밀번호를 입력해 주세요."
                                   value={currentPassword}
                                   onChange={(e) => setCurrentPassword(e.target.value)}
-                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-3 focus:ring-sky-200 focus:border-sky-400 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                                 />
                                 <input
                                   type="password"
                                   placeholder="새 비밀번호를 입력해 주세요."
                                   value={newPassword}
                                   onChange={(e) => setNewPassword(e.target.value)}
-                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-3 focus:ring-sky-200 focus:border-sky-400 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                                 />
                                 <input
                                   type="password"
                                   placeholder="새 비밀번호를 다시 입력해 주세요."
                                   value={confirmPassword}
                                   onChange={(e) => setConfirmPassword(e.target.value)}
-                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                  className="w-full h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-3 focus:ring-sky-200 focus:border-sky-400 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                                 />
                               </div>
                             </div>
@@ -436,7 +436,7 @@ const Settings: React.FC = () => {
                               placeholder="비밀번호를 입력해 주세요."
                               value={withdrawPassword}
                               onChange={(e) => setWithdrawPassword(e.target.value)}
-                              className="w-[450px] h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                              className="w-[450px] h-8 px-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-3 focus:ring-sky-200 focus:border-sky-400 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                             />
                           )}
                           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
