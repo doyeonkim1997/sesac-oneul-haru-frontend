@@ -8,6 +8,7 @@ import { toggleGoalComplete } from '../api/toggleGoalComplete';
 import { getBookmarks, type BookmarkResponse } from '../api/getBookmarks';
 import { toggleBookmark as apiToggleBookmark } from '../api/toggleBookmark';
 import { toggleCheer, type CheerResponse } from '../api/toggleCheer';
+import { updateTier } from '../api/updateTier';
 import { getNickName, getImageUrl } from '../api/axiosInstance';
 import { useAuth } from './AuthContext';
 import { getFriendList } from '../api/getFriendList';
@@ -42,7 +43,7 @@ interface ApiGoalContextType {
 
 const ApiGoalContext = createContext<ApiGoalContextType | undefined>(undefined);
 
-export const useApiGoals = () => {
+const useApiGoals = () => {
   const context = useContext(ApiGoalContext);
   if (context === undefined) {
     throw new Error('useApiGoals must be used within a ApiGoalProvider');
@@ -54,7 +55,7 @@ interface ApiGoalProviderProps {
   children: React.ReactNode;
 }
 
-export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
+const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
   const { userId } = useAuth(); // 현재 로그인한 사용자 ID
   console.log('👤 현재 로그인 userId:', userId);
   const [goals, setGoals] = useState<ApiGoal[]>([]); // 모든 목표
@@ -342,7 +343,16 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
       await toggleGoalComplete(goalId);
       console.log('✅ 목표 완료 토글 API 성공');
 
-      // 3. 캘린더 새로고침 트리거
+      // 3. 등급 업데이트 (목표 완료 상태 변경 시)
+      try {
+        await updateTier();
+        console.log('✅ 등급 업데이트 성공');
+      } catch (error) {
+        console.error('❌ 등급 업데이트 실패:', error);
+        // 등급 업데이트 실패는 목표 완료 토글에 영향을 주지 않도록 함
+      }
+
+      // 4. 캘린더 새로고침 트리거
       refreshCalendar();
     } catch (error) {
       console.error('❌ 목표 완료 토글 API 실패, 상태 되돌리기:', error);
@@ -579,3 +589,5 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
     </ApiGoalContext.Provider>
   );
 };
+
+export { useApiGoals, ApiGoalProvider };

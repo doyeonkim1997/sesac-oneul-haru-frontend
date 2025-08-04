@@ -51,6 +51,15 @@ const ProfileSection: React.FC = () => {
 
       // 티어 업데이트 후 프로필 정보 새로고침
       await fetchUserProfile();
+
+      // UserContext의 tier 정보도 업데이트 (AuthContext를 통해)
+      const updatedTier = getTier();
+      if (updatedTier && updatedTier !== userTier) {
+        console.log('🔍 ProfileSection - UserContext tier 업데이트:', {
+          old: userTier,
+          new: updatedTier,
+        });
+      }
     } catch (error) {
       console.error('🔍 ProfileSection - 티어 업데이트 실패:', error);
     }
@@ -61,7 +70,7 @@ const ProfileSection: React.FC = () => {
     fetchUserProfile();
   }, [user?.user_id]);
 
-  // 실시간 상태 동기화 (기존 방식과 함께 사용)
+  // 실시간 상태 동기화 (닉네임, 이미지, 티어 변경 감지)
   useEffect(() => {
     const interval = setInterval(() => {
       const updatedImageUrl = getImageUrl();
@@ -77,19 +86,19 @@ const ProfileSection: React.FC = () => {
       if (updatedTier && updatedTier !== userTier) {
         setUserTier(updatedTier);
       }
-    }, 5000); // 5초마다 체크 (API 호출과 함께 사용하므로 간격을 늘림)
+    }, 3000); // 3초마다 체크 (더 빠른 반응)
 
     return () => clearInterval(interval);
   }, [imageUrl, nickName, userTier]);
 
-  // 목표 완료 시 티어 업데이트를 위한 추가 폴링
-  useEffect(() => {
-    const tierUpdateInterval = setInterval(() => {
-      refreshTierAndProfile();
-    }, 10000); // 10초마다 티어 업데이트 및 프로필 정보 새로고침
+  // 목표 완료 시 티어 업데이트를 위한 추가 폴링 (제거 - 이미 목표 완료 시 즉시 업데이트됨)
+  // useEffect(() => {
+  //   const tierUpdateInterval = setInterval(() => {
+  //     refreshTierAndProfile();
+  //   }, 10000); // 10초마다 티어 업데이트 및 프로필 정보 새로고침
 
-    return () => clearInterval(tierUpdateInterval);
-  }, [user?.user_id]);
+  //   return () => clearInterval(tierUpdateInterval);
+  // }, [user?.user_id]);
 
   return (
     <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl shadow-sm flex flex-col items-center w-full">
