@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '../../contexts/UserContext';
 import { getImageUrl, getNickName, getTier } from '../../api/axiosInstance';
 import { getUserProfile } from '../../api/getUserProfile';
+import { updateTier } from '../../api/updateTier';
 import TierMedal from './TierMedal';
 
 const ProfileSection: React.FC = () => {
@@ -39,6 +40,22 @@ const ProfileSection: React.FC = () => {
     }
   };
 
+  // 티어 업데이트 및 프로필 새로고침
+  const refreshTierAndProfile = async () => {
+    if (!user?.user_id) return;
+
+    try {
+      // 먼저 티어 업데이트 API 호출
+      const tierUpdateResult = await updateTier();
+      console.log('🔍 ProfileSection - 티어 업데이트 결과:', tierUpdateResult);
+
+      // 티어 업데이트 후 프로필 정보 새로고침
+      await fetchUserProfile();
+    } catch (error) {
+      console.error('🔍 ProfileSection - 티어 업데이트 실패:', error);
+    }
+  };
+
   // 초기 로드 시 프로필 정보 가져오기
   useEffect(() => {
     fetchUserProfile();
@@ -68,8 +85,8 @@ const ProfileSection: React.FC = () => {
   // 목표 완료 시 티어 업데이트를 위한 추가 폴링
   useEffect(() => {
     const tierUpdateInterval = setInterval(() => {
-      fetchUserProfile();
-    }, 10000); // 10초마다 프로필 정보 새로고침
+      refreshTierAndProfile();
+    }, 10000); // 10초마다 티어 업데이트 및 프로필 정보 새로고침
 
     return () => clearInterval(tierUpdateInterval);
   }, [user?.user_id]);
