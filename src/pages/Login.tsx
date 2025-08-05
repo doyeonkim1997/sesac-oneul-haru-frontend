@@ -22,10 +22,9 @@ export default function Login() {
   const { accessToken, setAccessToken } = useAuth();
   const navigate = useNavigate();
 
-  // accessToken 상태가 바뀌면 /main 으로 이동
   useEffect(() => {
     if (accessToken) {
-      navigate('/main');
+      window.location.replace('/main');
     }
   }, [accessToken, navigate]);
 
@@ -99,7 +98,6 @@ export default function Login() {
           console.log('소셜 로그인 타입 (지연 확인):', getAuthType());
         }, 100);
 
-        // navigate('/main');  ← 삭제
       } else {
         console.warn('accessToken이 없습니다');
       }
