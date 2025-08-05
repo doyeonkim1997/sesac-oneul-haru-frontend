@@ -13,14 +13,21 @@ import axiosInstance, {
   setImageUrl,
   setNickName,
   setTier,
-} from '../api/axiosInstance'; // API 요청 보낼 때 사용할 커스텀 axios 인스턴스
+} from '../api/axiosInstance';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { setAccessToken } = useAuth();
+  const { accessToken, setAccessToken } = useAuth();
   const navigate = useNavigate();
+
+  // accessToken 상태가 바뀌면 /main 으로 이동
+  useEffect(() => {
+    if (accessToken) {
+      navigate('/main');
+    }
+  }, [accessToken, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +56,6 @@ export default function Login() {
       console.log('로그인 티어:', getTier());
       console.log('로그인 타입:', getAuthType());
 
-      navigate('/main');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('로그인 실패:', error.response?.data?.message || error.message);
@@ -67,9 +73,8 @@ export default function Login() {
       });
       const accessToken = res.data.accessToken;
       if (accessToken) {
-        console.log('🔍 소셜 로그인 응답 데이터:', res.data); // 전체 응답 확인
+        console.log('🔍 소셜 로그인 응답 데이터:', res.data);
 
-        // authType이 제대로 설정되었는지 확인
         const authTypeFromResponse = res.data.authType;
         console.log('🔍 소셜 로그인 - authType 확인:', authTypeFromResponse);
 
@@ -84,19 +89,17 @@ export default function Login() {
         setTier(res.data.tier);
         setAuthType(authTypeFromResponse);
 
-        // 즉시 확인
         console.log('소셜 로그인 성공, accessToken:', accessToken);
         console.log('소셜 로그인 이미지:', getImageUrl());
         console.log('소셜 로그인 닉네임:', getNickName());
         console.log('소셜 로그인 티어:', getTier());
         console.log('소셜 로그인 타입 (즉시 확인):', getAuthType());
 
-        // 잠시 대기 후 다시 확인
         setTimeout(() => {
           console.log('소셜 로그인 타입 (지연 확인):', getAuthType());
         }, 100);
 
-        navigate('/main');
+        // navigate('/main');  ← 삭제
       } else {
         console.warn('accessToken이 없습니다');
       }
@@ -120,14 +123,14 @@ export default function Login() {
     const timer = setInterval(() => {
       if (popup.closed) {
         clearInterval(timer);
-        // 팝업 닫힌 뒤, 토큰 요청해서 로그인 상태 체크
         checkLoginStatus();
       }
     }, 500);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-sky-100 via-white to-sky-200 px-4 pt-12 pb-16">      {/* 로고 + 설명 */}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-sky-100 via-white to-sky-200 px-4 pt-12 pb-16">
+      {/* 로고 + 설명 */}
       <div className="text-center mb-7 px-2">
         <div className="flex items-baseline justify-center mb-3 ">
           <img src={logo} alt="logo" className="w-[43px] h-[43px] object-contain" />
