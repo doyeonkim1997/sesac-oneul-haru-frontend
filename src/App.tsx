@@ -28,6 +28,7 @@ function AppContent() {
     { path: '/bookmarks', element: <BookmarkList /> },
     { path: '/friends', element: <FriendList /> },
     { path: '/settings', element: <Settings /> },
+    { path: '/terms', element: <Terms /> },
   ];
 
   return (
@@ -42,7 +43,6 @@ function AppContent() {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/terms" element={<Terms />} />
 
           {privateRoutes.map(({ path, element }) => (
             <Route key={path} path={path} element={<PrivateRoute>{element}</PrivateRoute>} />
