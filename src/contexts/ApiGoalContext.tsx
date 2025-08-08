@@ -12,6 +12,7 @@ import { updateTier } from '../api/updateTier';
 import { getNickName, getImageUrl } from '../api/axiosInstance';
 import { useAuth } from './AuthContext';
 import { getFriendList } from '../api/getFriendList';
+import axiosInstance from '../api/axiosInstance';
 
 // API 기반 목표 타입 (실제 백엔드 응답과 동일)
 export interface ApiGoal extends GoalApiResponse {
@@ -88,11 +89,29 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
     }
   }, [cheeredGoals]);
 
+  // 응원 상태를 백엔드에서 가져오기
+  const loadMyCheeredGoals = async () => {
+    if (!userId) return;
+
+    try {
+      const response = await axiosInstance.get('/cheer/my-cheers');
+      const cheeredGoalIds = response.data;
+      setCheeredGoals(new Set(cheeredGoalIds));
+    } catch (error) {
+      // 응원 상태 로드 실패시 빈 Set으로 초기화
+      setCheeredGoals(new Set());
+    }
+  };
+
   // 친구 목표 로드
   const loadFriendGoals = async () => {
-    try {
-      setIsLoadingFriendGoals(true);
+    if (!userId) {
+      setFriendGoals([]);
+      return;
+    }
 
+    setIsLoadingFriendGoals(true);
+    try {
       // 1. 친구 목록 가져오기
       const friends = await getFriendList();
 
@@ -110,20 +129,14 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
       // Soft delete된 목표들 필터링 (isDeleted가 1인 목표 제외)
       const activeFriendGoals = friendGoalsData.filter((goal) => goal.isDeleted !== 1);
 
-      const friendGoalsWithUserId = activeFriendGoals.map((goal) => ({
+      const friendGoalsWithUserId = activeFriendGoals.map((goal: any) => ({
         ...goal,
         userId: goal.userId ?? 0, // 이미 포함되어 있으므로 복사만 함
       }));
+
       setFriendGoals(friendGoalsWithUserId); // ✅ 방법 2 (명시적 변환)
 
-      // 응원 상태 복원 (친구 목표 기반)
-      const currentCheeredGoals = new Set(cheeredGoals);
-      friendGoalsWithUserId.forEach((goal) => {
-        if (goal.cheerCount > 0) {
-          currentCheeredGoals.add(goal.goalId);
-        }
-      });
-      setCheeredGoals(currentCheeredGoals);
+      // 응원 상태 복원 로직 제거 - 별도 함수로 처리
     } catch (error) {
       setFriendGoals([]); // 실패시 빈 배열
     } finally {
@@ -131,27 +144,21 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
     }
   };
 
-  // 목표 목록 로드 (전체)
+  // 모든 목표 로드
   const loadGoals = async () => {
-    try {
-      setIsLoadingGoals(true);
-      // getAllGoals()는 userId가 포함된 모든 목표를 반환해야 합니다.
-      const goalData = await getAllGoals();
+    if (!userId) {
+      setGoals([]);
+      return;
+    }
 
-      // Soft delete된 목표들 필터링
-      const activeGoals = goalData.filter((goal) => goal.isDeleted !== 1) as ApiGoal[];
-      // goalData에 이미 userId가 포함되어 있어야 합니다. (백엔드 응답에 따라)
+    setIsLoadingGoals(true);
+    try {
+      const response = await getAllGoals();
+      const activeGoals = response.filter((goal) => !goal.isDeleted);
 
       setGoals(activeGoals);
 
-      // 응원 상태 복원 (서버 데이터 기반)
-      const cheeredGoalIds = new Set<number>();
-      activeGoals.forEach((goal) => {
-        if (goal.cheerCount > 0) {
-          cheeredGoalIds.add(goal.goalId);
-        }
-      });
-      setCheeredGoals(cheeredGoalIds);
+      // 응원 상태 복원 로직 제거 - 별도 함수로 처리
     } catch (error) {
     } finally {
       setIsLoadingGoals(false);
@@ -491,6 +498,7 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
     loadGoals();
     loadFriendGoals();
     loadBookmarks();
+    loadMyCheeredGoals(); // 개인 응원 상태 로드 추가
   }, [userId]); // userId가 설정될 때만 실행
 
   return (
