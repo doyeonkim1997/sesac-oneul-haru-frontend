@@ -7,12 +7,10 @@ export interface CheerResponse {
 // 응원 토글 API (새로운 백엔드 API에 맞춤)
 export const toggleCheer = async (goalId: number): Promise<CheerResponse> => {
   try {
-    console.log('💖 응원 토글 API 호출:', goalId);
     const res = await axiosInstance.patch(`/cheer/${goalId}`);
-    console.log('✅ 응원 토글 API 응답:', res.data);
+
     return res.data;
   } catch (err) {
-    console.error('❌ 응원 토글 실패:', err);
     throw err;
   }
 };

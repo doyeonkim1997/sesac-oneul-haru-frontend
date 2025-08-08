@@ -5,9 +5,7 @@ const DarkModeToggle: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const handleToggle = () => {
-    console.log('다크모드 토글 클릭됨, 현재 상태:', isDarkMode);
     toggleDarkMode();
-    console.log('토글 후 상태:', !isDarkMode);
   };
 
   return (

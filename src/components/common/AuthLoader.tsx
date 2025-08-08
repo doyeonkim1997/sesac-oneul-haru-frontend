@@ -16,8 +16,6 @@ export default function AuthLoader({ children }: { children: React.ReactNode }) 
     async function refresh() {
       try {
         const res = await axiosInstance.post('/auth/refresh');
-        console.log('🔍 AuthLoader - 백엔드 응답:', res.data);
-        console.log('🔍 AuthLoader - authType 값:', res.data.authType);
 
         setAccessToken(res.data.accessToken, {
           nickName: res.data.nickName,

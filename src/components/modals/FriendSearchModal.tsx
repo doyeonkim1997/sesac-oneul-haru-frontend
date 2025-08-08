@@ -30,14 +30,12 @@ const FriendSearchModal = ({
     const loadFriendIdsAndRequests = async () => {
       try {
         const friends = await fetchFriends();
-        setFriendIds(friends.map(f => f.userId));
+        setFriendIds(friends.map((f) => f.userId));
 
         const sentRequests = await fetchSentFriendRequests();
         const sentUserIds = sentRequests.map((req: any) => req.receiverId);
         setRequestedUserIds(sentUserIds);
-      } catch (err) {
-        console.error('친구 목록 또는 요청 목록 불러오기 실패:', err);
-      }
+      } catch (err) {}
     };
 
     loadFriendIdsAndRequests();
@@ -49,7 +47,7 @@ const FriendSearchModal = ({
     try {
       const result = await getUsersByEmail(searchTerm);
 
-      const formattedResults: User[] = result.map(user => ({
+      const formattedResults: User[] = result.map((user) => ({
         userId: Number(user.userId),
         requestId: Number(user.requestId),
         nickName: user.nickName,
@@ -60,7 +58,7 @@ const FriendSearchModal = ({
         unreadCount: user.unreadCount,
       }));
 
-      const filteredResults = formattedResults.filter(user => {
+      const filteredResults = formattedResults.filter((user) => {
         const emailPrefix = user.email.split('@')[0];
         return emailPrefix.toLowerCase().includes(searchTerm.toLowerCase());
       });
@@ -68,23 +66,21 @@ const FriendSearchModal = ({
       setResults(filteredResults);
     } catch (err) {
       alert('사용자 검색에 실패했습니다. 다시 시도해주세요.');
-      console.error(err);
     }
   };
 
   const handleSelect = async (user: User) => {
     try {
       await sendFriendRequest(user.userId);
-      setRequestedUserIds(prev => [...prev, user.userId]);
+      setRequestedUserIds((prev) => [...prev, user.userId]);
     } catch (error) {
       showToast('이미 친구 요청 중인 사용자입니다.', 'error');
-      console.error(error);
     }
   };
 
   const containerClass = isStandalone
-    ? "bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative transform hover:scale-[1.01] transition-transform duration-300 min-h-[230px] backdrop-blur-sm bg-opacity-95 hover:shadow-2xl"
-    : "";
+    ? 'bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative transform hover:scale-[1.01] transition-transform duration-300 min-h-[230px] backdrop-blur-sm bg-opacity-95 hover:shadow-2xl'
+    : '';
 
   const content = (
     <>
@@ -146,8 +142,8 @@ const FriendSearchModal = ({
                       isFriend
                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                         : isRequested
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-sky-400 text-white hover:bg-sky-600'
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-sky-400 text-white hover:bg-sky-600'
                     }
                   `}
                   disabled={isFriend || isRequested}
@@ -164,13 +160,7 @@ const FriendSearchModal = ({
           <div className="text-center text-gray-500">검색 결과가 없습니다.</div>
         )
       )}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </>
   );
 

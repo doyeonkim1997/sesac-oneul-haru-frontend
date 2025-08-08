@@ -10,7 +10,6 @@ export const createGoal = async (goalData: CreateGoalRequest) => {
     const res = await axiosInstance.post('/goals', goalData);
     return res.data;
   } catch (err) {
-    console.error('목표 생성 실패:', err);
     throw err;
   }
 };

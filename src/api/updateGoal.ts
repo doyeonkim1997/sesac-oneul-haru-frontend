@@ -11,7 +11,6 @@ export const updateGoal = async (goalId: string, goalData: UpdateGoalRequest) =>
     const res = await axiosInstance.patch(`/goals/${goalId}`, goalData);
     return res.data;
   } catch (err) {
-    console.error('목표 수정 실패:', err);
     throw err;
   }
 };

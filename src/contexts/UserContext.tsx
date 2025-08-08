@@ -72,17 +72,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         currentAuthType = 'EMAIL';
       }
 
-      console.log('🔄 UserContext 사용자 정보 업데이트:', {
-        email,
-        nickName: currentNickName,
-        imageUrl: currentImageUrl,
-        authType: currentAuthType,
-        authTypeFromContext: authType,
-        authTypeFromAxios: getAuthType(),
-        isSocialUser: currentAuthType !== 'EMAIL',
-        accessToken: accessToken ? '있음' : '없음',
-      });
-
       setUser({
         user_id: userId || 0,
         nickname: currentNickName || '사용자',
@@ -117,7 +106,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       showToast('닉네임이 성공적으로 변경되었습니다.', 'success');
       return true;
     } catch (error: any) {
-      console.error('닉네임 업데이트 실패:', error);
       showToast('닉네임 변경 중 오류가 발생했습니다.', 'error');
       return false;
     }
@@ -152,7 +140,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       showToast('비밀번호가 성공적으로 변경되었습니다.', 'success');
       return true;
     } catch (error: any) {
-      console.error('비밀번호 업데이트 실패:', error);
       showToast('비밀번호를 잘못 입력하셨습니다', 'error');
       return false;
     }
@@ -168,7 +155,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       showToast('프로필 이미지가 성공적으로 변경되었습니다.', 'success');
       return true;
     } catch (error: any) {
-      console.error('프로필 이미지 업데이트 실패:', error);
       alert(error.response?.data?.message || '프로필 이미지 변경 중 오류가 발생했습니다.');
       return false;
     }
@@ -177,15 +163,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const withdrawUser = async (password: string): Promise<boolean> => {
     // 실시간으로 authType 다시 확인
     const realTimeAuthType = getAuthType() || user.auth_type;
-
-    console.log('🔍 회원 탈퇴 시도:', {
-      userAuthType: user.auth_type,
-      realTimeAuthType: realTimeAuthType,
-      password: password,
-      passwordLength: password.length,
-      isEmailUser: realTimeAuthType === 'EMAIL',
-      needPassword: realTimeAuthType === 'EMAIL' && !password,
-    });
 
     // 이메일 사용자는 비밀번호 필요
     if (realTimeAuthType === 'EMAIL' && !password) {
@@ -211,7 +188,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       window.location.href = '/login';
       return true;
     } catch (error: any) {
-      console.error('회원 탈퇴 실패:', error);
       alert(error.response?.data?.message || '회원 탈퇴 중 오류가 발생했습니다.');
       return false;
     }
@@ -228,13 +204,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       }}
     >
       {children}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </UserContext.Provider>
   );
 };

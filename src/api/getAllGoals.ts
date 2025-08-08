@@ -21,7 +21,6 @@ export const getAllGoals = async (): Promise<GoalApiResponse[]> => {
     const res = await axiosInstance.get('/goals/all');
     return res.data;
   } catch (err) {
-    console.error('전체 목표 조회 실패:', err);
     throw err;
   }
 };

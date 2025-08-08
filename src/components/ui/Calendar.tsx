@@ -23,23 +23,11 @@ const CalendarSection: React.FC = () => {
     if (Array.isArray(calendarGoals)) {
       // 배열 형태의 응답 처리
       calendarGoals.forEach((goal) => {
-        console.log('📅 캘린더 목표 확인:', {
-          goalId: goal.goalId,
-          content: goal.content,
-          isCompleted: goal.isCompleted,
-          isCompletedType: typeof goal.isCompleted,
-          year: goal.year,
-          month: goal.month,
-          day: goal.day,
-        });
-
         // isCompleted가 true인 경우만 완료된 것으로 처리
         if (goal && goal.isCompleted === true && goal.year && goal.month && goal.day) {
           const dateString = `${goal.year}-${String(goal.month).padStart(2, '0')}-${String(goal.day).padStart(2, '0')}`;
           completedDates.add(dateString);
-          console.log('✅ 완료된 날짜 추가:', dateString);
         } else if (goal && goal.isCompleted === false) {
-          console.log('⏳ 미완료 목표:', goal.content);
         }
       });
     } else {
@@ -47,22 +35,15 @@ const CalendarSection: React.FC = () => {
       Object.entries(calendarGoals).forEach(([date, goals]) => {
         if (Array.isArray(goals)) {
           const hasCompletedGoal = goals.some((goal) => {
-            console.log('📅 캘린더 목표 확인 (객체):', {
-              date,
-              goal,
-              isCompleted: goal?.isCompleted,
-            });
             return goal && goal.isCompleted === true;
           });
           if (hasCompletedGoal) {
             completedDates.add(date);
-            console.log('✅ 완료된 날짜 추가 (객체):', date);
           }
         }
       });
     }
 
-    console.log('📅 최종 완료된 날짜들:', Array.from(completedDates));
     return completedDates;
   }, [calendarGoals]);
 
@@ -73,51 +54,23 @@ const CalendarSection: React.FC = () => {
       // 로그인 상태 확인
       const currentUser = getNickName();
       const currentToken = getAccessToken();
-      console.log('🔐 캘린더 API 호출 전 로그인 상태:', {
-        currentUser,
-        hasToken: !!currentToken,
-        year,
-        month,
-      });
 
       const data = await getCalendarGoals(year, month);
-      console.log('📅 캘린더 API 응답:', data);
-      console.log('📅 캘린더 API 응답 타입:', typeof data);
-      console.log('📅 캘린더 API 응답이 배열인가?', Array.isArray(data));
 
       // 데이터가 배열이거나 객체인지 확인하고 안전하게 설정
       if (data && (Array.isArray(data) || typeof data === 'object')) {
         // 캘린더 데이터가 현재 사용자의 것인지 확인
         if (Array.isArray(data) && data.length > 0) {
-          console.log('📅 캘린더 데이터 검증:', {
-            데이터개수: data.length,
-            첫번째목표: data[0],
-            현재사용자: currentUser,
-            완료된목표수: data.filter((goal) => goal.isCompleted === true).length,
-            미완료목표수: data.filter((goal) => goal.isCompleted === false).length,
-          });
-
           // 각 목표의 isCompleted 상태 확인
-          data.forEach((goal, index) => {
-            console.log(`📅 목표 ${index + 1}:`, {
-              goalId: goal.goalId,
-              content: goal.content,
-              isCompleted: goal.isCompleted,
-              year: goal.year,
-              month: goal.month,
-              day: goal.day,
-            });
-          });
+          data.forEach((goal, index) => {});
         }
 
         setCalendarGoals(data);
-        console.log('✅ 캘린더 데이터 설정 완료');
       } else {
         console.warn('⚠️ 캘린더 API 응답이 예상과 다릅니다:', data);
         setCalendarGoals([]);
       }
     } catch (error) {
-      console.error('❌ 캘린더 데이터 로드 실패:', error);
       setCalendarGoals([]);
     } finally {
       setLoading(false);
@@ -135,13 +88,6 @@ const CalendarSection: React.FC = () => {
   useEffect(() => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1;
-    console.log('🔄 캘린더 새로고침 트리거됨:', {
-      calendarRefreshTrigger,
-      year,
-      month,
-      currentDate: currentDate.toISOString(),
-      현재시간: new Date().toISOString(),
-    });
     loadCalendarGoals(year, month);
   }, [calendarRefreshTrigger, currentDate]);
 
@@ -188,9 +134,7 @@ const CalendarSection: React.FC = () => {
   const isCompletedDate = (day: number) => {
     const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const isCompleted = completedGoalDates.has(dateString);
-    if (isCompleted) {
-      console.log('완료된 날짜 확인:', dateString);
-    }
+
     return isCompleted;
   };
 

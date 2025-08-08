@@ -42,10 +42,8 @@ const Signup: React.FC = () => {
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error('이메일 확인 실패:', error.response?.data?.message || error.message);
         alert(`이메일 확인 실패: ${error.response?.data?.message || error.message}`);
       } else {
-        console.error('알 수 없는 에러 발생');
         alert('이메일 확인 중 오류가 발생했습니다.');
       }
     } finally {
@@ -71,10 +69,8 @@ const Signup: React.FC = () => {
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error('인증 코드 확인 실패:', error.response?.data?.message || error.message);
         alert(`인증 코드 확인 실패: ${error.response?.data?.message || error.message}`);
       } else {
-        console.error('알 수 없는 에러 발생');
         alert('인증 코드 확인 중 오류가 발생했습니다.');
       }
     } finally {
@@ -125,10 +121,8 @@ const Signup: React.FC = () => {
       navigate('/login');
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error('회원가입 실패:', error.response?.data?.message || error.message);
         alert(`회원가입 실패: ${error.response?.data?.message || error.message}`);
       } else {
-        console.error('알 수 없는 에러 발생');
         alert('회원가입 중 오류가 발생했습니다.');
       }
     } finally {

@@ -37,14 +37,6 @@ const GoalCard: React.FC<GoalCardProps> = ({
   const isCurrentUserGoal = user.user_id === currentUser?.user_id;
 
   // 디버깅: 현재 사용자 목표인지 확인
-  console.log('🔍 GoalCard - 사용자 ID 비교:', {
-    goalUserId: user.user_id,
-    currentUserId: currentUser?.user_id,
-    isCurrentUserGoal,
-    isMyGoal,
-    goalId: goal.goal_id,
-    myGoalIds: Array.from(myGoalIds),
-  });
 
   // 실시간 프로필 정보 상태
   const [realTimeProfileImage, setRealTimeProfileImage] = useState(user.profileImage);
@@ -64,9 +56,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
           if (profileData.nickName && profileData.nickName !== realTimeNickname) {
             setRealTimeNickname(profileData.nickName);
           }
-        } catch (error) {
-          console.error('🔍 GoalCard - 프로필 조회 실패:', error);
-        }
+        } catch (error) {}
       };
 
       fetchCurrentUserProfile();
@@ -87,11 +77,6 @@ const GoalCard: React.FC<GoalCardProps> = ({
     return bookmarked;
   }, [bookmarks, goal.goal_id]); // bookmarks와 goal.goal_id가 변경될 때만 재계산
   // 디버깅용
-  console.log('🔖 북마크 상태 확인:', {
-    goalId: goal.goal_id,
-    bookmarks: bookmarks.map((b) => b.goalId),
-    isBookmarked,
-  });
 
   // 오늘 작성된 목표인지 확인 (자정 처리)
   const isTodayGoal = () => {
@@ -147,7 +132,6 @@ const GoalCard: React.FC<GoalCardProps> = ({
           className="h-20 w-20 rounded-full object-cover flex-shrink-0"
           src={getFullImageUrl(displayProfileImage || '')}
           onError={(e) => {
-            console.error('🔍 GoalCard - 이미지 로드 실패:', displayProfileImage);
             e.currentTarget.src = '/default-profile.png'; // 기본 이미지로 대체
           }}
         />
