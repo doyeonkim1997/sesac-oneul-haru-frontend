@@ -45,12 +45,10 @@ const Header = () => {
         const todayResponse = await axiosInstance.get('/cheer/today');
         setTodayCheerCount(todayResponse.data.todayCheerCount || 0);
         setCheerCount(todayResponse.data.todayCheerCount || 0);
-        console.log('총합', todayResponse); // 디버깅
+
         const totalResponse = await axiosInstance.get('/cheer/total');
         setTotalCheerCount(totalResponse.data.totalCheerCount || 0);
-      } catch (error) {
-        console.error('응원 수를 가져오는데 실패했습니다.', error);
-      }
+      } catch (error) {}
     };
     fetchCheerCounts();
   }, []);
@@ -111,7 +109,6 @@ const Header = () => {
                 try {
                   await axiosInstance.post('/auth/logout'); // 백엔드에 로그아웃 요청
                 } catch (error) {
-                  console.error('로그아웃 실패:', error);
                 } finally {
                   logout(); // AuthContext의 logout 함수 사용
                   // 로그아웃 시 다크모드 해제

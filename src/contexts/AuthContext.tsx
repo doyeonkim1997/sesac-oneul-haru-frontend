@@ -40,22 +40,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (accessToken) {
       try {
         const decoded = jwtDecode<TokenPayload>(accessToken);
-        console.log('🔍 AuthContext - JWT 토큰 디코딩 결과:', {
-          fullDecoded: decoded,
-          email: decoded.email,
-          userId: decoded.userId,
-          tokenLength: accessToken.length,
-        });
+
         setEmail(decoded.email);
-        setUserId(decoded.userId); // 추가
+        setUserId(decoded.userId);
       } catch (e) {
-        console.error('🔍 AuthContext - AccessToken 디코딩 실패:', e);
         setEmail(null);
-        setUserId(null); // 추가
+        setUserId(null);
       }
     } else {
       setEmail(null);
-      setUserId(null); // 추가
+      setUserId(null);
     }
   }, [accessToken]);
 
@@ -93,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         imageUrl,
         tier,
         authType,
-        userId, // 추가
+        userId,
         setAccessToken: updateAccessToken,
         logout,
       }}

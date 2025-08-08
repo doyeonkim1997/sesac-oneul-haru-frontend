@@ -17,7 +17,6 @@ export const getBookmarks = async (): Promise<BookmarkResponse[]> => {
     const res = await axiosInstance.get('/bookmarks/all');
     return res.data;
   } catch (err) {
-    console.error('북마크 목록 조회 실패:', err);
     throw err;
   }
 };

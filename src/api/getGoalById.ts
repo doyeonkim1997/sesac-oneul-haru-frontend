@@ -6,7 +6,6 @@ export const getGoalById = async (goalId: string): Promise<GoalApiResponse> => {
     const res = await axiosInstance.get(`/goals/${goalId}`);
     return res.data;
   } catch (err) {
-    console.error('목표 조회 실패:', err);
     throw err;
   }
 };

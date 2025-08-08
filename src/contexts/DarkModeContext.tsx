@@ -35,11 +35,9 @@ const DarkModeProvider: React.FC<DarkModeProviderProps> = ({ children }) => {
     if (isDarkMode) {
       html.classList.add('dark');
       body.classList.add('dark-mode');
-      console.log('다크모드 활성화됨');
     } else {
       html.classList.remove('dark');
       body.classList.remove('dark-mode');
-      console.log('라이트모드 활성화됨');
     }
   }, [isDarkMode]);
 

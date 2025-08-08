@@ -22,8 +22,6 @@ const FriendList: React.FC = () => {
 
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const showToast = (message: string, type: 'success' | 'error') => {
-      console.log('토스트 호출:', message);
-
     setToast({ message, type });
   };
 
@@ -36,7 +34,6 @@ const FriendList: React.FC = () => {
         setError(null);
       } catch (err) {
         setError('친구 목록을 불러오는데 실패했습니다.');
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -49,12 +46,11 @@ const FriendList: React.FC = () => {
     try {
       const latestUser = await getFriendProfile(user.userId);
       if (!latestUser.requestId) {
-        latestUser.requestId = user.requestId;  // 기존 requestId 복사
+        latestUser.requestId = user.requestId; // 기존 requestId 복사
       }
       setSelectedUser(latestUser);
       setIsModalOpen(true);
     } catch (err) {
-      console.error('프로필 불러오기 실패:', err);
       alert('프로필 정보를 불러오는 데 실패했습니다.');
     }
   };
@@ -65,16 +61,13 @@ const FriendList: React.FC = () => {
   };
 
   const handleDeleteUser = async (requestId: number) => {
-      console.log('삭제 요청 requestId:', requestId);
-
     try {
       await deleteFriend(requestId); // API 호출
       showToast('친구가 삭제되었습니다.', 'success');
-      setUsers(prev => prev.filter(user => user.requestId !== requestId));
+      setUsers((prev) => prev.filter((user) => user.requestId !== requestId));
       closeModal(); // 모달 닫기
     } catch (err) {
       showToast('친구 삭제에 실패했습니다. 다시 시도해주세요.', 'error');
-      console.error(err);
     }
   };
 
@@ -111,7 +104,7 @@ const FriendList: React.FC = () => {
                         [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent
                         [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full"
                     >
-                      {users.map(user => (
+                      {users.map((user) => (
                         <UserItem
                           key={user.userId}
                           user={user}
@@ -130,11 +123,7 @@ const FriendList: React.FC = () => {
                   </>
                 )}
                 {toast && (
-                  <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                  />
+                  <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
                 )}
               </div>
             </div>

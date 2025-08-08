@@ -43,21 +43,21 @@ interface ApiGoalContextType {
 
 const ApiGoalContext = createContext<ApiGoalContextType | undefined>(undefined);
 
-const useApiGoals = () => {
+export function useApiGoals() {
   const context = useContext(ApiGoalContext);
   if (context === undefined) {
     throw new Error('useApiGoals must be used within a ApiGoalProvider');
   }
   return context;
-};
+}
 
 interface ApiGoalProviderProps {
   children: React.ReactNode;
 }
 
-const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
+export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
   const { userId } = useAuth(); // 현재 로그인한 사용자 ID
-  console.log('👤 현재 로그인 userId:', userId);
+
   const [goals, setGoals] = useState<ApiGoal[]>([]); // 모든 목표
   const [friendGoals, setFriendGoals] = useState<ApiGoal[]>([]); // 친구 목표
   const [myGoals, setMyGoals] = useState<ApiGoal[]>([]); // 내 목표
@@ -75,9 +75,7 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
       try {
         const parsed = JSON.parse(savedCheeredGoals);
         setCheeredGoals(new Set(parsed));
-      } catch (error) {
-        console.error('응원 상태 복원 실패:', error);
-      }
+      } catch (error) {}
     }
   }, []);
 
@@ -93,31 +91,24 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
   // 친구 목표 로드
   const loadFriendGoals = async () => {
     try {
-      console.log('🔄 친구 목표 로드 시작...');
       setIsLoadingFriendGoals(true);
 
       // 1. 친구 목록 가져오기
       const friends = await getFriendList();
-      console.log('👥 친구 목록:', friends);
 
       if (friends.length === 0) {
-        console.log('📝 친구가 없어서 친구 목표 없음');
         setFriendGoals([]);
         return;
       }
 
       // 2. 친구들의 ID 추출
       const friendIds = friends.map((friend) => friend.userId);
-      console.log('🆔 친구 ID들:', friendIds);
 
       // 3. 모든 친구들의 목표 가져오기
       const friendGoalsData = await getAllFriendsGoals(friendIds);
-      console.log('✅ 친구 목표 로드 성공:', friendGoalsData);
-      console.log('📊 친구 목표 개수:', friendGoalsData?.length || 0);
 
       // Soft delete된 목표들 필터링 (isDeleted가 1인 목표 제외)
       const activeFriendGoals = friendGoalsData.filter((goal) => goal.isDeleted !== 1);
-      console.log('📊 활성 친구 목표 개수 (삭제 제외):', activeFriendGoals.length);
 
       const friendGoalsWithUserId = activeFriendGoals.map((goal) => ({
         ...goal,
@@ -133,9 +124,7 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
         }
       });
       setCheeredGoals(currentCheeredGoals);
-      console.log('💖 친구 목표 응원 상태 복원:', Array.from(currentCheeredGoals));
     } catch (error) {
-      console.error('❌ 친구 목표 로드 실패:', error);
       setFriendGoals([]); // 실패시 빈 배열
     } finally {
       setIsLoadingFriendGoals(false);
@@ -148,13 +137,11 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
       setIsLoadingGoals(true);
       // getAllGoals()는 userId가 포함된 모든 목표를 반환해야 합니다.
       const goalData = await getAllGoals();
-      console.log('✅ API 목표 로드 성공:', goalData);
 
       // Soft delete된 목표들 필터링
       const activeGoals = goalData.filter((goal) => goal.isDeleted !== 1) as ApiGoal[];
       // goalData에 이미 userId가 포함되어 있어야 합니다. (백엔드 응답에 따라)
 
-      console.log('📊 활성 목표 (원래 userId 유지):', activeGoals);
       setGoals(activeGoals);
 
       // 응원 상태 복원 (서버 데이터 기반)
@@ -165,9 +152,7 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
         }
       });
       setCheeredGoals(cheeredGoalIds);
-      console.log('💖 서버에서 응원 상태 복원:', Array.from(cheeredGoalIds));
     } catch (error) {
-      console.error('❌ 목표 로드 실패:', error);
     } finally {
       setIsLoadingGoals(false);
     }
@@ -176,15 +161,11 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
   // 북마크 목록 로드
   const loadBookmarks = async () => {
     try {
-      console.log('🔄 API 북마크 로드 시작...');
       setIsLoadingBookmarks(true);
       const bookmarkData = await getBookmarks();
-      console.log('✅ API 북마크 로드 성공:', bookmarkData);
-      console.log('📊 북마크 개수:', bookmarkData?.length || 0);
 
       setBookmarks(bookmarkData);
     } catch (error) {
-      console.error('❌ 북마크 로드 실패:', error);
     } finally {
       setIsLoadingBookmarks(false);
     }
@@ -192,8 +173,6 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
 
   // 새 목표 생성 (Optimistic Update 적용)
   const createNewGoal = async (goalData: CreateGoalRequest) => {
-    console.log('🔄 목표 생성 시작:', goalData);
-
     // 임시 목표 객체 생성 (API 응답으로 교체될 예정)
     const tempGoal: ApiGoal = {
       goalId: Date.now(),
@@ -209,30 +188,23 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
       cheerCount: 0,
     };
 
-    console.log('📝 임시 목표 생성:', tempGoal);
-
     // 즉시 UI에 추가
     setGoals([tempGoal, ...goals]);
     setMyGoals([tempGoal, ...myGoals]);
     setMyGoalIds(new Set([tempGoal.goalId, ...Array.from(myGoalIds)]));
 
-    console.log('✅ UI 즉시 업데이트 완료');
-
     try {
       // API 호출
       await createGoal(goalData);
-      console.log('✅ 목표 생성 API 성공');
 
       // API 성공 후 전체 목록 새로고침 (실제 DB 데이터로)
-      console.log('🔄 목록 새로고침 시작...');
+
       await loadGoals();
       await loadFriendGoals();
-      console.log('✅ 목록 새로고침 완료');
 
       // 캘린더 새로고침 트리거
       refreshCalendar();
     } catch (error) {
-      console.error('❌ 목표 생성 API 실패, 상태 되돌리기:', error);
       // 실패시 임시 목표 제거
       setGoals(goals.filter((goal) => goal.goalId !== tempGoal.goalId));
       setMyGoals(myGoals.filter((goal) => goal.goalId !== tempGoal.goalId));
@@ -271,12 +243,10 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
     try {
       // 2. API 호출
       await updateGoal(goalId, goalData);
-      console.log('✅ 목표 수정 API 성공');
 
       // 3. 캘린더 새로고침 트리거
       refreshCalendar();
     } catch (error) {
-      console.error('❌ 목표 수정 API 실패, 상태 되돌리기:', error);
       // 3. 실패시 원래 상태로 복원
       setGoals(prevGoals);
       setMyGoals(prevMyGoals);
@@ -303,12 +273,10 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
     try {
       // 2. API 호출 (백엔드에서 isDeleted = true로 설정)
       await deleteGoal(goalId);
-      console.log('✅ 목표 Soft Delete API 성공');
 
       // 3. 캘린더 새로고침 트리거
       refreshCalendar();
     } catch (error) {
-      console.error('❌ 목표 Soft Delete API 실패, 상태 되돌리기:', error);
       // 4. 실패시 원래 상태로 복원
       setGoals(prevGoals);
       setMyGoals(prevMyGoals);
@@ -341,21 +309,17 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
     try {
       // 2. API 호출
       await toggleGoalComplete(goalId);
-      console.log('✅ 목표 완료 토글 API 성공');
 
       // 3. 등급 업데이트 (목표 완료 상태 변경 시)
       try {
         await updateTier();
-        console.log('✅ 등급 업데이트 성공');
       } catch (error) {
-        console.error('❌ 등급 업데이트 실패:', error);
         // 등급 업데이트 실패는 목표 완료 토글에 영향을 주지 않도록 함
       }
 
       // 4. 캘린더 새로고침 트리거
       refreshCalendar();
     } catch (error) {
-      console.error('❌ 목표 완료 토글 API 실패, 상태 되돌리기:', error);
       // 4. 실패시 원래 상태로 복원
       setGoals(prevGoals);
       setMyGoals(prevMyGoals);
@@ -366,16 +330,8 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
 
   // 북마크 토글 (Optimistic Update 적용)
   const toggleBookmarkStatus = async (goalId: number) => {
-    console.log('🔖 북마크 토글 시작 (Goal ID):', goalId);
-
     const initialBookmarks = bookmarks;
     const isCurrentlyBookmarked = initialBookmarks.some((bookmark) => bookmark.goalId === goalId);
-    console.log('🔖 현재 북마크 상태 확인 (initialBookmarks 기준):', {
-      goalId,
-      isCurrentlyBookmarked,
-      initialBookmarksCount: initialBookmarks.length,
-      initialBookmarkedIds: initialBookmarks.map((b) => b.goalId),
-    });
 
     const prevGoals = goals;
     const prevMyGoals = myGoals;
@@ -398,11 +354,10 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
 
     if (isCurrentlyBookmarked) {
       // 북마크 제거
-      console.log('🔖 북마크 제거 로직 실행 (Goal ID):', goalId);
+
       newBookmarksState = initialBookmarks.filter((bookmark) => bookmark.goalId !== goalId);
     } else {
       // 북마크 추가
-      console.log('🔖 북마크 추가 로직 실행 (Goal ID):', goalId);
 
       // goals와 friendGoals 모두에서 목표 찾기
       let targetGoal: ApiGoal | undefined;
@@ -410,7 +365,6 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
       if (!targetGoal) {
         targetGoal = friendGoals.find((g) => g.goalId === goalId); // 없으면 friendGoals에서
       }
-      console.log('🔖 북마크를 추가하려는 목표 탐색 결과 (targetGoal):', targetGoal);
 
       if (targetGoal) {
         const newBookmark: BookmarkResponse = {
@@ -425,7 +379,6 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
           },
         };
         newBookmarksState = [...initialBookmarks, newBookmark];
-        console.log('🔖 새로 생성된 북마크 객체:', newBookmark);
       } else {
         console.warn(
           '⚠️ 북마크를 추가하려는 목표를 내 목표/친구 목표 배열에서 찾을 수 없습니다! Goal ID:',
@@ -437,21 +390,12 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
 
     // 최종적으로 북마크 상태 업데이트
     setBookmarks(newBookmarksState);
-    console.log(
-      '🔖 setBookmarks 호출 완료. 새로운 bookmarks 상태 길이 (다음 렌더링 반영):',
-      newBookmarksState.length,
-    );
-    console.log(
-      '🔖 새로운 bookmarks 상태 ID들 (다음 렌더링 반영):',
-      newBookmarksState.map((b) => b.goalId),
-    );
 
     try {
       await apiToggleBookmark(goalId);
-      console.log('✅ 북마크 토글 API 성공 (Goal ID):', goalId);
+
       await loadBookmarks();
     } catch (error) {
-      console.error('❌ 북마크 토글 API 실패, 상태 되돌리기 (Goal ID):', goalId, error);
       // 에러 발생 시 원래 상태로 복원
       setGoals(prevGoals);
       setMyGoals(prevMyGoals);
@@ -463,14 +407,11 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
 
   // 응원 토글 (Optimistic Update 적용)
   const toggleCheerStatus = async (goalId: number) => {
-    console.log('💖 응원 토글 시작:', goalId);
-
     // 현재 목표 찾기 (goals와 friendGoals 모두에서 검색)
     const currentGoal =
       goals.find((g) => g.goalId === goalId) || friendGoals.find((g) => g.goalId === goalId);
 
     if (!currentGoal) {
-      console.error('❌ 목표를 찾을 수 없습니다:', goalId);
       return;
     }
 
@@ -508,9 +449,7 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
     try {
       // 2. API 호출 (응원 토글)
       const response = await toggleCheer(goalId);
-      console.log('✅ 응원 토글 API 성공:', response.message);
     } catch (error) {
-      console.error('❌ 응원 토글 API 실패, 상태 되돌리기:', error);
       // 3. 실패시 원래 상태로 복원
       setGoals(prevGoals);
       setMyGoals(prevMyGoals);
@@ -522,7 +461,6 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
 
   // 캘린더 새로고침 함수
   const refreshCalendar = () => {
-    console.log('🔄 캘린더 새로고침 트리거');
     // 캘린더 컴포넌트에서 이 함수를 호출하면 useEffect가 다시 실행되어 API를 호출
     // 강제로 상태를 변경하여 useEffect 트리거
     setCalendarRefreshTrigger((prev) => prev + 1);
@@ -534,12 +472,9 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
   // 초기 데이터 로드
   // 내 목표 계산 (현재 로그인한 사용자의 목표만)
   useEffect(() => {
-    console.log('🔍 내 목표 필터링 시작, goals 길이:', goals.length);
-    console.log('현재 userId:', userId, typeof userId);
     if (!userId || goals.length === 0) return;
 
     const myGoalsFiltered = goals.filter((goal) => goal.userId === Number(userId));
-    console.log('🔍 필터링된 내 목표:', myGoalsFiltered);
 
     setMyGoals(myGoalsFiltered);
     setMyGoalIds(new Set(myGoalsFiltered.map((goal) => goal.goalId)));
@@ -548,13 +483,11 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
   // 컴포넌트 마운트 시 자동으로 데이터 로드
   useEffect(() => {
     if (!userId) {
-      console.log('⛔️ userId 없음 - loadGoals 실행 안 함');
       // 로그아웃 시 응원 상태 초기화
       setCheeredGoals(new Set());
       return;
     }
 
-    console.log('✅ userId 준비됨, loadGoals 실행:', userId);
     loadGoals();
     loadFriendGoals();
     loadBookmarks();
@@ -589,5 +522,3 @@ const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) => {
     </ApiGoalContext.Provider>
   );
 };
-
-export { useApiGoals, ApiGoalProvider };

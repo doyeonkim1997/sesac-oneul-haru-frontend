@@ -25,16 +25,13 @@ const MenuSection: React.FC = () => {
     content: string;
     category: string;
   }) => {
-    console.log('🎯 MenuSection - 목표 생성 요청:', goalData);
     try {
       await createNewGoal({ content: goalData.content, category: goalData.category });
-      console.log('✅ MenuSection - 목표 생성 성공');
     } catch (error) {
-      console.error('❌ MenuSection - 목표 생성 실패:', error);
       showToast('오늘의 목표가 이미 존재합니다!', 'error');
     }
   };
-  
+
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mb-4">
       <nav className="space-y-1">
@@ -147,13 +144,7 @@ const MenuSection: React.FC = () => {
         onClose={() => setIsCreateGoalModalOpen(false)}
         onSubmit={handleCreateGoal}
       />
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 };

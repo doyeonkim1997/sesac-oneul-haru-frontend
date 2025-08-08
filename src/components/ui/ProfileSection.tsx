@@ -19,11 +19,9 @@ const ProfileSection: React.FC = () => {
 
     try {
       const profileData = await getUserProfile(user.user_id);
-      console.log('🔍 ProfileSection - 프로필 데이터:', profileData);
 
       // 티어 업데이트
       if (profileData.tier && profileData.tier !== userTier) {
-        console.log('🔍 ProfileSection - 티어 업데이트:', { old: userTier, new: profileData.tier });
         setUserTier(profileData.tier);
       }
 
@@ -36,9 +34,7 @@ const ProfileSection: React.FC = () => {
       if (profileData.image?.imageUrl && profileData.image.imageUrl !== imageUrl) {
         setImageUrl(profileData.image.imageUrl);
       }
-    } catch (error) {
-      console.error('🔍 ProfileSection - 프로필 조회 실패:', error);
-    }
+    } catch (error) {}
   };
 
   // 티어 업데이트 및 프로필 새로고침
@@ -48,7 +44,6 @@ const ProfileSection: React.FC = () => {
     try {
       // 먼저 티어 업데이트 API 호출
       const tierUpdateResult = await updateTier();
-      console.log('🔍 ProfileSection - 티어 업데이트 결과:', tierUpdateResult);
 
       // 티어 업데이트 후 프로필 정보 새로고침
       await fetchUserProfile();
@@ -56,14 +51,8 @@ const ProfileSection: React.FC = () => {
       // UserContext의 tier 정보도 업데이트 (AuthContext를 통해)
       const updatedTier = getTier();
       if (updatedTier && updatedTier !== userTier) {
-        console.log('🔍 ProfileSection - UserContext tier 업데이트:', {
-          old: userTier,
-          new: updatedTier,
-        });
       }
-    } catch (error) {
-      console.error('🔍 ProfileSection - 티어 업데이트 실패:', error);
-    }
+    } catch (error) {}
   };
 
   // 초기 로드 시 프로필 정보 가져오기
@@ -75,7 +64,7 @@ const ProfileSection: React.FC = () => {
         .then(() => {
           fetchUserProfile(); // 등급 업데이트 후 프로필 새로고침
         })
-        .catch(console.error);
+        .catch(() => {});
     }
   }, [user?.user_id]);
 
@@ -85,16 +74,13 @@ const ProfileSection: React.FC = () => {
       // DB 변경사항 감지를 위해 주기적으로 등급 업데이트 시도
       try {
         await updateTier();
-        console.log('🔄 ProfileSection - 주기적 등급 업데이트 완료');
 
         // 등급 업데이트 후 프로필 정보 새로고침
         await fetchUserProfile();
 
         // 강제 리렌더링 트리거
         setForceUpdate((prev) => prev + 1);
-      } catch (error) {
-        console.log('🔄 ProfileSection - 등급 업데이트 실패 (정상)');
-      }
+      } catch (error) {}
 
       // UserContext에서 최신 정보 가져오기
       const updatedImageUrl = getImageUrl();
@@ -109,7 +95,6 @@ const ProfileSection: React.FC = () => {
       }
       if (updatedTier && updatedTier !== userTier) {
         setUserTier(updatedTier);
-        console.log('🔍 ProfileSection - 티어 업데이트 감지:', { old: userTier, new: updatedTier });
       }
     }, 2000); // 2초마다 체크 (적절한 간격)
 

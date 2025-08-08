@@ -29,7 +29,6 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
         setError(null);
       } catch (err) {
         setError('친구 요청을 불러오는데 실패했습니다.');
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -44,7 +43,6 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
       setRequests((prev) => prev.filter((req) => req.requestId !== requestId));
     } catch (err) {
       alert('친구 요청 수락에 실패했습니다. 다시 시도해주세요.');
-      console.error(err);
     }
   };
 
@@ -54,7 +52,6 @@ const FriendRequestModal = ({ onClose, isStandalone = false }: Props) => {
       setRequests((prev) => prev.filter((req) => req.requestId !== requestId));
     } catch (err) {
       alert('친구 요청 거절에 실패했습니다. 다시 시도해주세요.');
-      console.error(err);
     }
   };
 

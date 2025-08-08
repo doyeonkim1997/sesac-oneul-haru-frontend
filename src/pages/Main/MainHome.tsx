@@ -23,7 +23,6 @@ const MainHome: React.FC = () => {
       await createNewGoal(goalData);
       setIsCreateGoalModalOpen(false);
     } catch (error) {
-      console.error('❌ 목표 생성 실패:', error);
       alert('오늘의 목표가 이미 존재합니다!');
     }
   };
@@ -32,9 +31,7 @@ const MainHome: React.FC = () => {
 
   const goals = useMemo(() => {
     const today = new Date().toDateString();
-    const todayMyGoal = myGoals.find(
-      (goal) => new Date(goal.createdAt).toDateString() === today
-    );
+    const todayMyGoal = myGoals.find((goal) => new Date(goal.createdAt).toDateString() === today);
 
     let filteredGoals: any[] = [];
 
@@ -49,11 +46,11 @@ const MainHome: React.FC = () => {
         : [{ isEmpty: true }, ...otherGoals];
     } else if (activeFilter === 'my') {
       filteredGoals = [...myGoals].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     } else if (activeFilter === 'friends') {
       filteredGoals = [...friendGoals].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     }
 
@@ -62,7 +59,7 @@ const MainHome: React.FC = () => {
         goal.isEmpty
           ? true
           : goal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            goal.nickName.toLowerCase().includes(searchTerm.toLowerCase())
+            goal.nickName.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 

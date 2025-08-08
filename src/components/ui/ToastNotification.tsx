@@ -11,7 +11,6 @@ const ToastNotification: React.FC = () => {
     let reconnectTimeout: ReturnType<typeof setTimeout>;
     const connectSSE = async () => {
       try {
-        console.log('SSE 연결 시도 중...');
         const response = await fetch(`${import.meta.env.VITE_BACKEND_ADDRESS}/notifications/sse`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -22,14 +21,13 @@ const ToastNotification: React.FC = () => {
           throw new Error(`SSE 연결 실패: ${response.status}`);
         }
         isConnected = true;
-        console.log('SSE 연결 성공!');
+
         const reader = response.body?.getReader();
         if (!reader) return;
         const decoder = new TextDecoder();
         while (true) {
           const { done, value } = await reader.read();
           if (done) {
-            console.log('SSE 스트림 종료');
             break;
           }
           const chunk = decoder.decode(value);
@@ -37,7 +35,7 @@ const ToastNotification: React.FC = () => {
           for (const line of lines) {
             if (line.startsWith('data: ')) {
               const message = line.slice(6); // 'data: ' 제거
-              console.log('SSE 메시지 수신:', message);
+
               setSseMessage(message);
               setShowSseToast(true);
               // 5초 후 자동으로 숨기기
@@ -48,12 +46,10 @@ const ToastNotification: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error('SSE 연결 오류:', error);
         isConnected = false;
         // 3초 후 재연결 시도
         if (reconnectTimeout) clearTimeout(reconnectTimeout);
         reconnectTimeout = setTimeout(() => {
-          console.log('SSE 재연결 시도...');
           connectSSE();
         }, 3000);
       }

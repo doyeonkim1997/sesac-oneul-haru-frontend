@@ -14,7 +14,6 @@ export const getUserProfile = async (userId: number): Promise<UserProfileRespons
     const response = await axiosInstance.get(`/user/profile/${userId}`);
     return response.data;
   } catch (error) {
-    console.error('사용자 프로필 조회 실패:', error);
     throw error;
   }
 };

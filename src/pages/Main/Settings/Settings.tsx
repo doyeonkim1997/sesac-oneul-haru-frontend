@@ -27,12 +27,7 @@ const Settings: React.FC = () => {
   const currentImageUrl = getImageUrl();
 
   // Debug logs (wrapped in useEffect to prevent excessive logging)
-  useEffect(() => {
-    console.log('🔍 Settings - AuthContext authType:', authType);
-    console.log('🔍 Settings - axiosInstance authType:', directAuthType);
-    console.log('🔍 Settings - isSocialUser:', isSocialUser);
-    console.log('🔍 Settings - UserContext user.auth_type:', user?.auth_type);
-  }, [authType, directAuthType, isSocialUser, user?.auth_type]);
+  useEffect(() => {}, [authType, directAuthType, isSocialUser, user?.auth_type]);
 
   // AuthContext의 데이터로 로컬 상태 초기화
   const [nickname, setNickname] = useState(currentNickName || '');
@@ -68,7 +63,6 @@ const Settings: React.FC = () => {
     }
     const success = await updateNickname(nickname);
     if (success) {
-      console.log('닉네임 업데이트 성공');
     }
   };
 
@@ -125,7 +119,6 @@ const Settings: React.FC = () => {
     const passwordToUse = isSocialUser ? '' : withdrawPassword;
     const success = await withdrawUser(passwordToUse);
     if (success) {
-      console.log('회원 탈퇴 성공');
     }
   };
 
@@ -355,7 +348,6 @@ const Settings: React.FC = () => {
                               showToast('변경할 내용이 없습니다.', 'error');
                             }
                           } catch (error) {
-                            console.error('프로필 저장 중 오류:', error);
                             showToast('프로필 저장 중 오류가 발생했습니다.', 'error');
                           } finally {
                             setIsUploading(false);
@@ -392,7 +384,6 @@ const Settings: React.FC = () => {
                           try {
                             await handlePasswordUpdate();
                           } catch (error) {
-                            console.error('비밀번호 변경 중 오류:', error);
                             alert('비밀번호 변경 중 오류가 발생했습니다.');
                           }
                         }}
@@ -466,11 +457,7 @@ const Settings: React.FC = () => {
           </div>
         </div>
         {toast && (
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={() => setToast(null)}
-          />
+          <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
         )}
       </main>
       <Footer />
