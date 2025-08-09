@@ -324,8 +324,7 @@ export const ApiGoalProvider: React.FC<ApiGoalProviderProps> = ({ children }) =>
         // 등급 업데이트 실패는 목표 완료 토글에 영향을 주지 않도록 함
       }
 
-      // 4. 캘린더 새로고침 트리거
-      refreshCalendar();
+      // 4. 캘린더 새로고침 제거 (Optimistic Update로 충분함)
     } catch (error) {
       // 4. 실패시 원래 상태로 복원
       setGoals(prevGoals);
