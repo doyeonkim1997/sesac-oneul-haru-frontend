@@ -24,7 +24,7 @@ export default function Login() {
 
   useEffect(() => {
     if (accessToken) {
-      window.location.replace('/main');
+      navigate('/main');
     }
   }, [accessToken, navigate]);
 
@@ -37,7 +37,6 @@ export default function Login() {
         { email, password },
         { withCredentials: true },
       );
-
       setAccessToken(res.data.accessToken, {
         nickName: res.data.nickName,
         imageUrl: res.data.imageUrl.imageUrl,
@@ -48,13 +47,6 @@ export default function Login() {
       setNickName(res.data.nickName);
       setTier(res.data.tier);
       setAuthType(res.data.authType);
-
-      console.log('로그인 성공:', res.data.accessToken);
-      console.log('로그인 이미지:', getImageUrl());
-      console.log('로그인 닉네임:', getNickName());
-      console.log('로그인 티어:', getTier());
-      console.log('로그인 타입:', getAuthType());
-
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('로그인 실패:', error.response?.data?.message || error.message);
@@ -72,11 +64,7 @@ export default function Login() {
       });
       const accessToken = res.data.accessToken;
       if (accessToken) {
-        console.log('🔍 소셜 로그인 응답 데이터:', res.data);
-
         const authTypeFromResponse = res.data.authType;
-        console.log('🔍 소셜 로그인 - authType 확인:', authTypeFromResponse);
-
         setAccessToken(accessToken, {
           nickName: res.data.nickName,
           imageUrl: res.data.imageUrl.imageUrl,
@@ -87,17 +75,6 @@ export default function Login() {
         setNickName(res.data.nickName);
         setTier(res.data.tier);
         setAuthType(authTypeFromResponse);
-
-        console.log('소셜 로그인 성공, accessToken:', accessToken);
-        console.log('소셜 로그인 이미지:', getImageUrl());
-        console.log('소셜 로그인 닉네임:', getNickName());
-        console.log('소셜 로그인 티어:', getTier());
-        console.log('소셜 로그인 타입 (즉시 확인):', getAuthType());
-
-        setTimeout(() => {
-          console.log('소셜 로그인 타입 (지연 확인):', getAuthType());
-        }, 100);
-
       } else {
         console.warn('accessToken이 없습니다');
       }
