@@ -24,7 +24,7 @@ export default function Login() {
 
   useEffect(() => {
     if (accessToken) {
-      navigate('/main');
+      navigate('/main', { replace: true });
     }
   }, [accessToken, navigate]);
 

@@ -7,7 +7,7 @@ import {
 
 interface TokenPayload {
   email: string;
-  userId: number; // 추가
+  userId: number;
 }
 
 type AuthContextType = {
@@ -17,7 +17,7 @@ type AuthContextType = {
   imageUrl: string | null;
   tier: string | null;
   authType: string | null;
-  userId: number | null; // 추가
+  userId: number | null;
   setAccessToken: (
     token: string | null,
     info?: { nickName?: string; imageUrl?: string; tier?: string; authType?: string },
@@ -57,22 +57,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     token: string | null,
     info?: { nickName?: string; imageUrl?: string; tier?: string; authType?: string },
   ) => {
-    setAccessToken(token);
-    setTokenHelper(token || '');
+    // 토큰 새로 들어왔을 경우 (로그인 또는 토큰 갱신)
+    if (token) {
+      setAccessToken(token);
+      setTokenHelper(token);
+      localStorage.setItem('isLoggedIn', 'true'); // 로컬스토리지 저장
 
-    if (info) {
-      setNickName(info.nickName || null);
-      setImageUrl(info.imageUrl || null);
-      setTier(info.tier || null);
-      setAuthType(info.authType || null);
-      setAxiosAuthType(info.authType || null); // axiosInstance와 동기화
-    } else if (token === null) {
-      // 로그아웃 시 초기화
+      if (info) {
+        setNickName(info.nickName || null);
+        setImageUrl(info.imageUrl || null);
+        setTier(info.tier || null);
+        setAuthType(info.authType || null);
+        setAxiosAuthType(info.authType || null);
+      }
+    } 
+    // 로그아웃 시
+    else {
+      setAccessToken(null);
+      setTokenHelper(''); 
+      localStorage.removeItem('isLoggedIn'); // 제거
+
       setNickName(null);
       setImageUrl(null);
       setTier(null);
       setAuthType(null);
-      setAxiosAuthType(null); // axiosInstance와 동기화
+      setAxiosAuthType(null);
     }
   };
 

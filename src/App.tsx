@@ -16,40 +16,24 @@ import FriendList from './pages/Main/Friends/FriendList';
 import Settings from './pages/Main/Settings/Settings';
 
 import PrivateRoute from './components/common/PrivateRoute';
-import AuthLoader from './components/common/AuthLoader';
+import RootRedirector from './components/common/RootRedirector';
 
 function AppContent() {
   const { accessToken } = useAuth();
 
-  // 로그인 필요한 경로들
-  const privateRoutes = [
-    { path: '/main', element: <MainHome /> },
-    { path: '/goals', element: <GoalList /> },
-    { path: '/bookmarks', element: <BookmarkList /> },
-    { path: '/friends', element: <FriendList /> },
-    { path: '/settings', element: <Settings /> },
-    { path: '/terms', element: <Terms /> },
-  ];
-
   return (
     <BrowserRouter>
-      <AuthLoader>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              accessToken ? <Navigate to="/main" replace /> : <Navigate to="/login" replace />
-            }
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-
-          {privateRoutes.map(({ path, element }) => (
-            <Route key={path} path={path} element={<PrivateRoute>{element}</PrivateRoute>} />
-          ))}
-        </Routes>
-      </AuthLoader>
-
+      <Routes>
+        <Route path="/" element={<RootRedirector />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/main"      element={<PrivateRoute><MainHome /></PrivateRoute>} />
+        <Route path="/goals"     element={<PrivateRoute><GoalList /></PrivateRoute>} />
+        <Route path="/bookmarks" element={<PrivateRoute><BookmarkList /></PrivateRoute>} />
+        <Route path="/friends"   element={<PrivateRoute><FriendList /></PrivateRoute>} />
+        <Route path="/settings"  element={<PrivateRoute><Settings /></PrivateRoute>} />
+        <Route path="/terms"     element={<PrivateRoute><Terms /></PrivateRoute>} />
+      </Routes>
       {accessToken && <ToastNotification />}
     </BrowserRouter>
   );
