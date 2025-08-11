@@ -10,7 +10,7 @@ const MAX_CHEER_COUNT: number = 15;
 
 const getHeartColor = (count: number): string => {
   if (count === 0) {
-    return 'rgb(0, 0, 0)'; // cheerCount 0일 땐 검정색
+    return 'rgb(0, 0, 0)';
   }
 
   const intensity = Math.min(count / MAX_CHEER_COUNT, 1);
@@ -33,10 +33,9 @@ const Header = () => {
   const navigate = useNavigate();
   const { isDarkMode, resetDarkMode } = useDarkMode();
   const { logout } = useAuth();
-  // 테스트용 (실제론 props나 context에서)
+  // 테스트용
   const [cheerCount, setCheerCount] = useState(0);
 
-  // 백엔드 연결
   const [todayCheerCount, setTodayCheerCount] = useState(0);
   const [totalCheerCount, setTotalCheerCount] = useState(0);
   useEffect(() => {
@@ -71,11 +70,6 @@ const Header = () => {
           </div>
 
           <div className="flex items-center space-x-6 text-gray-900 dark:text-white">
-            {/* 임시 버튼
-            <button onClick={() => setCheerCount((prev) => Math.min(prev + 1, 100))}>
-              임시 버튼 (+1)
-            </button> */}
-
             <button className="hover:text-sky-400" onClick={() => setShowFriendModal(true)}>
               <span className="material-icons !text-[28px] translate-y-[3px]">people</span>
             </button>
@@ -107,10 +101,10 @@ const Header = () => {
               className="hover:text-sky-400"
               onClick={async () => {
                 try {
-                  await axiosInstance.post('/auth/logout'); // 백엔드에 로그아웃 요청
+                  await axiosInstance.post('/auth/logout');
                 } catch (error) {
                 } finally {
-                  logout(); // AuthContext의 logout 함수 사용
+                  logout();
                   // 로그아웃 시 다크모드 해제
                   resetDarkMode();
                   navigate('/login', { replace: true });
