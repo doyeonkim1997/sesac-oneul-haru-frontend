@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, memo } from 'react';
-import { flushSync } from 'react-dom';
+// flushSync import 제거
 import {
   getCalendarGoals,
   type CalendarGoalsResponse,
@@ -195,19 +195,17 @@ const CalendarSection: React.FC = () => {
     const month = currentDate.getMonth() + 1; // getMonth()는 0부터 시작하므로 +1
     const cacheKey = `${year}-${month}`;
 
-    // 전역 캐시에 있으면 flushSync로 완전히 동기적으로 설정
+    // 전역 캐시에 있으면 setTimeout으로 다음 tick에서 설정 (번쩍거림 방지)
     if (globalCalendarCache.has(cacheKey)) {
       const cachedData = globalCalendarCache.get(cacheKey)!;
-      // flushSync로 상태 업데이트를 즉시 DOM에 반영 (번쩍거림 완전 제거)
-      flushSync(() => {
+      // setTimeout으로 React 렌더링 사이클과 충돌 방지
+      setTimeout(() => {
         setCalendarGoals(cachedData);
         setLoading(false);
-      });
+      }, 0);
     } else {
       // 캐시가 없는 경우에만 비동기 로딩
-      flushSync(() => {
-        setLoading(true);
-      });
+      setLoading(true);
       loadCalendarGoals(year, month, false);
     }
   }, [currentDate]);
