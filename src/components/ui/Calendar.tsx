@@ -6,7 +6,7 @@ import {
   type CalendarGoalsArrayResponse,
 } from '../../api/getCalendarGoals';
 import { useApiGoals } from '../../contexts/ApiGoalContext';
-import { getNickName, getAccessToken } from '../../api/axiosInstance';
+import {} from '../../api/axiosInstance';
 
 // 전역 캐시 (모든 캘린더 인스턴스가 공유)
 const globalCalendarCache = new Map<string, CalendarGoalsResponse | CalendarGoalsArrayResponse>();
@@ -97,14 +97,10 @@ const CalendarSection: React.FC = () => {
     return !globalCalendarCache.has(cacheKey);
   });
   // 로컬 캐시 상태 제거 - 전역 캐시 사용
-  const { refreshCalendar, calendarRefreshTrigger, myGoals } = useApiGoals(); // 실시간 목표 상태 추가
+  const { calendarRefreshTrigger, myGoals } = useApiGoals(); // 실시간 목표 상태 추가
 
   // 완료된 목표가 있는 날짜들 계산 (안정적인 캐싱)
   const completedGoalDates = useMemo(() => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
-    const cacheKey = `${year}-${month}`;
-
     // 새로 계산
     const completedDates = new Set<string>();
 
@@ -161,10 +157,6 @@ const CalendarSection: React.FC = () => {
     globalLoadingCache.set(cacheKey, true); // 전역 로딩 상태 저장
 
     try {
-      // 로그인 상태 확인
-      const currentUser = getNickName();
-      const currentToken = getAccessToken();
-
       const data = await getCalendarGoals(year, month);
 
       // 데이터가 배열이거나 객체인지 확인하고 안전하게 설정
@@ -220,78 +212,6 @@ const CalendarSection: React.FC = () => {
       loadCalendarGoals(year, month, true); // 강제 새로고침
     }
   }, [calendarRefreshTrigger]);
-
-  // 디버깅: 캘린더 응답 샘플 로그 (월 변경/데이터 갱신 시 1회)
-  useEffect(() => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
-
-    try {
-      if (!calendarGoals) return;
-
-      // 배열 응답 형태
-      if (Array.isArray(calendarGoals)) {
-        const sample = calendarGoals.slice(0, 5).map((g) => ({
-          goalId: g?.goalId,
-          year: g?.year,
-          yearType: typeof g?.year,
-          month: g?.month,
-          monthType: typeof g?.month,
-          day: g?.day,
-          dayType: typeof g?.day,
-          isCompleted: g?.isCompleted ?? (g as any)?.is_completed ?? (g as any)?.completed,
-          isCompletedType: typeof (
-            g?.isCompleted ??
-            (g as any)?.is_completed ??
-            (g as any)?.completed
-          ),
-        }));
-        // eslint-disable-next-line no-console
-        console.log(`[Calendar] ${year}-${month} array response sample:`, sample);
-      } else if (typeof calendarGoals === 'object') {
-        // 객체 응답 형태
-        const entries = Object.entries(calendarGoals as Record<string, any[]>).slice(0, 3);
-        const sample = entries.map(([date, arr]) => ({
-          date,
-          items: (arr || []).slice(0, 2).map((g) => ({
-            goalId: g?.goalId,
-            isCompleted: g?.isCompleted ?? g?.is_completed ?? g?.completed,
-            isCompletedType: typeof (g?.isCompleted ?? g?.is_completed ?? g?.completed),
-          })),
-        }));
-        // eslint-disable-next-line no-console
-        console.log(`[Calendar] ${year}-${month} object response sample:`, sample);
-      }
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.warn('[Calendar] debug logging failed:', e);
-    }
-  }, [calendarGoals, currentDate]);
-
-  // 디버깅: 완료 날짜 Set 내용 확인
-  useEffect(() => {
-    try {
-      const year = currentDate.getFullYear();
-      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-      const sampleDays = [1, 5, 12, 15, 23, 28];
-      const checks = sampleDays.map((d) => {
-        const key = `${year}-${month}-${String(d).padStart(2, '0')}`;
-        return { date: key, completed: completedGoalDates.has(key) };
-      });
-      const entries = Array.from(completedGoalDates).slice(0, 20);
-      // eslint-disable-next-line no-console
-      console.log(
-        '[Calendar] completedGoalDates size:',
-        completedGoalDates.size,
-        checks,
-        'entries:',
-        entries,
-      );
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.warn('[Calendar] completedGoalDates logging failed:', e);
-    }
-  }, [completedGoalDates, currentDate]);
 
   // 현재 월의 첫 번째 날과 마지막 날 계산
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -411,15 +331,6 @@ const CalendarSection: React.FC = () => {
     '11월',
     '12월',
   ];
-
-  // 디버깅: 현재 렌더링 중인 월/연도 출력
-  try {
-    // eslint-disable-next-line no-console
-    console.log(
-      '[Calendar] render month:',
-      `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`,
-    );
-  } catch {}
 
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
